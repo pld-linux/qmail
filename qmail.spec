@@ -291,7 +291,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %files
-%defattr(644, root, root, 755)
+%defattr(644,root,root,755)
 %doc {FAQ,INSTALL*,PIC*,REMOVE*,SENDMAIL,TEST*,UPGRADE}.gz
 %doc {BLURB*,README,SECURITY,THANKS,THOUGHTS,TODO,VERSION}.gz
 %doc checkpassword-0.76/ queue-fix-1.3/ qmHandle-0.3.0/ rblsmtpd-0.70/ boot/ 
