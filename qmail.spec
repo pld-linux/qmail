@@ -927,6 +927,9 @@ fi
 %doc boot checkpass-1.2 queue-fix-1.4
 %doc rblsmtpd-0.70 tarpit.README
 %doc qmail-doki
+%if %{with tls}
+%doc README.auth README.remote-auth README.starttls README.qregex
+%endif
 
 %attr(755,root,root) %dir %{_sysconfdir}/mail
 %attr(755,root,root) %dir %{_sysconfdir}/qmail
