@@ -46,9 +46,9 @@ Source4:	checkpass-1.2.tar.gz
 # Source4-md5:	6818629dc74737f3ca33ca97ab4ffcc4
 Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
 # Source5-md5:	43f915c104024e6f33a5b3ff52dfb75b
-Source6:	http://glen.alkohol.ee/pld/qmail/qmail-conf-20050225.tar.bz2
+Source6:	http://glen.alkohol.ee/pld/qmail/%{name}-conf-20050225.tar.bz2
 # Source6-md5:	1f294eda711f128e63cb1fb943e6dee2
-Source7:	http://iidea.pl/~paweln/tlum/qmail-doki.tar.bz2
+Source7:	http://iidea.pl/~paweln/tlum/%{name}-doki.tar.bz2
 # Source7-md5:	2d85f0f9f8408cf6caab9f9bc8f68657
 Source8:	%{name}-linux.sh
 Source9:	%{name}-linux.csh
@@ -108,7 +108,7 @@ Patch104:	%{name}-any-to-cname.patch
 
 # Patches from http://www-dt.e-technik.uni-dortmund.de/~ma/qmail-bugs.html
 # Maildir file name creation is not collision proof. Mail loss possible depending on mail user agent.
-Patch106:	http://vorlon.cwru.edu/~tmb2/qmail-1.03/qmail-1.03-maildir-uniq.patch
+Patch106:	http://vorlon.cwru.edu/~tmb2/qmail-1.03/%{name}-1.03-maildir-uniq.patch
 
 # Gentoo patches 200-
 # Last check: qmail-1.03-r15.ebuild
@@ -194,13 +194,13 @@ Patch213:	%{name}-1.03-accept-5xx.tls.patch
 Patch206:	%{name}-nullenvsender-recipcount.tarpit.patch
 
 # Qmail does not reliably detect IP aliases on Linux.
-Patch221:	http://www-dt.e-technik.uni-dortmund.de/~ma/qmail/patch-qmail-1.03-4.3BSD-ipalias.diff
+Patch221:	http://www-dt.e-technik.uni-dortmund.de/~ma/qmail/patch-%{name}-1.03-4.3BSD-ipalias.diff
 
 # Deliberate RFC-1652 "8BITMIME" violation
-Patch222:	http://www-dt.e-technik.uni-dortmund.de/~ma/qmail/patch-qmail-1.03-rfc1652.diff
+Patch222:	http://www-dt.e-technik.uni-dortmund.de/~ma/qmail/patch-%{name}-1.03-rfc1652.diff
 
 # Let qmail accept bare LF in the mail body
-Patch223:	qmail-0.95-liberal-lf-rediff.patch
+Patch223:	%{name}-0.95-liberal-lf-rediff.patch
 
 URL:		http://www.qmail.org/
 BuildRequires:	groff
@@ -301,11 +301,10 @@ Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
 - Obs³uga TLS/SSL. Je¶li chcesz tego u¿ywaæ musisz mieæ certyfikat w
   /etc/qmail/control/servercert.pem.
 
-
 ======================================================================
-*** Uwaga! Przeczytaj uwa¿nie dokumentacjê do tego pakietu, poniewa¿
-istniej± ma³e, ale znacz±ce ró¿nice pomiêdzy qmailem oraz sendmailem
-i programami, które wspó³pracuj± z nimi.
+- *** Uwaga! Przeczytaj uwa¿nie dokumentacjê do tego pakietu, poniewa¿
+  istniej± ma³e, ale znacz±ce ró¿nice pomiêdzy qmailem oraz sendmailem i
+  programami, które wspó³pracuj± z nimi.
 
 %package client
 Summary:	qmail Mail Transport Agent - null client
@@ -1145,12 +1144,12 @@ fi
 %attr(755,root,root) %dir %{varqmail}
 %attr(755,root,root) %{varqmail}/bin
 %attr(755,root,root) %{varqmail}/control
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/defaultdomain
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/me
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/plusdomain
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/idhost
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/qmqpservers
-%attr(755,root,root) %config(noreplace) %verify(not size mtime md5) /etc/profile.d/*
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/qmail/control/defaultdomain
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/qmail/control/me
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/qmail/control/plusdomain
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/qmail/control/idhost
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/qmail/control/qmqpservers
+%attr(755,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/profile.d/*
 %attr(755,root,root) %{_libdir}/qmail/datemail
 %attr(755,root,root) %{_libdir}/qmail/elq
 %attr(755,root,root) %{_libdir}/qmail/forward
@@ -1204,8 +1203,8 @@ fi
 %files pop3
 %defattr(644,root,root,755)
 %{tcprules}/Makefile.qmail-pop3
-%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{tcprules}/tcp.qmail-pop3
-%attr(640,qmaild,root) %config(noreplace) %verify(not size mtime md5) %ghost %{tcprules}/tcp.qmail-pop3.cdb
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{tcprules}/tcp.qmail-pop3
+%attr(640,qmaild,root) %config(noreplace) %verify(not md5 mtime size) %ghost %{tcprules}/tcp.qmail-pop3.cdb
 %config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-pop3d
 %config(noreplace) %verify(not mtime) /etc/logrotate.d/qmail-pop3
 
