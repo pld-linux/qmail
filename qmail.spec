@@ -33,7 +33,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.50
+Release:	56.61
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -46,8 +46,8 @@ Source4:	checkpass-1.2.tar.gz
 # Source4-md5:	6818629dc74737f3ca33ca97ab4ffcc4
 Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
 # Source5-md5:	43f915c104024e6f33a5b3ff52dfb75b
-Source6:    http://glen.alkohol.ee/pld/qmail/qmail-conf-20041216.1.tar.bz2
-# Source6-md5:	c92391b81429b941d09705ca225ce359
+Source6:    http://glen.alkohol.ee/pld/qmail/qmail-conf-20041222.tar.bz2
+# Source6-md5:	8733c4e19a5ba293e1e659b7cf2713f0
 Source7:	http://iidea.pl/~paweln/tlum/qmail-doki.tar.bz2
 # Source7-md5:	2d85f0f9f8408cf6caab9f9bc8f68657
 Source8:	%{name}-linux.sh
@@ -763,7 +763,6 @@ if [ ! -s /etc/qmail/control/me ]; then
 	echo "$FQDN" | /bin/sed 's/^.*\.\([^\.]*\)\.\([^\.]*\)$/\1.\2/' > /etc/qmail/control/plusdomain
 	echo "$FQDN" >> /etc/qmail/control/locals
 	echo "$FQDN" >> /etc/qmail/control/rcpthosts
-	chmod 644 /etc/qmail/control/*
 
 	echo "Now qmail will refuse to accept SMTP messages except to $FQDN."
 	echo "Make sure to change rcpthosts if you add hosts to locals or virtualdomains!"
@@ -889,7 +888,6 @@ if [ ! -s /etc/qmail/control/me ]; then
 	echo "$FQDN" > /etc/qmail/control/idhost
 	echo "$FQDN" | /bin/sed 's/^\([^\.]*\)\.\([^\.]*\)\./\2\./' > /etc/qmail/control/defaultdomain
 	echo "$FQDN" | /bin/sed 's/^.*\.\([^\.]*\)\.\([^\.]*\)$/\1.\2/' > /etc/qmail/control/plusdomain
-	chmod 644 /etc/qmail/control/*
 fi
 
 %files
@@ -939,7 +937,11 @@ fi
 %ghost %{_sysconfdir}/qmail/control/clientcert.pem
 %endif
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/defaultdelivery
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/conf-*
+%config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-common
+%config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-qmqpd
+%config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-qmtpd
+%config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-send
+%config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-smtpd
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/users/*
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/aliases
 %{_sysconfdir}/mail/aliases
@@ -1150,6 +1152,7 @@ fi
 %defattr(644,root,root,755)
 %attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{tcprules}/tcp.qmail-pop3
 %attr(640,qmaild,root) %config(noreplace) %verify(not size mtime md5) %{tcprules}/tcp.qmail-pop3.cdb
+%config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-pop3d
 
 %attr(1755,root,root) %dir %{_sysconfdir}/qmail/supervise/pop3d
 %attr(1755,root,root) %dir %{_sysconfdir}/qmail/supervise/pop3d/log
