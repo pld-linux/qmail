@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	43
+Release:	44
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
@@ -54,6 +54,8 @@ Patch22:	%{name}-rblsmtpd-glibc2.2.patch
 Patch23:	%{name}-extbouncer.patch
 # http://www.esat.kuleuven.ac.be/~vermeule/qmail/tls.patch
 Patch24:	%{name}-tls.patch
+# http://www.qmail.org/qmailqueue-patch
+Patch25:	%{name}-queue.patch
 BuildRequires:	pam-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Provides:	smtpdaemon
@@ -241,6 +243,7 @@ tar zxf %{SOURCE6} -C qmHandle-0.5.1/
 %patch22 -p1
 %patch23 -p1
 %patch24 -p1
+%patch25 -p1
 
 %build
 %{__make} CFLAGS="%{rpmcflags}"
