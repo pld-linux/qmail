@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	47
+Release:	48
 License:	Check with djb@koobera.math.uic.edu
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
@@ -658,9 +658,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/qmail-qmqpc*
 %{_mandir}/man8/qmail-queue*
 %{_mandir}/man8/qmail-showctl*
-%lang(pl) %{_mandir}/man8/pl/qmail-inject*
-%lang(pl) %{_mandir}/man8/pl/qmail-qmqpc*
-%lang(pl) %{_mandir}/man8/pl/qmail-queue*
+%lang(pl) %{_mandir}/pl/man8/qmail-inject*
+%lang(pl) %{_mandir}/pl/man8/qmail-qmqpc*
+%lang(pl) %{_mandir}/pl/man8/qmail-queue*
 
 # default folder - Maildir/
 %attr( 700, root, root) %dir /etc/skel/Mail
