@@ -283,13 +283,13 @@ if [ $1 = 1 ]; then
 # Add few users and groups
 %{_sbindir}/groupadd -f -g 81 nofiles
 %{_sbindir}/groupadd -f -g 82 qmail
-%{_sbindir}/useradd -M -g nofiles -d /var/qmail/ -u 81 -s /bin/true qmaild 2> /dev/null
-%{_sbindir}/useradd -M -g nofiles -d /var/qmail/alias/ -u 82 -s /bin/true alias 2> /dev/null
-%{_sbindir}/useradd -M -g qmail -d /var/qmail/ -u 83 -s /bin/true qmailq 2> /dev/null
-%{_sbindir}/useradd -M -g qmail -d /var/qmail/ -u 84 -s /bin/true qmailr 2> /dev/null
-%{_sbindir}/useradd -M -g qmail -d /var/qmail/ -u 85 -s /bin/true qmails 2> /dev/null
-%{_sbindir}/useradd -M -g nofiles -d /var/qmail/ -u 86 -s /bin/true qmaill 2> /dev/null
-%{_sbindir}/useradd -M -g nofiles -d /var/qmail/ -u 87 -s /bin/true qmailp 2> /dev/null
+%{_sbindir}/useradd -g nofiles -d /var/qmail/ -u 81 -s /bin/true qmaild 2> /dev/null
+%{_sbindir}/useradd -g nofiles -d /var/qmail/alias/ -u 82 -s /bin/true alias 2> /dev/null
+%{_sbindir}/useradd -g qmail -d /var/qmail/ -u 83 -s /bin/true qmailq 2> /dev/null
+%{_sbindir}/useradd -g qmail -d /var/qmail/ -u 84 -s /bin/true qmailr 2> /dev/null
+%{_sbindir}/useradd -g qmail -d /var/qmail/ -u 85 -s /bin/true qmails 2> /dev/null
+%{_sbindir}/useradd -g nofiles -d /var/qmail/ -u 86 -s /bin/true qmaill 2> /dev/null
+%{_sbindir}/useradd -g nofiles -d /var/qmail/ -u 87 -s /bin/true qmailp 2> /dev/null
 
 fi
 
