@@ -23,6 +23,8 @@ if is_no "${NETWORKING}"; then
 	exit 1
 fi
 
+RETVAL=0
+
 # See how we were called.
 case "$1" in
   start)
@@ -42,15 +44,16 @@ case "$1" in
 		then
 			deltext
 			ok
+			touch /var/lock/subsys/qmail
 		else
 			deltext
 			fail	  
+			RETVAL=1
 		fi
 	else
 		msg_Already_Running qmail
 		exit 1
 	fi
-	touch /var/lock/subsys/qmail
 	;;
   stop)
 	# Stop daemons.
@@ -70,5 +73,4 @@ case "$1" in
 	exit 1
 esac
 
-exit 0
-
+exit $RETVAL
