@@ -1,0 +1,15 @@
+# Mail Aliases
+bin: root
+daemon: root
+decode: root
+dumper: root
+games: root
+ingres: root
+mailer-daemon: root
+manager: root
+nobody: root
+operator: root
+postmaster: root
+system: root
+toor: root
+uucp: root

@@ -1,0 +1,66 @@
+Qmail-1.01 MaxRCPT patch - patch by Michael Samuel <michael@surfnetcity.com.au>
+
+Updated to qmail-1.03 by Jan Rêkorajski <baggins@hunter.mimuw.edu.pl>
+
+Here is a patch I rigged up limit the number of RCPT TO: commands per E-Mail
+messages.
+
+It reads the file control/maxrcpt relative to your qmail directory stucture
+(usually /var/qmail/control/maxrcpt).
+
+In that file you should have a integer, which represents the maximum number
+of recipients per E-Mail Messages.
+
+Apparently one of the SMTP rfcs recommends a minimum of 100 recipients per
+message be allowed.  Just something to keep in mind anyway.
+
+If /var/qmail/control/maxrcpt doesn't exist, it does not impose a limit and
+skips the rcpt part of the code, so unless I missed something in the source, 
+you could even have more than MAXINT.
+
+I would like to thank Sam from the qmail list for giving me a good start to
+this patch, and anyone else who offered me suggestions from the qmail list.
+(When I refer to qmail list, I'm referring to djb-qmail@koobera.math.uic.edu)
+
+To apply the patch, enter the qmail source directory and type:
+
+patch -p1 < ~/qmail-1.01-maxrcpt.patch
+
+Assuming that the patch is in your home directory.
+
+
+--- qmail-smtpd.c~	Mon Feb 22 00:15:29 1999
++++ qmail-smtpd.c	Mon Feb 22 00:32:43 1999
+@@ -29,6 +29,7 @@
+ int timeout = 1200;
+ int tarpitcount = 0;
+ int tarpitdelay = 5;
++int maxrcpt = 0;
+ 
+ int safewrite(fd,buf,len) int fd; char *buf; int len;
+ {
+@@ -115,6 +116,8 @@
+   if (control_readint(&timeout,"control/timeoutsmtpd") == -1) die_control();
+   if (timeout <= 0) timeout = 1;
+ 
++  if (control_readint(&maxrcpt,"control/maxrcpt") == -1) die_control();
++
+   if (!env_get("NOTARPIT")) {
+     if (control_readint(&tarpitcount,"control/tarpitcount") == -1) die_control();
+     if (tarpitcount < 0) tarpitcount = 0;
+@@ -252,6 +255,7 @@
+ stralloc rcptto = {0};
+ int rcptcount;
+ 
++
+ void smtp_helo(arg) char *arg;
+ {
+   smtp_greet("250 "); out("\r\n");
+@@ -294,6 +298,7 @@
+   if (!stralloc_cats(&rcptto,addr.s)) die_nomem();
+   if (!stralloc_0(&rcptto)) die_nomem();
+   if (tarpitcount && ++rcptcount >= tarpitcount) sleep(tarpitdelay); 
++  if (maxrcpt && rcptcount > maxrcpt) { err_syntax(); return; }
+   out("250 ok\r\n");
+ }
+ 

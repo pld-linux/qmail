@@ -1,0 +1,25 @@
+What's tarpitting? It's the practice of inserting a small sleep in an SMTP
+session for each RCPT TO after some set number of RCPT TOs.  The idea is to
+thwart spammers who would hand your SMTP server a single message with a long
+list of RCPT TOs. If a spammer were to attempt to use your server to relay a
+message with, say, 10,000 recipients, and you inserted a five-second delay for
+each recipient after the fiftieth, the spammer would be "tarpitted," and would
+most likely assume that his connection had stalled and give up.
+
+The subject originally came up in a discussion on the qmail mailing list of
+ways to run an open relay safely (I didn't suggest it, and I don't do that kind
+of thing), but it could also be useful in keeping your own dial-up customers
+from using you as a spam relay.
+
+I've made a simple patch to qmail-smtpd to allow it to do tarpitting. There are
+two control files involved: control/tarpitcount and control/tarpitdelay.
+tarpitcount is the number of RCPT TOs you accept before you start tarpitting,
+and tarpitdelay is the number of seconds of delay to introduce after each
+subsequent RCPT TO. tarpitcount defaults to 0 (which means no tarpitting), and
+tarpitdelay defaults to 5. If NOTARPIT is set in the environment (perhaps by
+tcpserver) then no tarpitting is done. (I had considered doing this the other
+way around--no tarpitting would be done unless TARPIT was set, irrespective of
+control/tarpitcount. Any suggestions on this point?)
+
+Chris Johnson
+cjohnson@palomine.net

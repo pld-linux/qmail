@@ -1,0 +1,67 @@
+--- qmail-1.03/config.sh.ORIG	Tue Nov 19 18:44:14 1996
++++ qmail-1.03/config.sh	Tue Nov 19 18:48:34 1996
+@@ -53,6 +53,9 @@
+       else
+         echo Sorry, I couldn\'t find your host\'s canonical name in DNS.
+         echo You will have to set up control/me yourself.
++        echo
++        echo If your hostname is setup properly, you can do this with:
++        echo \# echo \`hostname -f\` \> /var/qmail/control/me
+       fi
+     )
+   else
+--- qmail-1.03/INSTALL.redhat.ORIG	Tue Nov 19 18:52:38 1996
++++ qmail-1.03/INSTALL.redhat	Tue Nov 19 19:15:49 1996
+@@ -0,0 +1,52 @@
++Installation Notes for Red Hat Linux Users:
++----------------------------------------------------------------------
++
++I. Qmail and mail delivery.
++
++   Qmail doesn't use a central mail spool. The default location
++   for mail delivery is now $HOME/Mailbox.
++
++   To cope with this, you'll need to change the following (as root):
++
++   1) If you are using pine, put:
++	sendmail-path=/var/qmail/bin/qmail-inject
++	inbox-path=$MAIL 
++      into /usr/lib/pine.conf.fixed or /usr/lib/pine.conf.
++
++   2) If you are using MH, and do not have /etc/aliases.db, do:
++	touch /etc/aliases.db
++
++II. Mail & root.
++
++    Qmail does not deliver mail to "root". The following files determine
++    where mail addressed to "root" and the other mail maintenance users,
++    "mailer-daemon" and "postmaster", get sent. Use these files to specify
++    where this mail should be sent.
++
++       /etc/qmail/alias/.qmail-mailer-daemon
++       /etc/qmail/alias/.qmail-postmaster
++       /etc/qmail/alias/.qmail-root
++
++    By default, these files are empty. An empty
++    /etc/qmail/alias/.qmail-foo file means that all mail sent to foo
++    will be delivered to /etc/qmail/alias/Mailbox. If you like this
++    and you want to read root's mail only as root you can set
++    MAIL and MAILDROP in root's shell init files
++    (.profile or .bash_profile, .bashrc, .login, .cshrc), to
++    /etc/qmail/alias/Mailbox.
++
++    However, if you wish to use simple forwarding (ie. have this
++    mail just forwarded to user "john") then place the username preceded
++    by an  ampersand (&) in these files. ( "&john", without the quotes
++    in /etc/qmail/alias/.qmail-root will forward root's mail to user
++    "john". )
++
++    Refer to "man dot-qmail" for more information on how qmail's
++    alias  files are  setup.
++
++III. QMail and MH
++
++   MH has a small problem with qmail. The symptom is that qmail will
++   reject any mail sent by MH. The solution is to delete the file
++   /var/qmail/control/rcpthosts.  
++

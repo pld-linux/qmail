@@ -1,0 +1,68 @@
+#!/bin/sh
+#
+# qmail      This shell script takes care of starting and stopping qmail.
+#
+# chkconfig: 2345 80 30
+# description: Qmail is a Mail Transport Agent, which is the program \
+# that moves mail from one machine to another.
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+[ ${NETWORKING} = "no" ] && exit 0
+
+[ -f /var/qmail/bin/sendmail ] || exit 0
+
+# See how we were called.
+case "$1" in
+  start)
+	# Start daemons.
+	show Starting qmail
+
+	busy
+	if ps ax | grep -v grep | grep -q qmail-send
+	then
+	  deltext
+	  fail	  
+	  exit 1
+	fi
+
+	PATH="/var/qmail/bin:$PATH"; export PATH
+
+	qmail-start "`cat /etc/qmail/dot-qmail`" splogger qmail &
+	sleep 1
+
+	if ps ax | grep -v grep | grep -q qmail-send
+	then
+	  deltext
+	  ok
+	else
+	  deltext
+	  fail	  
+	fi
+	touch /var/lock/subsys/qmail
+	;;
+  stop)
+	# Stop daemons.
+	show Shutting down qmail
+	killproc qmail-send
+	rm -f /var/lock/subsys/qmail
+	;;
+  restart)
+  	$0 stop
+	$0 start
+	;;
+  status)
+  	status qmail-send
+	;;
+  *)
+	echo "Usage: qmail {start|stop|restart|status}"
+	exit 1
+esac
+
+exit 0
+

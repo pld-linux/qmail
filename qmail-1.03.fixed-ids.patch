@@ -1,0 +1,364 @@
+diff -urN qmail-1.03.orig/Makefile qmail-1.03/Makefile
+--- qmail-1.03.orig/Makefile	Mon Jun 15 12:53:16 1998
++++ qmail-1.03/Makefile	Sun Feb 21 17:24:02 1999
+@@ -110,19 +110,19 @@
+ compile auto_split.c
+ 	./compile auto_split.c
+ 
+-auto_uids.c: \
+-auto-uid auto-gid conf-users conf-groups
+-	( ./auto-uid auto_uida `head -1 conf-users` \
+-	&&./auto-uid auto_uidd `head -2 conf-users | tail -1` \
+-	&&./auto-uid auto_uidl `head -3 conf-users | tail -1` \
+-	&&./auto-uid auto_uido `head -4 conf-users | tail -1` \
+-	&&./auto-uid auto_uidp `head -5 conf-users | tail -1` \
+-	&&./auto-uid auto_uidq `head -6 conf-users | tail -1` \
+-	&&./auto-uid auto_uidr `head -7 conf-users | tail -1` \
+-	&&./auto-uid auto_uids `head -8 conf-users | tail -1` \
+-	&&./auto-gid auto_gidq `head -1 conf-groups` \
+-	&&./auto-gid auto_gidn `head -2 conf-groups | tail -1` \
+-	) > auto_uids.c.tmp && mv auto_uids.c.tmp auto_uids.c
++#auto_uids.c: \
++#auto-uid auto-gid conf-users conf-groups
++#	( ./auto-uid auto_uida `head -1 conf-users` \
++#	&&./auto-uid auto_uidd `head -2 conf-users | tail -1` \
++#	&&./auto-uid auto_uidl `head -3 conf-users | tail -1` \
++#	&&./auto-uid auto_uido `head -4 conf-users | tail -1` \
++#	&&./auto-uid auto_uidp `head -5 conf-users | tail -1` \
++#	&&./auto-uid auto_uidq `head -6 conf-users | tail -1` \
++#	&&./auto-uid auto_uidr `head -7 conf-users | tail -1` \
++#	&&./auto-uid auto_uids `head -8 conf-users | tail -1` \
++#	&&./auto-gid auto_gidq `head -1 conf-groups` \
++#	&&./auto-gid auto_gidn `head -2 conf-groups | tail -1` \
++#	) > auto_uids.c.tmp && mv auto_uids.c.tmp auto_uids.c
+ 
+ auto_uids.o: \
+ compile auto_uids.c
+diff -urN qmail-1.03.orig/auto_uids.c qmail-1.03/auto_uids.c
+--- qmail-1.03.orig/auto_uids.c	Thu Jan  1 01:00:00 1970
++++ qmail-1.03/auto_uids.c	Sun Feb 21 17:24:02 1999
+@@ -0,0 +1,10 @@
++int auto_uida = 81;
++int auto_uidd = 80;
++int auto_uidl = 85;
++int auto_uido = 0;
++int auto_uidp = 86;
++int auto_uidq = 82;
++int auto_uidr = 83;
++int auto_uids = 84;
++int auto_gidq = 81;
++int auto_gidn = 80;
+diff -urN qmail-1.03.orig/brand.c qmail-1.03/brand.c
+--- qmail-1.03.orig/brand.c	Thu Jan  1 01:00:00 1970
++++ qmail-1.03/brand.c	Sun Feb 21 17:24:02 1999
+@@ -0,0 +1,139 @@
++/* Silly program to "trivially" (ha!) store uid and gid numbers in correct place */
++
++#include <stdio.h>
++#include <sys/types.h>
++#include <sys/uio.h>
++#include <sys/stat.h>
++#include <fcntl.h>
++#include <unistd.h>
++#include <pwd.h>
++#include <grp.h>
++
++typedef struct
++   {
++   char *name;
++   } file_list_t;
++
++typedef struct
++   {
++   char *varname;
++   int ugid;
++   } number_list_t;
++
++file_list_t file_list [20];
++number_list_t number_list [20];
++
++int filebrand( int file, number_list_t *list, int count );
++void usage();
++
++int main( int argc, char **argv )
++{
++int n;
++int fd;
++struct passwd *myp;
++struct group *myg;
++int filecount = -1, numbercount = -1;
++
++if ( argc < 4 )
++   usage();
++
++for ( n = 0; n < argc; n++ )
++   {
++   if ( strcmp( argv[n], "-f" ) == 0 )
++      if ( n + 1 < argc )
++         {
++         n++;
++         file_list[++filecount].name = argv[n];
++         continue;
++         }
++       else
++         usage();
++
++   if ( strcmp( argv[n], "-u" ) == 0 )
++      if ( n + 2 < argc )
++         {
++         n++;
++         number_list[++numbercount].varname = argv[n++];
++         if ( (myp = getpwnam( argv[n] )) == NULL )
++            {
++            fprintf( stderr, "Can't find user %s\n", argv[n] );
++            exit( 1 );
++            }
++         number_list[numbercount].ugid = myp->pw_uid;
++         continue;
++         }
++       else
++         usage();
++
++   if ( strcmp( argv[n], "-g" ) == 0 )
++      if ( n + 2 < argc )
++         {
++         n++;
++         number_list[++numbercount].varname = argv[n++];
++         if ( (myg = getgrnam( argv[n] )) == NULL )
++            {
++            fprintf( stderr, "Can't find group %s\n", argv[n] );
++            exit( 1 );
++            }
++         number_list[numbercount].ugid = myg->gr_gid;
++         }
++       else
++         usage();
++   }
++
++filecount++;
++numbercount++;
++
++for ( n = 0; n < filecount; n++ )
++   {
++   if ( (fd = open( file_list[n].name, O_RDWR )) == -1 )
++      {
++      fprintf( stderr, "Can't open file %s\n", file_list[n].name );
++      exit( 1 );
++      }
++   /* fprintf( stderr, "Searching %s\n", file_list[n].name ); */
++   filebrand( fd, &number_list[0], numbercount );
++   close( fd );
++   }
++
++return 0;
++}
++
++void usage( void )
++{
++fprintf( stderr, "Usage: brand { -f target_file } ... { [ -u | -g ] string user_or_group } ...\n" );
++exit( 1 );
++}
++
++/* Search for multiple strings in open file */
++int filebrand( int file, number_list_t *list, int listcount )
++{
++char c;
++int i;
++char buf[BUFSIZ];
++int pos = 0;
++
++/* Go through each character of file, filling in buffer until string terminator
++   found or buffer is full */
++while ( read( file, &c, sizeof(c) ) )
++   {
++   buf[pos++] = c;
++   if ( c != 0 && pos < sizeof(buf) - 1 )
++      continue;
++
++   /* Something found, terminate string and reset pointer */
++   buf[pos] = 0;
++   pos = 0;
++   /* Now a string can be compared with each item in list */
++   for ( i = 0; i < listcount; i++ )
++      if ( strcmp( buf, list[i].varname ) == 0 )
++         {
++         /* fprintf( stderr, "Found %s writing %d\n", list[i].varname, list[i].ugid ); */
++         if ( write( file, &list[i].ugid, sizeof(list[i].ugid) ) != sizeof(list[i].ugid) )
++            {
++            fprintf( stderr, "Error writing to file.\n" );
++            exit( 1 );
++            }
++         }
++   }
++}
+diff -urN qmail-1.03.orig/install.c qmail-1.03/install.c
+--- qmail-1.03.orig/install.c	Mon Jun 15 12:53:16 1998
++++ qmail-1.03/install.c	Sun Feb 21 17:25:25 1999
+@@ -11,17 +11,28 @@
+ 
+ int fdsourcedir = -1;
+ 
++char *install_dir = 0;
++int set_perms_only = 0;
++
+ void h(home,uid,gid,mode)
+ char *home;
+ int uid;
+ int gid;
+ int mode;
+ {
++if ( install_dir )
++   {
++   home++; /* Make it relative (skip "/" character) */
++   if ( chdir( install_dir ) == -1 )
++      strerr_die4sys(111,FATAL,"unable to switch to ",install_dir,": ");
++   }
++
+   if (mkdir(home,0700) == -1)
+     if (errno != error_exist)
+       strerr_die4sys(111,FATAL,"unable to mkdir ",home,": ");
+-  if (chown(home,uid,gid) == -1)
+-    strerr_die4sys(111,FATAL,"unable to chown ",home,": ");
++  if (!set_perms_only)
++    if (chown(home,uid,gid) == -1)
++      strerr_die4sys(111,FATAL,"unable to chown ",home,": ");
+   if (chmod(home,mode) == -1)
+     strerr_die4sys(111,FATAL,"unable to chmod ",home,": ");
+ }
+@@ -33,13 +44,21 @@
+ int gid;
+ int mode;
+ {
++if ( install_dir )  
++   { 
++   home++; /* Make it relative (skip "/" character) */ 
++   if ( chdir( install_dir ) == -1 )
++      strerr_die4sys(111,FATAL,"unable to switch to ",install_dir,": "); 
++   } 
++
+   if (chdir(home) == -1)
+     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
+   if (mkdir(subdir,0700) == -1)
+     if (errno != error_exist)
+       strerr_die6sys(111,FATAL,"unable to mkdir ",home,"/",subdir,": ");
+-  if (chown(subdir,uid,gid) == -1)
+-    strerr_die6sys(111,FATAL,"unable to chown ",home,"/",subdir,": ");
++  if (!set_perms_only)
++    if (chown(subdir,uid,gid) == -1)
++      strerr_die6sys(111,FATAL,"unable to chown ",home,"/",subdir,": ");
+   if (chmod(subdir,mode) == -1)
+     strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",subdir,": ");
+ }
+@@ -51,13 +70,21 @@
+ int gid;
+ int mode;
+ {
++if ( install_dir )  
++   { 
++   home++; /* Make it relative (skip "/" character) */ 
++   if ( chdir( install_dir ) == -1 )
++      strerr_die4sys(111,FATAL,"unable to switch to ",install_dir,": "); 
++   } 
++
+   if (chdir(home) == -1)
+     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
+   if (fifo_make(fifo,0700) == -1)
+     if (errno != error_exist)
+       strerr_die6sys(111,FATAL,"unable to mkfifo ",home,"/",fifo,": ");
+-  if (chown(fifo,uid,gid) == -1)
+-    strerr_die6sys(111,FATAL,"unable to chown ",home,"/",fifo,": ");
++  if (!set_perms_only)
++    if (chown(fifo,uid,gid) == -1)
++      strerr_die6sys(111,FATAL,"unable to chown ",home,"/",fifo,": ");
+   if (chmod(fifo,mode) == -1)
+     strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",fifo,": ");
+ }
+@@ -81,16 +108,28 @@
+   if (fchdir(fdsourcedir) == -1)
+     strerr_die2sys(111,FATAL,"unable to switch back to source directory: ");
+ 
++  if ( set_perms_only < 2 )
++     {
+   fdin = open_read(file);
+   if (fdin == -1)
+     strerr_die4sys(111,FATAL,"unable to read ",file,": ");
+   substdio_fdbuf(&ssin,read,fdin,inbuf,sizeof inbuf);
++     }
++
++   if ( install_dir )
++     { 
++     home++; /* Make it relative (skip "/" character) */ 
++     if ( chdir( install_dir ) == -1 )
++        strerr_die4sys(111,FATAL,"unable to switch to ",install_dir,": "); 
++     } 
+ 
+   if (chdir(home) == -1)
+     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
+   if (chdir(subdir) == -1)
+     strerr_die6sys(111,FATAL,"unable to switch to ",home,"/",subdir,": ");
+ 
++  if ( set_perms_only < 2 )
++     {
+   fdout = open_trunc(file);
+   if (fdout == -1)
+     strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",file,": ");
+@@ -110,9 +149,11 @@
+     strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",file,": ");
+   if (close(fdout) == -1) /* NFS silliness */
+     strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",file,": ");
++     }
+ 
+-  if (chown(file,uid,gid) == -1)
+-    strerr_die6sys(111,FATAL,"unable to chown .../",subdir,"/",file,": ");
++  if (!set_perms_only)
++    if (chown(file,uid,gid) == -1)
++      strerr_die6sys(111,FATAL,"unable to chown .../",subdir,"/",file,": ");
+   if (chmod(file,mode) == -1)
+     strerr_die6sys(111,FATAL,"unable to chmod .../",subdir,"/",file,": ");
+ }
+@@ -127,6 +168,13 @@
+ {
+   int fdout;
+ 
++if ( install_dir )  
++   { 
++   home++; /* Make it relative (skip "/" character) */ 
++   if ( chdir( install_dir ) == -1 )
++      strerr_die4sys(111,FATAL,"unable to switch to ",install_dir,": "); 
++   } 
++
+   if (chdir(home) == -1)
+     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
+ 
+@@ -146,14 +194,28 @@
+   if (close(fdout) == -1) /* NFS silliness */
+     strerr_die6sys(111,FATAL,"unable to write ",home,"/",file,": ");
+ 
+-  if (chown(file,uid,gid) == -1)
+-    strerr_die6sys(111,FATAL,"unable to chown ",home,"/",file,": ");
++  if (!set_perms_only)
++    if (chown(file,uid,gid) == -1)
++      strerr_die6sys(111,FATAL,"unable to chown ",home,"/",file,": ");
+   if (chmod(file,mode) == -1)
+     strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",file,": ");
+ }
+ 
+-void main()
++void main( int argc, char **argv )
+ {
++int i;
++
++for ( i = 1; i < argc; i++ )
++   {
++   if ( strcmp( argv[i], "-s" ) == 0 )
++      {
++      set_perms_only++;
++      continue;
++      }
++
++   install_dir = argv[i];
++   }
++
+   fdsourcedir = open_read(".");
+   if (fdsourcedir == -1)
+     strerr_die2sys(111,FATAL,"unable to open current directory: ");
