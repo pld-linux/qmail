@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	31
+Release:	32
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
@@ -150,6 +150,19 @@ electronic mail. This qmail also support IPv6 protocol.
 qmail jest ma³±, szybk± oraz bezpieczn± alternatyw± do sendmail-a,
 która umo¿liwia otrzymywanie, przesy³anie oraz wysy³anie poczty
 elektronicznej. Ten qmail dodatkowo wspiera protokó³ IPv6.
+
+%package maildirmake
+Summary:	maildirmake - tool for making qmails' Maildirs
+Summary(pl):	maildirmake - narzêdzie do zak³adania folerow Maildir
+Group:		Applications/Mail
+Group(pl):	Aplikacje/Poczta
+Conflicts:	maildrop
+
+%description maildirmake
+Maildirmake is a tool for making mail folders in Maildir format
+
+%description -l maildirmake
+Maildirmake jest narzêdziem do zak³adania folderów w formacie Maildir 
 
 %prep
 %setup -q
@@ -465,7 +478,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 755,  root,  root) %{_libdir}/qmail/except
 %attr( 755,  root,  root) %{_libdir}/qmail/forward
 %attr( 755,  root,  root) %{_bindir}/maildir2mbox
-%attr( 755,  root,  root) %{_bindir}/maildirmake
 %attr( 755,  root,  root) %{_bindir}/maildirwatch
 %attr( 755,  root,  root) %{_libdir}/qmail/mailsubj
 %attr( 755,  root,  root) %{_libdir}/qmail/pinq
@@ -523,7 +535,11 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 755,  root,  root) /var/qmail/bin
 %attr( 755,  root,  root) /var/qmail/control
 %attr( 755,  root,  root) /var/qmail/users
-%{_mandir}/man?/*
+%{_mandir}/man1/[!m]*
+%{_mandir}/man1/maildir2mbox*
+%{_mandir}/man1/maildirwatch*
+%{_mandir}/man1/mailsubj*
+%{_mandir}/man[358]/*
 
 # default folder - Maildir/
 %attr( 700, root, root) %dir /etc/skel/Mail
@@ -555,7 +571,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755, root, root) %{_libdir}/qmail/elq
 %attr(755, root, root) %{_libdir}/qmail/forward
 %attr(755, root, root) %{_bindir}/maildir2mbox
-%attr(755, root, root) %{_bindir}/maildirmake
 %attr(755, root, root) %{_bindir}/maildirwatch
 %attr(755, root, root) %{_libdir}/qmail/mailsubj
 %attr(755, root, root) %{_libdir}/qmail/pinq
@@ -568,7 +583,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755, root, root) %{_libdir}/qmail/sendmail
 %attr(755, root, root) %{_sbindir}/sendmail
 %attr(755, root, root) %{_libdir}/sendmail
-%{_mandir}/man1/mail*
+%{_mandir}/man1/maildir2mbox*
+%{_mandir}/man1/maildirwatch*
+%{_mandir}/man1/mailsubj*  
 %{_mandir}/man5/qmail-header*
 %{_mandir}/man5/qmail-log*
 %{_mandir}/man8/qmail-inject*
@@ -582,3 +599,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 700, root, root) %dir /etc/skel/Mail/Maildir/cur
 %attr( 700, root, root) %dir /etc/skel/Mail/Maildir/new
 %attr( 700, root, root) %dir /etc/skel/Mail/Maildir/tmp
+
+%files maildirmake
+%attr(755, root, root) %{_bindir}/maildirmake
+%{_mandir}/man1/maildirmake*
