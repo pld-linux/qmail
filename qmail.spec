@@ -33,7 +33,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.76
+Release:	56.77
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -570,9 +570,10 @@ ln -sf ../aliases $RPM_BUILD_ROOT%{_sysconfdir}/mail/aliases
 install %{SOURCE11} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-default
 %{?with_msglog:install %{SOURCE12} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-msglog}
 
-for i in mailer-daemon postmaster root; do
-	> $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-$i
+for i in mailer-daemon postmaster; do
+	echo "root" > $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-$i
 done
+> $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-root
 
 # Set up control files.
 for i in defaultdomain locals me plusdomain rcpthosts qmqpservers idhost; do
@@ -938,7 +939,7 @@ fi
 %attr(600,qmails,qmail) %config(noreplace) %verify(not md5 mtime size) %ghost %{varqmail}/queue/lock/sendmutex
 %attr(644,qmailr,qmail) %config(noreplace) %verify(not md5 mtime size) %ghost %{varqmail}/queue/lock/tcpto
 %attr(622,qmails,qmail) %config(noreplace) %verify(not md5 mtime size) %ghost %{varqmail}/queue/lock/trigger
-%attr(644,root,nofiles) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/alias/.qmail-*
+%attr(644,root,nofiles) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/qmail/alias/.qmail-*
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/defaultdomain
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/locals
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/me
