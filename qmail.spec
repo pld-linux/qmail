@@ -472,6 +472,9 @@ echo -n ' -DUSE_HOME_ETC' >> conf-cc
 
 # TODO: conf-ld if home-etc
 
+# remove backup files after patching
+rm -f *~
+
 %build
 %{__make} CFLAGS="%{rpmcflags}"
 %{__make} man
@@ -618,12 +621,9 @@ install fastforward-0.51/*.1 $RPM_BUILD_ROOT%{varqmail}/man/man1/
 install -d $RPM_BUILD_ROOT/etc/skel/Mail
 ./maildirmake $RPM_BUILD_ROOT/etc/skel/Mail/Maildir
 
-# [a-z] won't work properly for et_EE locale
-export LANG=C
-(set +x; rm -f checkpass-1.2/{[a-z]*,Makefile})
-(set +x; rm -f dot-forward-0.71/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
-(set +x; rm -f fastforward-0.51/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
-(set +x; rm -f queue-fix-1.4/{[a-z]*,Makefile,TARGETS})
+install -d checkpass queue-fix
+install checkpass-1.2/{CHECKPASSWORD,README} checkpass
+install queue-fix-1.4/{CHANGES,README} queue-fix
 
 cp %{SOURCE16} .
 
@@ -676,9 +676,6 @@ for a in 1 3 5 7 8 9; do
 	install qmail-doki/*.$a $RPM_BUILD_ROOT%{_mandir}/pl/man$i
 done
 rm -f qmail-doki/*.[135789]
-
-# remove backup files
-rm -f *~
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -925,7 +922,7 @@ fi
 %defattr(644,root,root,755)
 %doc FAQ INSTALL* PIC* REMOVE* SENDMAIL TEST* UPGRADE
 %doc BLURB* README SECURITY THANKS THOUGHTS TODO VERSION
-%doc boot checkpass-1.2 queue-fix-1.4
+%doc boot checkpass queue-fix
 %doc tarpit.README
 %doc qmail-doki
 %if %{with tls}
