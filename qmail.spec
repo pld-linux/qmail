@@ -2,9 +2,10 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	26
+Release:	27
 Group:		Networking/Daemons
 Group(pl):	Sieciowe/Serwery
+Group(de):	Netzwerkwesen/Server
 Copyright:	Check with djb@koobera.math.uic.edu
 URL:		http://www.qmail.org/
 Source0:	ftp://koobera.math.uic.edu/pub/software/%{name}-%{version}.tar.gz
@@ -75,25 +76,20 @@ which is the program that actually receives, routes, and delivers
 electronic mail. This qmail also support IPv6 protocol.
 
 Following scripts and programs have been added:
-
+- checkpass - password-checking interface,
+- qmHandle - more powerful viewing and managing qmail queue (remote
+  and local),
+- rblsmtpd - a generic tool to block mail from RBL-listed sites; an
+  optional way to filter SPAM,
+- qmail-fix - a small utility for checking and repairing the qmail
+  queue structure,
+- qmail-msglog - advanced e-mail monitoring,
+- qmail-qsanity - examine all the files in the qmail queue,
+- qmail-lint - examine the qmail configuration,
+- tarpit - tool to fight with SPAM.
 
 
 ================================================================================
-Name Features
-================================================================================
-checkpass	- password-checking interface
-qmHandle	- more powerful viewing and managing qmail queue (remote and
-		  local)
-rblsmtpd 	- a generic tool to block mail from RBL-listed sites; an
-		  optional way to fight SPAM
-qmail-fix	- a small utility for checking and repairing the qmail queue
-		  structure
-qmail-msglog	- advanced e-mail monitoring
-qmail-qsanity	- examine all the files in the qmail queue
-qmail-lint	- examine the qmail configuration
-tarpit		- tool to fight with SPAM
-================================================================================
-
 - *** Note: Be sure and read the documentation as there are some small
   but very significant differences between SENDMAIL and QMAIL and the
   programs that interact with them.
@@ -104,25 +100,20 @@ która umo¿liwia otrzymywanie, przesy³anie oraz wysy³anie poczty
 elektronicznej. Ten qmail dodatkowo wspiera protokó³ IPv6.
 
 Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
-
+- checkpass - interfejs do sprawdzania hase³,
+- qmHandle - bardziej zaawansowane przegl±danie oraz zarz±dzanie
+  kolejk± pocztow±,
+- rblsmtpd - podstawowe narzêdzie do blokowania listów z miejsc
+  wyszczególnionych w RBL; sposób na filtrowanie SPAM-u,
+- qmail-fix - program do sprawdzania oraz naprawiania struktury
+  kolejki pocztowej qmail-a,
+- qmail-msglog - zaawansowane monitorowanie listów,
+- qmail-qsanity - sprawdza kolejkê pocztow± qmail-a,
+- qmail-lint - sprawdza konfiguracjê qmail-a,
+- tarpit - kolejne narzêdzie do walki ze SPAM-em.
 
 
 ================================================================================
-Nazwa Opis
-================================================================================
-checkpass	- interfejs do sprawdzania hase³
-qmHandle	- bardziej zaawansowane przegl±danie oraz zarz±dzanie
-		  kolejk± pocztow±
-rblsmtpd	- podstawowe narzêdzie do blokowania listów z miejsc
-		  wyszczególnionych w RBL; sposób na walkê ze SPAM-em
-qmail-fix	- program do sprawdzania oraz naprawiania struktury kolejki
-		  pocztowej qmail-a
-qmail-msglog	- zaawansowane monitorowanie listów
-qmail-qsanity	- sprawdza kolejkê pocztow± qmail-a
-qmail-lint	- sprawdza konfiguracjê qmail-a
-tarpit		- kolejne narzêdzie do walki ze SPAM-em
-================================================================================
-
 - *** Uwaga! Przeczytaj uwa¿nie dokumentacjê do tego pakietu, poniewa¿
   istniej± ma³e, ale znacz±ce róznice pomiêdzy qmail-em oraz sendmail-em
   i programami, które wspó³pracuj± z nimi.
@@ -132,6 +123,7 @@ Summary:	qmail Mail Transport Agent - null client
 Summary(pl):	qmail - serwer pocztowy (MTA) - cienki klient
 Group:		Networking/Daemons
 Group(pl):	Sieciowe/Serwery
+Group(de):	Netzwerkwesen/Server
 Copyright:	Check with djb@koobera.math.uic.edu
 URL:		http://www.qmail.org/
 Provides:	smtpdaemon
@@ -292,15 +284,15 @@ install -d $RPM_BUILD_ROOT/etc/skel/C/Mail
 cp $RPM_SOURCE_DIR/tarpit.README .
 
 # What else?
-mv $RPM_BUILD_ROOT/var/qmail/bin/maildir2mbox	$RPM_BUILD_ROOT%{_bindir}
-mv $RPM_BUILD_ROOT/var/qmail/bin/maildirmake	$RPM_BUILD_ROOT%{_bindir}
-mv $RPM_BUILD_ROOT/var/qmail/bin/maildirwatch	$RPM_BUILD_ROOT%{_bindir}
-mv $RPM_BUILD_ROOT/var/qmail/bin/qmHandle	$RPM_BUILD_ROOT%{_bindir}
-mv $RPM_BUILD_ROOT/var/qmail/bin/qmail-qread	$RPM_BUILD_ROOT%{_bindir}
-mv $RPM_BUILD_ROOT/var/qmail/bin/qmail-qsanity	$RPM_BUILD_ROOT%{_bindir}
-mv $RPM_BUILD_ROOT/var/qmail/bin/qmail-qstat	$RPM_BUILD_ROOT%{_bindir}
-mv $RPM_BUILD_ROOT/var/qmail/bin/queue-fix	$RPM_BUILD_ROOT%{_bindir}
-mv $RPM_BUILD_ROOT/var/qmail/bin/newaliases	$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT/var/qmail/bin/maildir2mbox	$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT/var/qmail/bin/maildirmake	$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT/var/qmail/bin/maildirwatch	$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT/var/qmail/bin/qmHandle	$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT/var/qmail/bin/qmail-qread	$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT/var/qmail/bin/qmail-qsanity	$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT/var/qmail/bin/qmail-qstat	$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT/var/qmail/bin/queue-fix	$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT/var/qmail/bin/newaliases	$RPM_BUILD_ROOT%{_bindir}
 
 install %{SOURCE21} .
 
