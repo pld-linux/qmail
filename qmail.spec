@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	28
+Release:	29
 Group:		Networking/Daemons
 Group(pl):	Sieciowe/Serwery
 Group(de):	Netzwerkwesen/Server
@@ -40,7 +40,7 @@ Patch6:		%{name}-relayclientexternal.patch
 Patch8:		tarpit.patch
 Patch9:		%{name}-1.03-maxrcpt.patch
 Patch10:	qmHandle.PLD-init.patch
-Patch11:	%{name}-IPv6-PLD.patch
+Patch11:	%{name}-1.03-v6-20000417.diff.gz
 Patch12:	http://www.ckdhr.com/ckd/%{name}-dns.patch
 Patch13:	ftp://dione.ids.pl/people/siewca/patches/%{name}-%{version}-etc.patch
 Patch14:	%{name}-rblsmtpd-IPv6-PLD.patch
