@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	27
+Release:	28
 Group:		Networking/Daemons
 Group(pl):	Sieciowe/Serwery
 Group(de):	Netzwerkwesen/Server
