@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	35
+Release:	36
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
@@ -54,7 +54,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Provides:	smtpdaemon
 Provides:	qmailmta
 Provides:	qmail-server
-Provides:	pop3daemon
+
 Requires:	%{_sbindir}/tcpd
 Requires:	inetdaemon
 Prereq:		rc-scripts >= 0.2.0
@@ -174,6 +174,25 @@ Requires:	%{name} = %{version}
 
 %description perl
 Perl scripts for qmail
+
+
+%package pop3
+Summary:	POP3 server for qmail
+Summary(pl):	Serwer POP3 dla qmaila
+Group:          Networking/Daemons
+Group(de):      Netzwerkwesen/Server
+Group(pl):      Sieciowe/Serwery
+Requires:	%{name} = %{version}
+Provides:	pop3daemon
+Obsoletes:      qpopper
+Obsoletes:      qpopper6
+Obsoletes:      imap-pop
+Obsoletes:      solid-pop3d-ssl
+Obsoletes:      solid-pop3d
+
+%description pop3
+POP3 server for qmail
+
 
 %prep
 %setup -q
@@ -479,7 +498,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 754,  root,  root) /etc/rc.d/init.d/*
 %attr( 640,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/rc-inetd/qmqp
 %attr( 640,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/rc-inetd/smtp
-%attr( 640,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/rc-inetd/qpop
 %attr( 644,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/pam.d/checkpass
 %attr( 644,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/security/checkpass.allow
 %attr( 755,  root,  root) %{_libdir}/qmail/bouncesaying
@@ -504,8 +522,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-lspawn
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-newmrh
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-newu
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-pop3d
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-popup
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-pw2u
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-qmqpc
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-qmqpd
@@ -548,7 +564,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/maildir2mbox*
 %{_mandir}/man1/maildirwatch*
 %{_mandir}/man1/mailsubj*
-%{_mandir}/man[358]/*
+%{_mandir}/man[35]/*
+%{_mandir}/man8/[!q]*
+%{_mandir}/man8/qmail-[!p]*
+%{_mandir}/man8/qmail-p[!o]*
+
 
 # default folder - Maildir/
 %attr( 700, root, root) %dir /etc/skel/Mail
@@ -620,3 +640,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 755,  root,  root) %{_bindir}/qmHandle
 %attr( 755,  root,  root) %{_bindir}/qmail-qsanity
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-lint
+
+%files pop3
+%defattr(644,root,root,755)
+%attr( 640,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/rc-inetd/qpop
+%attr( 755,  root,  root) %{_libdir}/qmail/qmail-pop3d
+%attr( 755,  root,  root) %{_libdir}/qmail/qmail-popup
+%{_mandir}/man8/qmail-po*
