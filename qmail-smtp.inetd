@@ -1,8 +1,9 @@
 SERVICE_NAME=smtp
 SOCK_TYPE=stream
 PROTOCOL=tcp
+PORT=25
 FLAGS=nowait
 USER=qmaild
-SERVER=/usr/sbin/tcd
+SERVER=tcd
 DAEMON=/var/qmail/bin/rblsmtpd
 DAEMONARGS="/var/qmail/bin/qmail-smtpd"
