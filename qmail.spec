@@ -63,6 +63,7 @@ Obsoletes:	sendmail
 Obsoletes:	postfix
 Obsoletes:	zmailer
 Obsoletes:	smail
+BuildRequires:	pam-devel
 
 %description
 qmail is a small, fast, secure replacement for the SENDMAIL package, which is
