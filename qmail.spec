@@ -624,7 +624,7 @@ export LANG=C
 (set +x; rm -f rblsmtpd-0.70/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
 (set +x; rm -f queue-fix-1.4/{[a-z]*,Makefile,TARGETS})
 
-cp $RPM_SOURCE_DIR/tarpit.README .
+cp %{SOURCE16} .
 
 # What else?
 mv -f $RPM_BUILD_ROOT%{varqmail}/bin/maildir2mbox	$RPM_BUILD_ROOT%{_bindir}
