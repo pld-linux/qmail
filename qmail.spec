@@ -30,6 +30,7 @@ Source19:	%{name}-qpop.inetd
 Source20:	checkpassword.pamd
 Source21:	%{name}-client.html
 Source22:	%{name}-cert.pem
+Source23:	%{name}-pl-man-pages.tar.bz2
 Patch0:		%{name}-1.03.install.patch
 %{?!_without_msglog:Patch1: %{name}-1.03.msglog.patch}
 Patch2:		%{name}-1.03.redhat.patch
@@ -367,6 +368,7 @@ mv -f $RPM_BUILD_ROOT/var/qmail/bin/newaliases	$RPM_BUILD_ROOT%{_bindir}
 install %{SOURCE21} .
 
 install %{SOURCE22} $RPM_BUILD_ROOT/var/qmail/control/cert.pem
+bzip2 -dc %{SOURCE23} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 
 sed /^diff/q %{PATCH24} >README.TLS
 
@@ -601,7 +603,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/[!q]*
 %{_mandir}/man8/qmail-[!p]*
 %{_mandir}/man8/qmail-p[!o]*
-
+%lang(pl) %{_mandir}/pl/man5/*
+%lang(pl) %{_mandir}/pl/man8/qmail-[!p]*
+%lang(pl) %{_mandir}/pl/man8/qmail-p[!o]*
 
 # default folder - Maildir/
 %attr( 700, root, root) %dir /etc/skel/Mail
@@ -654,6 +658,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/qmail-qmqpc*
 %{_mandir}/man8/qmail-queue*
 %{_mandir}/man8/qmail-showctl*
+%lang(pl) %{_mandir}/man8/pl/qmail-inject*
+%lang(pl) %{_mandir}/man8/pl/qmail-qmqpc*
+%lang(pl) %{_mandir}/man8/pl/qmail-queue*
 
 # default folder - Maildir/
 %attr( 700, root, root) %dir /etc/skel/Mail
