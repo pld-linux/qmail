@@ -157,7 +157,7 @@ Following scripts and programs have been added:
   programs that interact with them.
 
 %description -l pl
-qmail jest ma³±, szybk± oraz bezpieczn± alternatyw± do sendmail-a,
+qmail jest ma³±, szybk± oraz bezpieczn± alternatyw± do sendmaila,
 która umo¿liwia otrzymywanie, przesy³anie oraz wysy³anie poczty
 elektronicznej. Ten qmail dodatkowo wspiera protokó³ IPv6.
 
@@ -178,7 +178,7 @@ Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
 
 ================================================================================
 *** Uwaga! Przeczytaj uwa¿nie dokumentacjê do tego pakietu, poniewa¿
-istniej± ma³e, ale znacz±ce róznice pomiêdzy qmail-em oraz sendmail-em
+istniej± ma³e, ale znacz±ce ró¿nice pomiêdzy qmailem oraz sendmailem
 i programami, które wspó³pracuj± z nimi.
 
 %package client
@@ -209,7 +209,7 @@ which is the program that actually receives, routes, and delivers
 electronic mail. This qmail also support IPv6 protocol.
 
 %description client -l pl
-qmail jest ma³±, szybk± oraz bezpieczn± alternatyw± do sendmail-a,
+qmail jest ma³±, szybk± oraz bezpieczn± alternatyw± do sendmaila,
 która umo¿liwia otrzymywanie, przesy³anie oraz wysy³anie poczty
 elektronicznej. Ten qmail dodatkowo wspiera protokó³ IPv6.
 
