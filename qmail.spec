@@ -3,6 +3,8 @@
 # - home_etc not tested (i don't use)
 # - relayclient-external does not apply
 # - maildir++ quota patch
+# - sort patches
+# - set base package source netqmail?
 #
 # - apply patches from http://www-dt.e-technik.uni-dortmund.de/~ma/qmail-bugs.html
 #  - 3.2. RFC-2821 (SMTP) violation (Mail Routing)
@@ -28,7 +30,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.38
+Release:	56.39
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -821,12 +823,26 @@ ln -snf %{_sysconfdir}/qmail/supervise/qmail-smtpd /service/qmail-smtpd
 echo "Creating a self-signed ssl-certificate:"
 %{_libdir}/qmail/mkservercert || true
 
-# init.d support removed. superseded by supervise
-%triggerun -- %{name} <= 1.03-56.12
+%triggerpostun -- %{name} <= 1.03-56.12
 if [ -f /var/lock/subsys/qmail ]; then
-	/etc/rc.d/init.d/qmail stop
+    if [ -f /var/lock/subsys/qmail ]; then
+		. /etc/rc.d/init.d/functions
+        msg_stopping qmail
+        killproc qmail-send
+        rm -f /var/lock/subsys/qmail
+    fi
 fi
 /sbin/chkconfig --del qmail
+
+# this should kill the old instance running on inetd
+if [ -f /var/lock/subsys/rc-inetd ]; then
+	/etc/rc.d/init.d/rc-inetd reload
+fi
+
+%triggerpostun -- %{name}-pop3 <= 1.03-56.12
+if [ -f /var/lock/subsys/rc-inetd ]; then
+	/etc/rc.d/init.d/rc-inetd reload
+fi
 
 # move dot-qmail to new location
 %triggerpostun -- %{name} <= 1.03-56.5
