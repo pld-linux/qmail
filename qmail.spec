@@ -367,16 +367,37 @@ gzip -9nf boot/* checkpass-1.1/* qmHandle-0.4.0/* queue-fix-1.3/*
 gzip -9nf rblsmtpd-0.70/* tarpit.README README.TLS
 
 %pre
-GROUP=nofiles; GID=81; %groupadd
-USER=alias; UID=82; HOMEDIR=/var/qmail/alias; %useradd
-HOMEDIR=/var/qmail
-USER=qmaild; UID=81; %useradd
-USER=qmaill; UID=86; %useradd
-USER=qmailp; UID=87; %useradd
-GROUP=qmail; GID=82; %groupadd
-USER=qmailq; UID=83; %useradd
-USER=qmailr; UID=84; %useradd
-USER=qmails; UID=85; %useradd
+if [ $1 = 1 ]; then
+# Add few users and groups
+    if [ ! -n "`getgid nofiles`" ]; then
+	%{_sbindir}/groupadd -f -g 81 nofiles
+    fi
+    if [ ! -n "`getgid qmail`" ]; then
+	%{_sbindir}/groupadd -f -g 82 qmail
+    fi
+
+    if [ ! -n "`id -u qmaild 2>/dev/null`" ]; then
+	%{_sbindir}/useradd -g nofiles -d /var/qmail -u 81 -s /bin/false qmaild 2> /dev/null
+    fi
+    if [ ! -n "`id -u alias 2>/dev/null`" ]; then
+	%{_sbindir}/useradd -g nofiles -d /var/qmail/alias -u 82 -s /bin/false alias 2> /dev/null
+    fi
+    if [ ! -n "`id -u qmailq 2>/dev/null`" ]; then
+	%{_sbindir}/useradd -g qmail -d /var/qmail -u 83 -s /bin/false qmailq 2> /dev/null
+    fi
+    if [ ! -n "`id -u qmailr 2>/dev/null`" ]; then
+	%{_sbindir}/useradd -g qmail -d /var/qmail -u 84 -s /bin/false qmailr 2> /dev/null
+    fi
+    if [ ! -n "`id -u qmails 2>/dev/null`" ]; then
+	%{_sbindir}/useradd -g qmail -d /var/qmail -u 85 -s /bin/false qmails 2> /dev/null
+    fi
+    if [ ! -n "`id -u qmaill 2>/dev/null`" ]; then
+	%{_sbindir}/useradd -g nofiles -d /var/qmail -u 86 -s /bin/false qmaill 2> /dev/null
+    fi
+    if [ ! -n "`id -u qmailp 2>/dev/null`" ]; then
+	%{_sbindir}/useradd -g nofiles -d /var/qmail -u 87 -s /bin/false qmailp 2> /dev/null
+    fi
+fi
 
 %post
 if [ ! -f /etc/mail/mailname -a -d /etc/mail ]; then
@@ -399,24 +420,46 @@ if [ ! -s /etc/qmail/control/me ]; then
 fi
 # Set up aliases
 %{_bindir}/newaliases
-%chkconfig_add
-%rc_inetd_post
+/sbin/chkconfig --add qmail
+if [ -f /var/lock/subsys/qmail ]; then
+	/etc/rc.d/init.d/qmail restart 1>&2
+else
+	echo "Type \"/etc/rc.d/init.d/qmail start to start qmail" 1>&2
+fi
+if [ -f /var/lock/subsys/rc-inetd ]; then
+	/etc/rc.d/init.d/rc-inetd reload 1>&2
+else
+	echo "Type \"/etc/rc.d/init.d/rc-inetd start\" to start inet sever" 1>&2
+fi
 
 %preun
-%chkconfig_del
+# If package is being erased for the last time.
+if [ "$1" = "0" ]; then
+	if [ -f /var/lock/subsys/qmail ]; then
+		/etc/rc.d/init.d/qmail stop
+	fi
+	/sbin/chkconfig --del qmail
+fi
 
 %postun
-USER=qmaild; %userdel
-USER=alias; %userdel
-USER=qmaill; %userdel
-USER=qmailp; %userdel
-USER=qmailq; %userdel
-USER=qmailr; %userdel
-USER=qmails; %userdel
-USER=qmail; %userdel
-GROUP=nofiles; %groupdel
-GROUP=qmail; %groupdel
-%rc_inetd_postun
+# If package is being erased for the last time.
+if [ "$1" = "0" ]; then
+	%{_sbindir}/userdel qmaild 2> /dev/null
+	%{_sbindir}/userdel alias 2> /dev/null
+	%{_sbindir}/userdel qmaill 2> /dev/null
+	%{_sbindir}/userdel qmailp 2> /dev/null
+	%{_sbindir}/userdel qmailq 2> /dev/null
+	%{_sbindir}/userdel qmailr 2> /dev/null
+	%{_sbindir}/userdel qmails 2> /dev/null
+	%{_sbindir}/userdel qmail 2> /dev/null
+
+	%{_sbindir}/groupdel nofiles 2> /dev/null
+	%{_sbindir}/groupdel qmail 2> /dev/null
+
+	if [ -f /var/lock/subsys/rc-inetd ]; then
+		/etc/rc.d/init.d/rc-inetd reload
+	fi
+fi
 
 %post client
 ln -sf qmail-qmqpc %{_libdir}/qmail/qmail-queue
