@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	51
+Release:	52
 License:	Check with djb@koobera.math.uic.edu
 Group:		Networking/Daemons
 Source0:	ftp://koobera.math.uic.edu/pub/software/%{name}-%{version}.tar.gz
@@ -602,11 +602,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/maildir2mbox*
 %{_mandir}/man1/maildirwatch*
 %{_mandir}/man1/mailsubj*
-%{_mandir}/man[35]/*
+%{_mandir}/man3/*
+%{_mandir}/man5/[!m]*
+%{_mandir}/man5/m[!b]*
 %{_mandir}/man8/[!q]*
 %{_mandir}/man8/qmail-[!p]*
 %{_mandir}/man8/qmail-p[!o]*
-%lang(pl) %{_mandir}/pl/man5/*
+%lang(pl) %{_mandir}/pl/man5/[!m]*
+%lang(pl) %{_mandir}/pl/man5/m[!b]*
 %lang(pl) %{_mandir}/pl/man8/qmail-[!p]*
 %lang(pl) %{_mandir}/pl/man8/qmail-p[!o]*
 
