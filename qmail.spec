@@ -27,13 +27,13 @@
 %bcond_without tls		# disable tls
 %bcond_with ipv6		# enable ipv6
 #
-%define	qhpsi_ver	016
+%define	qhpsi_ver	017
 #
 Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.46
+Release:	56.47
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -47,7 +47,7 @@ Source4:	checkpass-1.2.tar.gz
 Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
 # Source5-md5:	43f915c104024e6f33a5b3ff52dfb75b
 Source6:    http://glen.alkohol.ee/pld/qmail/qmail-conf-20041206.tar.bz2
-# Source6-md5:    e1840b6e0b946b67a17681c1e18e2765
+# Source6-md5:	e1840b6e0b946b67a17681c1e18e2765
 Source7:	http://iidea.pl/~paweln/tlum/qmail-doki.tar.bz2
 # Source7-md5:	2d85f0f9f8408cf6caab9f9bc8f68657
 Source8:	%{name}-linux.sh
@@ -60,7 +60,7 @@ Source14:	%{name}-lint-0.51.pl
 Source15:	%{name}-qsanity-0.51.pl
 Source16:	tarpit.README
 Source17:	http://www.fehcom.de/qmail/qhpsi/qhpsi-%{qhpsi_ver}_tgz.bin
-# Source17-md5:	6aad3e55b70bf7830f7aa577d28b89c0
+# Source17-md5:	18afa1762ba0b419deb26416b6a21a65
 Source20:	checkpassword.pamd
 # Source20-md5:	78c3cb713ec00207f8fa0edcf3fe4fd2
 Source21:	%{name}-client.html
