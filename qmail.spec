@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	50
+Release:	51
 License:	Check with djb@koobera.math.uic.edu
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
@@ -63,25 +63,26 @@ Patch24:	%{name}-tls.patch
 Patch25:	%{name}-queue.patch
 URL:		http://www.qmail.org/
 BuildRequires:	pam-devel
-BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
-Provides:	smtpdaemon
-Provides:	qmailmta
-Provides:	qmail-server
+PreReq:		/bin/sed
+PreReq:		/sbin/chkconfig
+PreReq:		rc-scripts >= 0.2.0
+PreReq:		rc-inetd
+PreReq:		sh-utils
+Requires(pre):	/bin/id
+Requires(pre):	/usr/bin/getgid
+Requires(pre):	/usr/sbin/groupadd
+Requires(pre):	/usr/sbin/useradd
 Requires:	%{_sbindir}/tcpd
 Requires:	inetdaemon
-Prereq:		rc-scripts >= 0.2.0
-Prereq:		rc-inetd
-Prereq:		/sbin/chkconfig
-Prereq:		/bin/hostname
-Prereq:		/bin/sed
-Prereq:		sh-utils
-Prereq:		/usr/bin/getgid
-Prereq:		/bin/id
-Prereq:		/usr/sbin/groupadd
-Prereq:		/usr/sbin/useradd
-Prereq:		/usr/sbin/groupdel
-Prereq:		/usr/sbin/userdel
+Requires(post):	/bin/hostname
+Requires(post):	/bin/id
+Requires(post):	fileutils
+Requires(postun):	/usr/sbin/groupdel
+Requires(postun):	/usr/sbin/userdel
 Conflicts:	qmail-client
+Provides:	qmail-server
+Provides:	qmailmta
+Provides:	smtpdaemon
 Obsoletes:	smtpdaemon
 Obsoletes:	exim
 Obsoletes:	masqmail
@@ -92,6 +93,7 @@ Obsoletes:	sendmail-cf
 Obsoletes:	sendmail-doc
 Obsoletes:	smail
 Obsoletes:	zmailer
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 qmail is a small, fast, secure replacement for the SENDMAIL package,
@@ -154,25 +156,29 @@ Group(pl):	Sieciowe/Serwery
 Group(pt):	Rede/Server
 Group(ru):	óÅÔÅ×ÙÅ/äÅÍÏÎÙ
 URL:		http://www.qmail.org/
-Provides:	smtpdaemon
-Provides:	qmailmta
-Prereq:		/bin/hostname
-Prereq:		/bin/sed
-Prereq:		sh-utils
+Requires(post):	/bin/hostname
+Requires(post):	/bin/sed
+Requires(post):	fileutils
 Conflicts:	qmail
+Provides:	qmailmta
+Provides:	smtpdaemon
 Obsoletes:	smtpdaemon
-Obsoletes:	sendmail
-Obsoletes:	postfix
-Obsoletes:	zmailer
-Obsoletes:	smail
 Obsoletes:	exim
+Obsoletes:	masqmail
+Obsoletes:	omta
+Obsoletes:	postfix
+Obsoletes:	sendmail
+Obsoletes:	sendmail-cf
+Obsoletes:	sendmail-doc
+Obsoletes:	smail
+Obsoletes:	zmailer
 
 %description client
 qmail is a small, fast, secure replacement for the SENDMAIL package,
 which is the program that actually receives, routes, and delivers
 electronic mail. This qmail also support IPv6 protocol.
 
-%description -l pl client
+%description client -l pl
 qmail jest ma³±, szybk± oraz bezpieczn± alternatyw± do sendmail-a,
 która umo¿liwia otrzymywanie, przesy³anie oraz wysy³anie poczty
 elektronicznej. Ten qmail dodatkowo wspiera protokó³ IPv6.
@@ -191,7 +197,7 @@ Conflicts:	courier-imap-maildirmake
 %description maildirmake
 Maildirmake is a tool for making mail folders in Maildir format.
 
-%description -l maildirmake
+%description maildirmake -l pl
 Maildirmake jest narzêdziem do zak³adania folderów w formacie Maildir.
 
 %package perl
@@ -316,14 +322,18 @@ install %{SOURCE11} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-default
 %{!?_without_msglog:install %{SOURCE12} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-msglog}
 
 for i in mailer-daemon postmaster root; do
-touch $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-$i
+	> $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-$i
 done
 
 # Set up control files.
-touch $RPM_BUILD_ROOT%{_sysconfdir}/qmail/control/{defaultdomain,locals,me,plusdomain,rcpthosts,qmqpservers,idhost}
+for i in defaultdomain locals me plusdomain rcpthosts qmqpservers idhost; do
+	> $RPM_BUILD_ROOT%{_sysconfdir}/qmail/control/$i
+done
 
 # Set up blank qmail/users
-touch $RPM_BUILD_ROOT%{_sysconfdir}/qmail/users/{assign,include,exclude,mailnames,subusers,append}
+for i in assign include exclude mailnames subusers append; do
+	> $RPM_BUILD_ROOT%{_sysconfdir}/qmail/users/$i
+done
 echo -n "." > $RPM_BUILD_ROOT%{_sysconfdir}/qmail/users/assign
 
 # Set up default delivery
@@ -516,30 +526,30 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc {FAQ,INSTALL*,PIC*,REMOVE*,SENDMAIL,TEST*,UPGRADE}.gz
 %doc {BLURB*,README,SECURITY,THANKS,THOUGHTS,TODO,VERSION}.gz
-%doc checkpass-1.2/ queue-fix-1.4/ rblsmtpd-0.70/ boot/ 
+%doc checkpass-1.2/ queue-fix-1.4/ rblsmtpd-0.70/ boot/
 %doc {README.TLS,tarpit.README}.gz
 
-%attr( 755, root, root) %dir %{_sysconfdir}/mail
-%attr( 755, root, root) %dir %{_sysconfdir}/qmail
-%attr(2755, alias,nofiles) %dir %{_sysconfdir}/qmail/alias
-%attr( 755, root, qmail) %dir %{_sysconfdir}/qmail/control
-%attr( 755, root, root) %dir %{_sysconfdir}/qmail/users
-%attr( 755,  root, qmail) %dir %{_libdir}/qmail
-%attr( 755,  root, qmail) %dir /var/qmail
-%attr( 750,qmailq, qmail) %dir /var/qmail/queue
-%attr( 750,qmailq, qmail) %dir /var/qmail/queue/lock
-%attr( 700,qmails, qmail) /var/qmail/queue/bounce
-%attr( 700,qmails, qmail) /var/qmail/queue/info
-%attr( 700,qmailq, qmail) /var/qmail/queue/intd
-%attr( 700,qmails, qmail) /var/qmail/queue/local
-%attr( 750,qmailq, qmail) /var/qmail/queue/mess
-%attr( 700,qmailq, qmail) /var/qmail/queue/pid
-%attr( 700,qmails, qmail) /var/qmail/queue/remote
-%attr( 750,qmailq, qmail) /var/qmail/queue/todo
-%attr( 600,qmails, qmail)  %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/sendmutex
-%attr( 644,qmailr, qmail)  %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/tcpto
-%attr( 622,qmails, qmail)  %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/trigger
-%attr( 644, root,nofiles) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/alias/.qmail-*
+%attr(755,root,root) %dir %{_sysconfdir}/mail
+%attr(755,root,root) %dir %{_sysconfdir}/qmail
+%attr(2755,alias,nofiles) %dir %{_sysconfdir}/qmail/alias
+%attr(755,root,qmail) %dir %{_sysconfdir}/qmail/control
+%attr(755,root,root) %dir %{_sysconfdir}/qmail/users
+%attr(755,root,qmail) %dir %{_libdir}/qmail
+%attr(755,root,qmail) %dir /var/qmail
+%attr(750,qmailq,qmail) %dir /var/qmail/queue
+%attr(750,qmailq,qmail) %dir /var/qmail/queue/lock
+%attr(700,qmails,qmail) /var/qmail/queue/bounce
+%attr(700,qmails,qmail) /var/qmail/queue/info
+%attr(700,qmailq,qmail) /var/qmail/queue/intd
+%attr(700,qmails,qmail) /var/qmail/queue/local
+%attr(750,qmailq,qmail) /var/qmail/queue/mess
+%attr(700,qmailq,qmail) /var/qmail/queue/pid
+%attr(700,qmails,qmail) /var/qmail/queue/remote
+%attr(750,qmailq,qmail) /var/qmail/queue/todo
+%attr(600,qmails,qmail) %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/sendmutex
+%attr(644,qmailr,qmail) %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/tcpto
+%attr(622,qmails,qmail) %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/trigger
+%attr(644,root,nofiles) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/alias/.qmail-*
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/dot-qmail
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/defaultdomain
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/locals
@@ -550,72 +560,72 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/users/*
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/aliases
 %{_sysconfdir}/mail/aliases
-%attr( 755, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/profile.d/*
-%attr( 754,  root,  root) /etc/rc.d/init.d/*
-%attr( 640,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/rc-inetd/qmqp
-%attr( 640,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/rc-inetd/smtp
-%attr( 644,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/pam.d/checkpass
-%attr( 644,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/security/checkpass.allow
-%attr( 755,  root,  root) %{_libdir}/qmail/bouncesaying
-%attr( 755,  root,  root) %{_libdir}/qmail/condredirect
-%attr(4755,  root,  root) %{_libdir}/qmail/checkpass
-%attr( 755,  root,  root) %{_libdir}/qmail/datemail
-%attr( 755,  root,  root) %{_libdir}/qmail/elq
-%attr( 755,  root,  root) %{_libdir}/qmail/except
-%attr( 755,  root,  root) %{_libdir}/qmail/forward
-%attr( 755,  root,  root) %{_bindir}/maildir2mbox
-%attr( 755,  root,  root) %{_bindir}/maildirwatch
-%attr( 755,  root,  root) %{_libdir}/qmail/mailsubj
-%attr( 755,  root,  root) %{_libdir}/qmail/pinq
-%attr( 755,  root,  root) %{_libdir}/qmail/predate
-%attr( 755,  root,  root) %{_libdir}/qmail/preline
-%attr( 755,  root,  root) %{_libdir}/qmail/qail
-%attr( 755,  root,  root) %{_libdir}/qmail/qbiff
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-clean
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-getpw
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-inject
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-local
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-lspawn
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-newmrh
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-newu
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-pw2u
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-qmqpc
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-qmqpd
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-qmtpd
-%attr( 755,  root,  root) %{_bindir}/qmail-qread
-%attr( 755,  root,  root) %{_bindir}/qmail-qstat
-%attr(4755,qmailq, qmail) %{_libdir}/qmail/qmail-queue
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-remote
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-rspawn
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-send
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-showctl
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-smtpd
-%attr( 744,  root,  root) %{_libdir}/qmail/qmail-start
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-tcpok
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-tcpto
-%attr( 755,  root,  root) %{_libdir}/qmail/qreceipt
-%attr( 755,  root,  root) %{_libdir}/qmail/qsmhook
-%attr( 755,  root,  root) %{_bindir}/queue-fix
-%attr( 755,  root,  root) %{_libdir}/qmail/sendmail
-%attr( 755,  root,  root) %{_libdir}/qmail/splogger
-%attr( 755,  root,  root) %{_libdir}/qmail/tcp-env
-%attr( 755,  root,  root) %{_libdir}/qmail/dot-forward
-%attr( 755,  root,  root) %{_libdir}/qmail/fastforward
-%attr( 755,  root,  root) %{_bindir}/newaliases
-%attr( 755,  root,  root) %{_libdir}/qmail/newinclude
-%attr( 755,  root,  root) %{_libdir}/qmail/printforward
-%attr( 755,  root,  root) %{_libdir}/qmail/printmaillist
-%attr( 755,  root,  root) %{_libdir}/qmail/setforward
-%attr( 755,  root,  root) %{_libdir}/qmail/setmaillist
-%attr( 755,  root,  root) %{_libdir}/qmail/antirbl
-%attr( 755,  root,  root) %{_libdir}/qmail/rblsmtpd
-%attr( 755,  root,  root) %{_bindir}/mailq
-%attr( 755,  root,  root) %{_sbindir}/sendmail
-%attr( 755,  root,  root) %{_libdir}/sendmail
-%attr(2755, alias, qmail) /var/qmail/alias
-%attr( 755,  root,  root) /var/qmail/bin
-%attr( 755,  root,  root) /var/qmail/control
-%attr( 755,  root,  root) /var/qmail/users
+%attr(755,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/profile.d/*
+%attr(754,root,root) /etc/rc.d/init.d/*
+%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) /etc/sysconfig/rc-inetd/qmqp
+%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) /etc/sysconfig/rc-inetd/smtp
+%attr(644,root,root) %config(noreplace) %verify(not size mtime md5) /etc/pam.d/checkpass
+%attr(644,root,root) %config(noreplace) %verify(not size mtime md5) /etc/security/checkpass.allow
+%attr(755,root,root) %{_libdir}/qmail/bouncesaying
+%attr(755,root,root) %{_libdir}/qmail/condredirect
+%attr(4755,root,root) %{_libdir}/qmail/checkpass
+%attr(755,root,root) %{_libdir}/qmail/datemail
+%attr(755,root,root) %{_libdir}/qmail/elq
+%attr(755,root,root) %{_libdir}/qmail/except
+%attr(755,root,root) %{_libdir}/qmail/forward
+%attr(755,root,root) %{_bindir}/maildir2mbox
+%attr(755,root,root) %{_bindir}/maildirwatch
+%attr(755,root,root) %{_libdir}/qmail/mailsubj
+%attr(755,root,root) %{_libdir}/qmail/pinq
+%attr(755,root,root) %{_libdir}/qmail/predate
+%attr(755,root,root) %{_libdir}/qmail/preline
+%attr(755,root,root) %{_libdir}/qmail/qail
+%attr(755,root,root) %{_libdir}/qmail/qbiff
+%attr(755,root,root) %{_libdir}/qmail/qmail-clean
+%attr(755,root,root) %{_libdir}/qmail/qmail-getpw
+%attr(755,root,root) %{_libdir}/qmail/qmail-inject
+%attr(755,root,root) %{_libdir}/qmail/qmail-local
+%attr(755,root,root) %{_libdir}/qmail/qmail-lspawn
+%attr(755,root,root) %{_libdir}/qmail/qmail-newmrh
+%attr(755,root,root) %{_libdir}/qmail/qmail-newu
+%attr(755,root,root) %{_libdir}/qmail/qmail-pw2u
+%attr(755,root,root) %{_libdir}/qmail/qmail-qmqpc
+%attr(755,root,root) %{_libdir}/qmail/qmail-qmqpd
+%attr(755,root,root) %{_libdir}/qmail/qmail-qmtpd
+%attr(755,root,root) %{_bindir}/qmail-qread
+%attr(755,root,root) %{_bindir}/qmail-qstat
+%attr(4755,qmailq,qmail) %{_libdir}/qmail/qmail-queue
+%attr(755,root,root) %{_libdir}/qmail/qmail-remote
+%attr(755,root,root) %{_libdir}/qmail/qmail-rspawn
+%attr(755,root,root) %{_libdir}/qmail/qmail-send
+%attr(755,root,root) %{_libdir}/qmail/qmail-showctl
+%attr(755,root,root) %{_libdir}/qmail/qmail-smtpd
+%attr(744,root,root) %{_libdir}/qmail/qmail-start
+%attr(755,root,root) %{_libdir}/qmail/qmail-tcpok
+%attr(755,root,root) %{_libdir}/qmail/qmail-tcpto
+%attr(755,root,root) %{_libdir}/qmail/qreceipt
+%attr(755,root,root) %{_libdir}/qmail/qsmhook
+%attr(755,root,root) %{_bindir}/queue-fix
+%attr(755,root,root) %{_libdir}/qmail/sendmail
+%attr(755,root,root) %{_libdir}/qmail/splogger
+%attr(755,root,root) %{_libdir}/qmail/tcp-env
+%attr(755,root,root) %{_libdir}/qmail/dot-forward
+%attr(755,root,root) %{_libdir}/qmail/fastforward
+%attr(755,root,root) %{_bindir}/newaliases
+%attr(755,root,root) %{_libdir}/qmail/newinclude
+%attr(755,root,root) %{_libdir}/qmail/printforward
+%attr(755,root,root) %{_libdir}/qmail/printmaillist
+%attr(755,root,root) %{_libdir}/qmail/setforward
+%attr(755,root,root) %{_libdir}/qmail/setmaillist
+%attr(755,root,root) %{_libdir}/qmail/antirbl
+%attr(755,root,root) %{_libdir}/qmail/rblsmtpd
+%attr(755,root,root) %{_bindir}/mailq
+%attr(755,root,root) %{_sbindir}/sendmail
+%attr(755,root,root) %{_libdir}/sendmail
+%attr(2755,alias,qmail) /var/qmail/alias
+%attr(755,root,root) /var/qmail/bin
+%attr(755,root,root) /var/qmail/control
+%attr(755,root,root) /var/qmail/users
 %{_mandir}/man1/[!m]*
 %{_mandir}/man1/maildir2mbox*
 %{_mandir}/man1/maildirwatch*
@@ -629,11 +639,11 @@ rm -rf $RPM_BUILD_ROOT
 %lang(pl) %{_mandir}/pl/man8/qmail-p[!o]*
 
 # default folder - Maildir/
-%attr( 700, root, root) %dir /etc/skel/Mail
-%attr( 700, root, root) %dir /etc/skel/Mail/Maildir
-%attr( 700, root, root) %dir /etc/skel/Mail/Maildir/cur
-%attr( 700, root, root) %dir /etc/skel/Mail/Maildir/new
-%attr( 700, root, root) %dir /etc/skel/Mail/Maildir/tmp
+%attr(700,root,root) %dir /etc/skel/Mail
+%attr(700,root,root) %dir /etc/skel/Mail/Maildir
+%attr(700,root,root) %dir /etc/skel/Mail/Maildir/cur
+%attr(700,root,root) %dir /etc/skel/Mail/Maildir/new
+%attr(700,root,root) %dir /etc/skel/Mail/Maildir/tmp
 
 %files client
 %defattr(644,root,root,755)
@@ -641,38 +651,38 @@ rm -rf $RPM_BUILD_ROOT
 %doc {BLURB*,README,SECURITY,THANKS,THOUGHTS,TODO,VERSION}.gz
 %doc qmail-client.html
 
-%attr(755, root, root) %dir %{_sysconfdir}/mail
-%attr(755, root, root) %dir %{_sysconfdir}/qmail
-%attr(755, root, root) %dir %{_sysconfdir}/qmail/control
-%attr(755, root, root) %dir %{_libdir}/qmail
-%attr(755, root, root) %dir /var/qmail
-%attr(755, root, root) /var/qmail/bin
-%attr(755, root, root) /var/qmail/control
+%attr(755,root,root) %dir %{_sysconfdir}/mail
+%attr(755,root,root) %dir %{_sysconfdir}/qmail
+%attr(755,root,root) %dir %{_sysconfdir}/qmail/control
+%attr(755,root,root) %dir %{_libdir}/qmail
+%attr(755,root,root) %dir /var/qmail
+%attr(755,root,root) /var/qmail/bin
+%attr(755,root,root) /var/qmail/control
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/defaultdomain
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/me
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/plusdomain
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/idhost
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/qmqpservers
-%attr(755, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/profile.d/*
-%attr(755, root, root) %{_libdir}/qmail/datemail
-%attr(755, root, root) %{_libdir}/qmail/elq
-%attr(755, root, root) %{_libdir}/qmail/forward
-%attr(755, root, root) %{_bindir}/maildir2mbox
-%attr(755, root, root) %{_bindir}/maildirwatch
-%attr(755, root, root) %{_libdir}/qmail/mailsubj
-%attr(755, root, root) %{_libdir}/qmail/pinq
-%attr(755, root, root) %{_libdir}/qmail/predate
-%attr(755, root, root) %{_libdir}/qmail/qail
-%attr(755, root, root) %{_libdir}/qmail/qmail-inject
-%attr(755, root, root) %{_libdir}/qmail/qmail-qmqpc
-%attr(755, root, root) %ghost %{_libdir}/qmail/qmail-queue
-%attr(755, root, root) %{_libdir}/qmail/qmail-showctl
-%attr(755, root, root) %{_libdir}/qmail/sendmail
-%attr(755, root, root) %{_sbindir}/sendmail
-%attr(755, root, root) %{_libdir}/sendmail
+%attr(755,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/profile.d/*
+%attr(755,root,root) %{_libdir}/qmail/datemail
+%attr(755,root,root) %{_libdir}/qmail/elq
+%attr(755,root,root) %{_libdir}/qmail/forward
+%attr(755,root,root) %{_bindir}/maildir2mbox
+%attr(755,root,root) %{_bindir}/maildirwatch
+%attr(755,root,root) %{_libdir}/qmail/mailsubj
+%attr(755,root,root) %{_libdir}/qmail/pinq
+%attr(755,root,root) %{_libdir}/qmail/predate
+%attr(755,root,root) %{_libdir}/qmail/qail
+%attr(755,root,root) %{_libdir}/qmail/qmail-inject
+%attr(755,root,root) %{_libdir}/qmail/qmail-qmqpc
+%attr(755,root,root) %ghost %{_libdir}/qmail/qmail-queue
+%attr(755,root,root) %{_libdir}/qmail/qmail-showctl
+%attr(755,root,root) %{_libdir}/qmail/sendmail
+%attr(755,root,root) %{_sbindir}/sendmail
+%attr(755,root,root) %{_libdir}/sendmail
 %{_mandir}/man1/maildir2mbox*
 %{_mandir}/man1/maildirwatch*
-%{_mandir}/man1/mailsubj*  
+%{_mandir}/man1/mailsubj*
 %{_mandir}/man5/qmail-header*
 %{_mandir}/man5/qmail-log*
 %{_mandir}/man8/qmail-inject*
@@ -684,27 +694,27 @@ rm -rf $RPM_BUILD_ROOT
 %lang(pl) %{_mandir}/pl/man8/qmail-queue*
 
 # default folder - Maildir/
-%attr( 700, root, root) %dir /etc/skel/Mail
-%attr( 700, root, root) %dir /etc/skel/Mail/Maildir
-%attr( 700, root, root) %dir /etc/skel/Mail/Maildir/cur
-%attr( 700, root, root) %dir /etc/skel/Mail/Maildir/new
-%attr( 700, root, root) %dir /etc/skel/Mail/Maildir/tmp
+%attr(700,root,root) %dir /etc/skel/Mail
+%attr(700,root,root) %dir /etc/skel/Mail/Maildir
+%attr(700,root,root) %dir /etc/skel/Mail/Maildir/cur
+%attr(700,root,root) %dir /etc/skel/Mail/Maildir/new
+%attr(700,root,root) %dir /etc/skel/Mail/Maildir/tmp
 
 %files maildirmake
 %defattr(644,root,root,755)
-%attr(755, root, root) %{_bindir}/maildirmake
+%attr(755,root,root) %{_bindir}/maildirmake
 %{_mandir}/man1/maildirmake*
 
 %files perl
 %defattr(644,root,root,755)
 %doc qmHandle-0.5.1/
-%attr( 755,  root,  root) %{_bindir}/qmHandle
-%attr( 755,  root,  root) %{_bindir}/qmail-qsanity
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-lint
+%attr(755,root,root) %{_bindir}/qmHandle
+%attr(755,root,root) %{_bindir}/qmail-qsanity
+%attr(755,root,root) %{_libdir}/qmail/qmail-lint
 
 %files pop3
 %defattr(644,root,root,755)
-%attr( 640,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/rc-inetd/qpop
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-pop3d
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-popup
+%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) /etc/sysconfig/rc-inetd/qpop
+%attr(755,root,root) %{_libdir}/qmail/qmail-pop3d
+%attr(755,root,root) %{_libdir}/qmail/qmail-popup
 %{_mandir}/man8/qmail-po*
