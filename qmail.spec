@@ -100,7 +100,7 @@ Conflicts:	qmail-client
 Provides:	qmail-server
 Provides:	qmailmta
 Provides:	smtpdaemon
-Obsoletes:	smtpdaemon
+Obsoletes:	courier
 Obsoletes:	exim
 Obsoletes:	masqmail
 Obsoletes:	omta
@@ -109,6 +109,7 @@ Obsoletes:	sendmail
 Obsoletes:	sendmail-cf
 Obsoletes:	sendmail-doc
 Obsoletes:	smail
+Obsoletes:	smtpdaemon
 Obsoletes:	zmailer
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
