@@ -36,7 +36,7 @@ Patch8:      tarpit.patch
 Patch9:      qmail-1.03-maxrcpt.patch
 Patch10:     qmHandle.PLD-init.patch
 Patch11:     qmail-1.03-IPv6-PLD.patch
-Patch12:     qmail-dns.patch
+Patch12:     http://www.ckdhr.com/ckd/qmail-dns.patch
 BuildRoot:   /tmp/%{name}-%{version}-root
 Provides:    smtpdaemon
 Provides:    qmailmta
