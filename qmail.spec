@@ -367,7 +367,7 @@ fi
 %{_bindir}/newaliases
 /sbin/chkconfig --add qmail
 if [ -f /var/lock/subsys/rc-inetd ]; then
-	/etc/rc.d/init.d/rc-inetd restart 1>&2
+	/etc/rc.d/init.d/rc-inetd reload 1>&2
 else
 	echo "Type \"/etc/rc.d/init.d/rc-inetd start\" to start inet sever" 1>&2
 fi
@@ -397,7 +397,7 @@ if [ "$1" = "0" ]; then
 	%{_sbindir}/groupdel qmail 2> /dev/null
 
 	if [ -f /var/lock/subsys/rc-inetd ]; then
-		/etc/rc.d/init.d/rc-inetd restart
+		/etc/rc.d/init.d/rc-inetd reload
 	fi
 fi
 
