@@ -33,7 +33,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.43
+Release:	56.44
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -687,10 +687,6 @@ for a in 1 3 5 7 8 9; do
 done
 rm -f qmail-doki/*.[135789]
 
-# my dnsbl and qmail-scanner enabled scripts
-install %{SOURCE40} $RPM_BUILD_ROOT%{varqmail}/bin/rblsmtpd.sh
-install %{SOURCE41} $RPM_BUILD_ROOT%{varqmail}/bin/qmail-smtpd.sh
-
 # remove backup files
 rm -f *~ rblsmtpd-0.70/*~
 
@@ -1030,9 +1026,6 @@ fi
 %attr(755,root,root) %{_libdir}/qmail/antirbl
 %attr(755,root,root) %{_libdir}/qmail/rblsmtpd
 %attr(755,root,root) %{varqmail}/rc
-
-%config(noreplace) %attr(755,root,root) %{_libdir}/qmail/rblsmtpd.sh
-%config(noreplace) %attr(755,root,root) %{_libdir}/qmail/qmail-smtpd.sh
 
 %attr(755,root,root) %{_libdir}/qmail/config-sanity-check
 %attr(755,root,root) %{_libdir}/qmail/qmail-config-system
