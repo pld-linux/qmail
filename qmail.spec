@@ -162,7 +162,7 @@ ln -sf $RPM_BUILD_DIR/%{name}-%{version}/boot $RPM_BUILD_ROOT/var/qmail/boot
 
 ln -s qmail/qmail-qread $RPM_BUILD_ROOT/usr/bin/mailq
 ln -sf ../../var/qmail/bin/sendmail $RPM_BUILD_ROOT/usr/sbin/sendmail
-ln -sf ../../var/qmail/bin/sendmail $RPM_BUILD_ROOT/usr/lib/sendmail
+ln -sf ../../var/qmail/bin/sendmail $RPM_BUILD_ROOT%{_libdir}/sendmail
 
 # Set up boot procedures
 install %{SOURCE7} $RPM_BUILD_ROOT/etc/rc.d/init.d/qmail
@@ -373,7 +373,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 755,   root,  root) /usr/bin/qmail/rblsmtpd
 %attr( 777,   root,  root) /usr/bin/mailq
 %attr( 777,   root,  root) /usr/sbin/sendmail
-%attr( 777,   root,  root) /usr/lib/sendmail
+%attr( 777,   root,  root) %{_libdir}/sendmail
 %attr( 777,  alias, qmail) /var/qmail/alias
 %attr( 777,   root, qmail) /var/qmail/bin
 %attr( 777,   root, qmail) /var/qmail/control
