@@ -368,6 +368,10 @@ mv -f $RPM_BUILD_ROOT/var/qmail/bin/qmail-qstat	$RPM_BUILD_ROOT%{_bindir}
 mv -f $RPM_BUILD_ROOT/var/qmail/bin/queue-fix	$RPM_BUILD_ROOT%{_bindir}
 mv -f $RPM_BUILD_ROOT/var/qmail/bin/newaliases	$RPM_BUILD_ROOT%{_bindir}
 
+# remove mbox(5) man page whic is now in man-pages and isn't strict qmail
+# man page
+rm -f $RPM_BUILD_ROOT%{_mandir}/man5/mbox.5
+
 install %{SOURCE21} .
 
 install %{SOURCE22} $RPM_BUILD_ROOT/var/qmail/control/cert.pem
@@ -602,14 +606,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/maildir2mbox*
 %{_mandir}/man1/maildirwatch*
 %{_mandir}/man1/mailsubj*
-%{_mandir}/man3/*
-%{_mandir}/man5/[!m]*
-%{_mandir}/man5/m[!b]*
+%{_mandir}/man[35]/*
 %{_mandir}/man8/[!q]*
 %{_mandir}/man8/qmail-[!p]*
 %{_mandir}/man8/qmail-p[!o]*
-%lang(pl) %{_mandir}/pl/man5/[!m]*
-%lang(pl) %{_mandir}/pl/man5/m[!b]*
+%lang(pl) %{_mandir}/pl/man5/*
 %lang(pl) %{_mandir}/pl/man8/qmail-[!p]*
 %lang(pl) %{_mandir}/pl/man8/qmail-p[!o]*
 
