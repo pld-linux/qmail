@@ -14,38 +14,38 @@ Source3:	ftp://koobera.math.uic.edu/pub/software/rblsmtpd-0.70.tar.gz
 Source4:	ftp://koobera.math.uic.edu/pub/software/checkpassword-0.76.shar.gz
 Source5:	http://www.netmeridian.com/e-huss/queue-fix.tar.gz
 Source6:	http://www.io.com/~mick/soft/qmHandle-0.4.0.tar.gz
-Source7:	qmail.init
-Source8:	qmail-linux.sh
-Source9:	qmail-linux.csh
-Source10:	qmail-aliases
-Source11:	qmail-default
-Source12:	qmail-msglog
-Source13:	qmail-default-delivery
-Source14:	qmail-lint-0.51.pl
-Source15:	qmail-qsanity-0.51.pl
+Source7:	%{name}.init
+Source8:	%{name}-linux.sh
+Source9:	%{name}-linux.csh
+Source10:	%{name}-aliases
+Source11:	%{name}-default
+Source12:	%{name}-msglog
+Source13:	%{name}-default-delivery
+Source14:	%{name}-lint-0.51.pl
+Source15:	%{name}-qsanity-0.51.pl
 Source16:	tarpit.README
 Source17:	%{name}-qmqp.inetd
 Source18:	%{name}-smtp.inetd
 Source19:	%{name}-qpop.inetd
 Source20:	checkpassword.pamd
-Patch0:		qmail-1.03.install.patch
-Patch1:		qmail-1.03.msglog.patch
-Patch2:		qmail-1.03.redhat.patch
-Patch3:		qmail-1.03.fixed-ids.patch
-Patch4:		qmail-1.03.rbl.conf.patch
-Patch5:		qmail-1.03.mklinux.patch
-Patch6:		qmail-relayclientexternal.patch
-Patch7:		qmail-1.03.checkpassword.patch
+Patch0:		%{name}-1.03.install.patch
+Patch1:		%{name}-1.03.msglog.patch
+Patch2:		%{name}-1.03.redhat.patch
+Patch3:		%{name}-1.03.fixed-ids.patch
+Patch4:		%{name}-1.03.rbl.conf.patch
+Patch5:		%{name}-1.03.mklinux.patch
+Patch6:		%{name}-relayclientexternal.patch
+Patch7:		%{name}-1.03.checkpassword.patch
 Patch8:		tarpit.patch
-Patch9:		qmail-1.03-maxrcpt.patch
+Patch9:		%{name}-1.03-maxrcpt.patch
 Patch10:	qmHandle.PLD-init.patch
-Patch11:	qmail-IPv6-PLD.patch
-Patch12:	http://www.ckdhr.com/ckd/qmail-dns.patch
+Patch11:	%{name}-IPv6-PLD.patch
+Patch12:	http://www.ckdhr.com/ckd/%{name}-dns.patch
 Patch13:	ftp://dione.ids.pl/people/siewca/patches/%{name}-%{version}-etc.patch
-Patch14:	qmail-rblsmtpd-IPv6-PLD.patch
-Patch15:	qmail-rblsmtpd-syslog.patch
-Patch16:	qmail-smtpauth.patch
-Patch17:	qmail-checkpassword-PAM.patch
+Patch14:	%{name}-rblsmtpd-IPv6-PLD.patch
+Patch15:	%{name}-rblsmtpd-syslog.patch
+Patch16:	%{name}-smtpauth.patch
+Patch17:	%{name}-checkpassword-PAM.patch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Provides:	smtpdaemon
 Provides:	qmailmta
@@ -68,74 +68,62 @@ Obsoletes:	exim
 BuildRequires:	pam-devel
 
 %description
-qmail is a small, fast, secure replacement for the SENDMAIL package, which
-is the program that actually receives, routes, and delivers electronic
-mail. This qmail also support IPv6 protocol.
+qmail is a small, fast, secure replacement for the SENDMAIL package,
+which is the program that actually receives, routes, and delivers
+electronic mail. This qmail also support IPv6 protocol.
 
 Following scripts and programs have been added:
 
 
+
 ================================================================================
-Name			Features
+Name Features
 ================================================================================
-checkpassword		password-checking interface
-
-qmHandle		more powerful viewing and managing qmail queue
-			(remote and local)
-
-rblsmtpd		a generic tool to block mail from RBL-listed sites;
-			an optional way to fight SPAM
-
-qmail-fix		a small utility for checking and repairing the qmail
-			queue structure
-
-qmail-msglog		advanced e-mail monitoring
-
-qmail-qsanity		examine all the files in the qmail queue
-
-qmail-lint		examine the qmail configuration
-
-tarpit			tool to fight with SPAM
+checkpassword	- password-checking interface
+qmHandle	- more powerful viewing and managing qmail queue (remote and
+		  local)
+rblsmtpd 	- a generic tool to block mail from RBL-listed sites; an
+		  optional way to fight SPAM
+qmail-fix	- a small utility for checking and repairing the qmail queue
+		  structure
+qmail-msglog	- advanced e-mail monitoring
+qmail-qsanity	- examine all the files in the qmail queue
+qmail-lint	- examine the qmail configuration
+tarpit		- tool to fight with SPAM
 ================================================================================
 
-- *** Note: Be sure and read the documentation as there are some small but
-  very significant differences between SENDMAIL and QMAIL and the programs
-  that interact with them.
+- *** Note: Be sure and read the documentation as there are some small
+  but very significant differences between SENDMAIL and QMAIL and the
+  programs that interact with them.
 
 %description -l pl
-qmail jest ma³±, szybk± oraz bezpieczn± alternatyw± do sendmail-a, która
-umo¿liwia otrzymywanie, przesy³anie oraz wysy³anie poczty elektronicznej.
-Ten qmail dodatkowo wspiera protokó³ IPv6.
+qmail jest ma³±, szybk± oraz bezpieczn± alternatyw± do sendmail-a,
+która umo¿liwia otrzymywanie, przesy³anie oraz wysy³anie poczty
+elektronicznej. Ten qmail dodatkowo wspiera protokó³ IPv6.
 
 Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
 
 
+
 ================================================================================
-Nazwa			Opis
+Nazwa Opis
 ================================================================================
-checkpassword		interfejs do sprawdzania hase³
-
-qmHandle		bardziej zaawansowane przegl±danie oraz zarz±dzanie
-			kolejk± pocztow±
-
-rblsmtpd 		podstawowe narzêdzie do blokowania listów z miejsc
-			wyszczególnionych w RBL; sposób na walkê ze SPAM-em
-
-qmail-fix		program do sprawdzania oraz naprawiania struktury
-			kolejki pocztowej qmail-a
-
-qmail-msglog		zaawansowane monitorowanie listów
-
-qmail-qsanity		sprawdza kolejkê pocztow± qmail-a
-
-qmail-lint		sprawdza konfiguracjê qmail-a
-
-tarpit			kolejne narzêdzie do walki ze SPAM-em
+checkpassword	- interfejs do sprawdzania hase³
+qmHandle	- bardziej zaawansowane przegl±danie oraz zarz±dzanie
+		  kolejk± pocztow±
+rblsmtpd	- podstawowe narzêdzie do blokowania listów z miejsc
+		  wyszczególnionych w RBL; sposób na walkê ze SPAM-em
+qmail-fix	- program do sprawdzania oraz naprawiania struktury kolejki
+		  pocztowej qmail-a
+qmail-msglog	- zaawansowane monitorowanie listów
+qmail-qsanity	- sprawdza kolejkê pocztow± qmail-a
+qmail-lint	- sprawdza konfiguracjê qmail-a
+tarpit		- kolejne narzêdzie do walki ze SPAM-em
 ================================================================================
 
 - *** Uwaga! Przeczytaj uwa¿nie dokumentacjê do tego pakietu, poniewa¿
-  istniej± ma³e, ale znacz±ce róznice pomiêdzy qmail-em oraz sendmail-em i
-  programami, które wspó³pracuj± z nimi.
+  istniej± ma³e, ale znacz±ce róznice pomiêdzy qmail-em oraz sendmail-em
+  i programami, które wspó³pracuj± z nimi.
 
 %prep
 %setup -q
