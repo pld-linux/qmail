@@ -78,9 +78,10 @@ Patch29:	%{name}-1.03.qmail_local.patch
 Patch30:	%{name}-ac_rblsmtpd.patch
 URL:		http://www.qmail.org/
 BuildRequires:	groff
+%{?with_home_etc:BuildRequires:	home-etc-devel >= 1.0.8}
 BuildRequires:	pam-devel
 BuildRequires:	openssl-devel >= 0.9.7d
-%{?with_home_etc:BuildRequires:	home-etc-devel >= 1.0.8}
+BuildRequires:	rpmbuild(macros) >= 1.159
 PreReq:		rc-scripts >= 0.2.0
 PreReq:		rc-inetd
 PreReq:		sh-utils
@@ -91,18 +92,27 @@ Requires(pre):	/usr/sbin/useradd
 Requires(post):	/bin/hostname
 Requires(post):	/bin/id
 Requires(post):	/bin/sed
-Requires(post,preun):	/sbin/chkconfig
 Requires(post):	fileutils
+Requires(post,preun):	/sbin/chkconfig
 Requires(postun):	/usr/sbin/groupdel
 Requires(postun):	/usr/sbin/userdel
 Requires:	%{_sbindir}/tcpd
+%{?with_home_etc:Requires:	home-etc >= 1.0.8}
 Requires:	inetdaemon
 Requires:	pam >= 0.77.3
-%{?with_home_etc:Requires:	home-etc >= 1.0.8}
 Conflicts:	qmail-client
+Provides:	group(nofiles)
+Provides:	group(qmail)
 Provides:	qmail-server
 Provides:	qmailmta
 Provides:	smtpdaemon
+Provides:	user(alias)
+Provides:	user(qmaild)
+Provides:	user(qmaill)
+Provides:	user(qmailp)
+Provides:	user(qmailq)
+Provides:	user(qmailr)
+Provides:	user(qmails)
 Obsoletes:	courier
 Obsoletes:	exim
 Obsoletes:	masqmail
@@ -416,36 +426,85 @@ sed /^diff/q %{PATCH24} >README.TLS
 rm -rf $RPM_BUILD_ROOT
 
 %pre
-if [ "$1" = "1" ]; then
 # Add few users and groups
-	if [ ! -n "`getgid nofiles`" ]; then
-		/usr/sbin/groupadd -f -g 81 nofiles
+if [ -n "`/usr/bin/getgid nofiles`" ]; then
+	if [ "`/usr/bin/getgid nofiles`" != "81" ]; then
+		echo "Error: group nofiles doesn't have gid=81. Correct this before installing qmail." 1>&2
+		exit 1
 	fi
-	if [ ! -n "`getgid qmail`" ]; then
-		/usr/sbin/groupadd -f -g 82 qmail
+else
+	/usr/sbin/groupadd -g 81 nofiles 1>&2
+fi
+if [ -n "`/usr/bin/getgid qmail`" ]; then
+	if [ "`/usr/bin/getgid qmail`" != "82" ]; then
+		echo "Error: group qmail doesn't have gid=82. Correct this before installing qmail." 1>&2
+		exit 1
 	fi
-
-	if [ ! -n "`id -u qmaild 2>/dev/null`" ]; then
-		/usr/sbin/useradd -g nofiles -d %{varqmail} -u 81 -s /bin/false qmaild 2> /dev/null
+else
+	/usr/sbin/groupadd -g 82 qmail 1>&2
+fi
+if [ -n "`/bin/id -u qmaild 2>/dev/null`" ]; then
+	if [ "`/bin/id -u qmaild`" != "81" ]; then
+		echo "Error: user qmaild doesn't have uid=81. Correct this before installing qmail." 1>&2
+		exit 1
 	fi
-	if [ ! -n "`id -u alias 2>/dev/null`" ]; then
-		/usr/sbin/useradd -g nofiles -d %{varqmail}/alias -u 82 -s /bin/false alias 2> /dev/null
+else
+	/usr/sbin/useradd -g nofiles -d %{varqmail} -u 81 -s /bin/false \
+		qmaild 1>&2
+fi
+if [ -n "`/bin/id -u alias 2>/dev/null`" ]; then
+	if [ "`/bin/id -u alias`" != "82" ]; then
+		echo "Error: user alias doesn't have uid=82. Correct this before installing qmail." 1>&2
+		exit 1
 	fi
-	if [ ! -n "`id -u qmailq 2>/dev/null`" ]; then
-		/usr/sbin/useradd -g qmail -d %{varqmail} -u 83 -s /bin/false qmailq 2> /dev/null
+else
+	/usr/sbin/useradd -g nofiles -d %{varqmail}/alias -u 82 \
+		-s /bin/false alias 1>&2
+fi
+if [ -n "`/bin/id -u qmailq 2>/dev/null`" ]; then
+	if [ "`/bin/id -u qmailq`" != "83" ]; then
+		echo "Error: user qmailq doesn't have uid=83. Correct this before installing qmail." 1>&2
+		exit 1
 	fi
-	if [ ! -n "`id -u qmailr 2>/dev/null`" ]; then
-		/usr/sbin/useradd -g qmail -d %{varqmail} -u 84 -s /bin/false qmailr 2> /dev/null
+else
+	/usr/sbin/useradd -g qmail -d %{varqmail} -u 83 -s /bin/false \
+		qmailq 1>&2
+fi
+if [ -n "`/bin/id -u qmailr 2>/dev/null`" ]; then
+	if [ "`/bin/id -u qmailr`" != "84" ]; then
+		echo "Error: user qmailr doesn't have uid=84. Correct this before installing qmail." 1>&2
+		exit 1
 	fi
-	if [ ! -n "`id -u qmails 2>/dev/null`" ]; then
-		/usr/sbin/useradd -g qmail -d %{varqmail} -u 85 -s /bin/false qmails 2> /dev/null
+else
+	/usr/sbin/useradd -g qmail -d %{varqmail} -u 84 -s /bin/false \
+		qmailr 1>&2
+fi
+if [ -n "`/bin/id -u qmails 2>/dev/null`" ]; then
+	if [ "`/bin/id -u qmails`" != "85" ]; then
+		echo "Error: user qmails doesn't have uid=85. Correct this before installing qmail." 1>&2
+		exit 1
 	fi
-	if [ ! -n "`id -u qmaill 2>/dev/null`" ]; then
-		/usr/sbin/useradd -g nofiles -d %{varqmail} -u 86 -s /bin/false qmaill 2> /dev/null
+else
+	/usr/sbin/useradd -g qmail -d %{varqmail} -u 85 -s /bin/false \
+		qmails 1>&2
+fi
+if [ -n "`/bin/id -u qmaill 2>/dev/null`" ]; then
+	if [ "`/bin/id -u qmaill`" != "86" ]; then
+		echo "Error: user qmaill doesn't have uid=86. Correct this before installing qmail." 1>&2
+		exit 1
 	fi
-	if [ ! -n "`id -u qmailp 2>/dev/null`" ]; then
-		/usr/sbin/useradd -g nofiles -d %{varqmail} -u 87 -s /bin/false qmailp 2> /dev/null
+else
+	/usr/sbin/useradd -g nofiles -d %{varqmail} -u 86 -s /bin/false \
+		qmaill 1>&2
+fi
+if [ -n "`/bin/id -u qmailp 2>/dev/null`" ]; then
+	if [ "`/bin/id -u qmailp`" != "87" ]; then
+		echo "Error: user qmailp doesn't have uid=87. Correct this before installing qmail." 1>&2
+		exit 1
 	fi
+else
+	/usr/sbin/useradd -g nofiles -d %{varqmail} -u 87 -s /bin/false \
+		qmailp 1>&2
 fi
 
 %post
@@ -494,18 +553,16 @@ fi
 %postun
 # If package is being erased for the last time.
 if [ "$1" = "0" ]; then
-	/usr/sbin/userdel qmaild 2> /dev/null
-	/usr/sbin/userdel alias 2> /dev/null
-	/usr/sbin/userdel qmaill 2> /dev/null
-	/usr/sbin/userdel qmailp 2> /dev/null
-	/usr/sbin/userdel qmailq 2> /dev/null
-	/usr/sbin/userdel qmailr 2> /dev/null
-	/usr/sbin/userdel qmails 2> /dev/null
-	/usr/sbin/userdel qmail 2> /dev/null
-
-	/usr/sbin/groupdel nofiles 2> /dev/null
-	/usr/sbin/groupdel qmail 2> /dev/null
-
+	%userremove qmaild
+	%userremove alias
+	%userremove qmaill
+	%userremove qmailp
+	%userremove qmailq
+	%userremove qmailr
+	%userremove qmails
+	%userremove qmail
+	%groupremove nofiles
+	%groupremove qmail
 	if [ -f /var/lock/subsys/rc-inetd ]; then
 		/etc/rc.d/init.d/rc-inetd reload
 	fi
