@@ -1,0 +1,6 @@
+- updated tls patch from gentoo: qregex-starttls-2way-auth.patch
+- obsoleted pld tls patch
+- added link(), 0.0.0.0, local timestamp, trim bounce, reread concurrency, nullenvsender-recipcount patches from gentoo
+- fix doubleslash symlinks in /usr/{lib,sbin}/sendmail
+- control/cert.pem renamed as control/servercert.pem for new tls patch
+- identify patches with -b switch
