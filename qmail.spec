@@ -1,3 +1,8 @@
+#
+# Conditional build:
+# _without_msglog	- without qmail-msglog (advanced e-mail monitoring)
+# _without_routing	- without mail routing
+#
 Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
@@ -17,7 +22,7 @@ Source8:	%{name}-linux.sh
 Source9:	%{name}-linux.csh
 Source10:	%{name}-aliases
 Source11:	%{name}-default
-%{?!_without_msglog:Source12:	%{name}-msglog}
+Source12:	%{name}-msglog
 Source13:	%{name}-default-delivery
 Source14:	%{name}-lint-0.51.pl
 Source15:	%{name}-qsanity-0.51.pl
@@ -30,7 +35,7 @@ Source21:	%{name}-client.html
 Source22:	%{name}-cert.pem
 Source23:	%{name}-pl-man-pages.tar.bz2
 Patch0:		%{name}-1.03.install.patch
-%{?!_without_msglog:Patch1: %{name}-1.03.msglog.patch}
+Patch1:		%{name}-1.03.msglog.patch
 Patch2:		%{name}-1.03.redhat.patch
 Patch3:		%{name}-1.03.fixed-ids.patch
 Patch4:		%{name}-1.03.rbl.conf.patch
@@ -46,7 +51,7 @@ Patch15:	%{name}-rblsmtpd-syslog.patch
 Patch16:	%{name}-smtpauth.patch
 Patch18:	%{name}-wildmat.patch
 Patch19:	%{name}-rblsmtpd-rss.patch
-%{?no_mail_routing:Patch20: %{name}-no_mail_routing.patch}
+Patch20:	%{name}-no_mail_routing.patch
 Patch21:	%{name}-qmqpc-received.patch
 Patch22:	%{name}-rblsmtpd-glibc2.2.patch
 Patch23:	%{name}-extbouncer.patch
@@ -56,8 +61,6 @@ Patch24:	%{name}-tls.patch
 Patch25:	%{name}-queue.patch
 URL:		http://www.qmail.org/
 BuildRequires:	pam-devel
-PreReq:		/bin/sed
-PreReq:		/sbin/chkconfig
 PreReq:		rc-scripts >= 0.2.0
 PreReq:		rc-inetd
 PreReq:		sh-utils
@@ -65,13 +68,15 @@ Requires(pre):	/bin/id
 Requires(pre):	/usr/bin/getgid
 Requires(pre):	/usr/sbin/groupadd
 Requires(pre):	/usr/sbin/useradd
-Requires:	%{_sbindir}/tcpd
-Requires:	inetdaemon
 Requires(post):	/bin/hostname
 Requires(post):	/bin/id
+Requires(post):	/bin/sed
+Requires(post,preun):	/sbin/chkconfig
 Requires(post):	fileutils
 Requires(postun):	/usr/sbin/groupdel
 Requires(postun):	/usr/sbin/userdel
+Requires:	%{_sbindir}/tcpd
+Requires:	inetdaemon
 Conflicts:	qmail-client
 Provides:	qmail-server
 Provides:	qmailmta
@@ -87,6 +92,9 @@ Obsoletes:	sendmail-doc
 Obsoletes:	smail
 Obsoletes:	zmailer
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+# not FHS compliant
+%define		varqmail	/var/qmail
 
 %description
 qmail is a small, fast, secure replacement for the SENDMAIL package,
@@ -213,12 +221,7 @@ POP3 server for qmail.
 Serwer POP3 dla qmaila.
 
 %prep
-%setup -q
-%setup -D -T -q -a 1
-%setup -D -T -q -a 2
-%setup -D -T -q -a 3
-%setup -D -T -q -a 4
-%setup -D -T -q -a 5
+%setup -q -a1 -a2 -a3 -a4 -a5
 install -d qmHandle-0.5.1
 tar zxf %{SOURCE6} -C qmHandle-0.5.1/
 %patch0 -p1
@@ -238,7 +241,7 @@ tar zxf %{SOURCE6} -C qmHandle-0.5.1/
 %patch16 -p1
 %patch18 -p1
 %patch19 -p1
-%{?no_mail_routing:%patch20 -p1}
+%{?_without_routing:%patch20 -p1}
 %patch21 -p1
 %patch22 -p1
 %patch23 -p1
@@ -258,21 +261,22 @@ tar zxf %{SOURCE6} -C qmHandle-0.5.1/
 rm -rf $RPM_BUILD_ROOT
 
 install -d boot
-install -d $RPM_BUILD_ROOT{%{_sbindir},%{_mandir},{%{_var},%{_bindir},%{_libdir}}/qmail}
-install -d $RPM_BUILD_ROOT%{_sysconfdir}/{qmail/{alias,control,users},rc.d/init.d,profile.d,mail,sysconfig/rc-inetd,pam.d,security}
+install -d $RPM_BUILD_ROOT{%{_sbindir},%{_bindir},%{_mandir},%{_libdir}/qmail,%{varqmail}} \
+	$RPM_BUILD_ROOT/etc/{rc.d/init.d,profile.d,mail,sysconfig/rc-inetd,pam.d,security}
+	$RPM_BUILD_ROOT%{_sysconfdir}/qmail/{alias,control,users}
 
-ln -sf ../../%{_sysconfdir}/qmail/alias $RPM_BUILD_ROOT/var/qmail/
-ln -sf ../../%{_sysconfdir}/qmail/control $RPM_BUILD_ROOT/var/qmail/
-ln -sf ../../%{_sysconfdir}/qmail/users $RPM_BUILD_ROOT/var/qmail/
-ln -sf ../../%{_libdir}/qmail $RPM_BUILD_ROOT/var/qmail/bin
-ln -sf ../../%{_mandir} $RPM_BUILD_ROOT/var/qmail/man
-ln -sf $RPM_BUILD_DIR/%{name}-%{version}/boot $RPM_BUILD_ROOT/var/qmail/boot
+ln -sf ../../%{_sysconfdir}/qmail/alias $RPM_BUILD_ROOT%{varqmail}
+ln -sf ../../%{_sysconfdir}/qmail/control $RPM_BUILD_ROOT%{varqmail}
+ln -sf ../../%{_sysconfdir}/qmail/users $RPM_BUILD_ROOT%{varqmail}
+ln -sf ../../%{_libdir}/qmail $RPM_BUILD_ROOT%{varqmail}/bin
+ln -sf ../../%{_mandir} $RPM_BUILD_ROOT%{varqmail}/man
+ln -sf $RPM_BUILD_DIR/%{name}-%{version}/boot $RPM_BUILD_ROOT%{varqmail}/boot
 
 ./install -s $RPM_BUILD_ROOT
 
 ln -sf qmail-qread $RPM_BUILD_ROOT%{_bindir}/mailq
-ln -sf ../../var/qmail/bin/sendmail $RPM_BUILD_ROOT%{_sbindir}/sendmail
-ln -sf ../../var/qmail/bin/sendmail $RPM_BUILD_ROOT%{_libdir}/sendmail
+ln -sf ../../%{varqmail}/bin/sendmail $RPM_BUILD_ROOT%{_sbindir}/sendmail
+ln -sf ../../%{varqmail}/bin/sendmail $RPM_BUILD_ROOT%{_libdir}/sendmail
 
 # Set up boot procedures
 install %{SOURCE7} $RPM_BUILD_ROOT/etc/rc.d/init.d/qmail
@@ -307,38 +311,38 @@ echo -n "." > $RPM_BUILD_ROOT%{_sysconfdir}/qmail/users/assign
 # Set up default delivery
 install %{SOURCE13} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/dot-qmail
 
-install %{SOURCE14} $RPM_BUILD_ROOT/var/qmail/bin/qmail-lint
-install %{SOURCE15} $RPM_BUILD_ROOT/var/qmail/bin/qmail-qsanity
+install %{SOURCE14} $RPM_BUILD_ROOT%{varqmail}/bin/qmail-lint
+install %{SOURCE15} $RPM_BUILD_ROOT%{varqmail}/bin/qmail-qsanity
 
 # qmHandle command
-install qmHandle-0.5.1/qmHandle $RPM_BUILD_ROOT/var/qmail/bin/qmHandle
+install qmHandle-0.5.1/qmHandle $RPM_BUILD_ROOT%{varqmail}/bin/qmHandle
 
 # QUEUE FIX command
-install queue-fix-1.4/queue-fix $RPM_BUILD_ROOT/var/qmail/bin
+install queue-fix-1.4/queue-fix $RPM_BUILD_ROOT%{varqmail}/bin
 
 # CHECKPASSWORD command
-install checkpass-1.2/checkpass $RPM_BUILD_ROOT/var/qmail/bin
+install checkpass-1.2/checkpass $RPM_BUILD_ROOT%{varqmail}/bin
 install %{SOURCE20} $RPM_BUILD_ROOT/etc/pam.d/checkpass
 echo "qmaild" > $RPM_BUILD_ROOT/etc/security/checkpass.allow
 
 # DOT FORWARD command and doc
-install dot-forward-0.71/dot-forward $RPM_BUILD_ROOT/var/qmail/bin
-install dot-forward-0.71/dot-forward.1 $RPM_BUILD_ROOT/var/qmail/man/man1
+install dot-forward-0.71/dot-forward $RPM_BUILD_ROOT%{varqmail}/bin
+install dot-forward-0.71/dot-forward.1 $RPM_BUILD_ROOT%{varqmail}/man/man1
 
 # FAST FORWARD commands and docs
-install fastforward-0.51/fastforward $RPM_BUILD_ROOT/var/qmail/bin
-install fastforward-0.51/newaliases $RPM_BUILD_ROOT/var/qmail/bin
-install fastforward-0.51/newinclude $RPM_BUILD_ROOT/var/qmail/bin
-install fastforward-0.51/printforward $RPM_BUILD_ROOT/var/qmail/bin
-install fastforward-0.51/printmaillist $RPM_BUILD_ROOT/var/qmail/bin
-install fastforward-0.51/setforward $RPM_BUILD_ROOT/var/qmail/bin
-install fastforward-0.51/setmaillist $RPM_BUILD_ROOT/var/qmail/bin
-install fastforward-0.51/*.1 $RPM_BUILD_ROOT/var/qmail/man/man1/
+install fastforward-0.51/fastforward $RPM_BUILD_ROOT%{varqmail}/bin
+install fastforward-0.51/newaliases $RPM_BUILD_ROOT%{varqmail}/bin
+install fastforward-0.51/newinclude $RPM_BUILD_ROOT%{varqmail}/bin
+install fastforward-0.51/printforward $RPM_BUILD_ROOT%{varqmail}/bin
+install fastforward-0.51/printmaillist $RPM_BUILD_ROOT%{varqmail}/bin
+install fastforward-0.51/setforward $RPM_BUILD_ROOT%{varqmail}/bin
+install fastforward-0.51/setmaillist $RPM_BUILD_ROOT%{varqmail}/bin
+install fastforward-0.51/*.1 $RPM_BUILD_ROOT%{varqmail}/man/man1/
 
 # RBLSMTPD commands and doc
-install rblsmtpd-0.70/antirbl $RPM_BUILD_ROOT/var/qmail/bin
-install rblsmtpd-0.70/rblsmtpd $RPM_BUILD_ROOT/var/qmail/bin
-install rblsmtpd-0.70/*.8 $RPM_BUILD_ROOT/var/qmail/man/man8
+install rblsmtpd-0.70/antirbl $RPM_BUILD_ROOT%{varqmail}/bin
+install rblsmtpd-0.70/rblsmtpd $RPM_BUILD_ROOT%{varqmail}/bin
+install rblsmtpd-0.70/*.8 $RPM_BUILD_ROOT%{varqmail}/man/man8
 
 # default folder in /etc/skel
 install -d $RPM_BUILD_ROOT/etc/skel/Mail
@@ -354,57 +358,60 @@ install -d $RPM_BUILD_ROOT/etc/skel/Mail
 cp $RPM_SOURCE_DIR/tarpit.README .
 
 # What else?
-mv -f $RPM_BUILD_ROOT/var/qmail/bin/maildir2mbox	$RPM_BUILD_ROOT%{_bindir}
-mv -f $RPM_BUILD_ROOT/var/qmail/bin/maildirmake	$RPM_BUILD_ROOT%{_bindir}
-mv -f $RPM_BUILD_ROOT/var/qmail/bin/maildirwatch	$RPM_BUILD_ROOT%{_bindir}
-mv -f $RPM_BUILD_ROOT/var/qmail/bin/qmHandle	$RPM_BUILD_ROOT%{_bindir}
-mv -f $RPM_BUILD_ROOT/var/qmail/bin/qmail-qread	$RPM_BUILD_ROOT%{_bindir}
-mv -f $RPM_BUILD_ROOT/var/qmail/bin/qmail-qsanity	$RPM_BUILD_ROOT%{_bindir}
-mv -f $RPM_BUILD_ROOT/var/qmail/bin/qmail-qstat	$RPM_BUILD_ROOT%{_bindir}
-mv -f $RPM_BUILD_ROOT/var/qmail/bin/queue-fix	$RPM_BUILD_ROOT%{_bindir}
-mv -f $RPM_BUILD_ROOT/var/qmail/bin/newaliases	$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT%{varqmail}/bin/maildir2mbox	$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT%{varqmail}/bin/maildirmake	$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT%{varqmail}/bin/maildirwatch	$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT%{varqmail}/bin/qmHandle		$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT%{varqmail}/bin/qmail-qread	$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT%{varqmail}/bin/qmail-qsanity	$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT%{varqmail}/bin/qmail-qstat	$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT%{varqmail}/bin/queue-fix		$RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT%{varqmail}/bin/newaliases		$RPM_BUILD_ROOT%{_bindir}
 
-# remove mbox(5) man page whic is now in man-pages and isn't strict qmail
+# remove mbox(5) man page which is in man-pages now and isn't strict qmail
 # man page
 rm -f $RPM_BUILD_ROOT%{_mandir}/man5/mbox.5
 
 install %{SOURCE21} .
 
-install %{SOURCE22} $RPM_BUILD_ROOT/var/qmail/control/cert.pem
+install %{SOURCE22} $RPM_BUILD_ROOT%{varqmail}/control/cert.pem
 bzip2 -dc %{SOURCE23} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 
 sed /^diff/q %{PATCH24} >README.TLS
+
+%clean
+rm -rf $RPM_BUILD_ROOT
 
 %pre
 if [ "$1" = "1" ]; then
 # Add few users and groups
 	if [ ! -n "`getgid nofiles`" ]; then
-		%{_sbindir}/groupadd -f -g 81 nofiles
+		/usr/sbin/groupadd -f -g 81 nofiles
 	fi
 	if [ ! -n "`getgid qmail`" ]; then
-		%{_sbindir}/groupadd -f -g 82 qmail
+		/usr/sbin/groupadd -f -g 82 qmail
 	fi
 
 	if [ ! -n "`id -u qmaild 2>/dev/null`" ]; then
-		%{_sbindir}/useradd -g nofiles -d /var/qmail -u 81 -s /bin/false qmaild 2> /dev/null
+		/usr/sbin/useradd -g nofiles -d %{varqmail} -u 81 -s /bin/false qmaild 2> /dev/null
 	fi
 	if [ ! -n "`id -u alias 2>/dev/null`" ]; then
-		%{_sbindir}/useradd -g nofiles -d /var/qmail/alias -u 82 -s /bin/false alias 2> /dev/null
+		/usr/sbin/useradd -g nofiles -d %{varqmail}/alias -u 82 -s /bin/false alias 2> /dev/null
 	fi
 	if [ ! -n "`id -u qmailq 2>/dev/null`" ]; then
-		%{_sbindir}/useradd -g qmail -d /var/qmail -u 83 -s /bin/false qmailq 2> /dev/null
+		/usr/sbin/useradd -g qmail -d %{varqmail} -u 83 -s /bin/false qmailq 2> /dev/null
 	fi
 	if [ ! -n "`id -u qmailr 2>/dev/null`" ]; then
-		%{_sbindir}/useradd -g qmail -d /var/qmail -u 84 -s /bin/false qmailr 2> /dev/null
+		/usr/sbin/useradd -g qmail -d %{varqmail} -u 84 -s /bin/false qmailr 2> /dev/null
 	fi
 	if [ ! -n "`id -u qmails 2>/dev/null`" ]; then
-		%{_sbindir}/useradd -g qmail -d /var/qmail -u 85 -s /bin/false qmails 2> /dev/null
+		/usr/sbin/useradd -g qmail -d %{varqmail} -u 85 -s /bin/false qmails 2> /dev/null
 	fi
 	if [ ! -n "`id -u qmaill 2>/dev/null`" ]; then
-		%{_sbindir}/useradd -g nofiles -d /var/qmail -u 86 -s /bin/false qmaill 2> /dev/null
+		/usr/sbin/useradd -g nofiles -d %{varqmail} -u 86 -s /bin/false qmaill 2> /dev/null
 	fi
 	if [ ! -n "`id -u qmailp 2>/dev/null`" ]; then
-		%{_sbindir}/useradd -g nofiles -d /var/qmail -u 87 -s /bin/false qmailp 2> /dev/null
+		/usr/sbin/useradd -g nofiles -d %{varqmail} -u 87 -s /bin/false qmailp 2> /dev/null
 	fi
 fi
 
@@ -413,6 +420,7 @@ if [ ! -f /etc/mail/mailname -a -d /etc/mail ]; then
 	(cd /etc/mail && ln -sf ../qmail/control/me mailname && chmod a+r mailname)
 fi
 
+umask 022
 if [ ! -s /etc/qmail/control/me ]; then
 	FQDN=`/bin/hostname -f`
 	echo "$FQDN" > /etc/qmail/control/me
@@ -453,17 +461,17 @@ fi
 %postun
 # If package is being erased for the last time.
 if [ "$1" = "0" ]; then
-	%{_sbindir}/userdel qmaild 2> /dev/null
-	%{_sbindir}/userdel alias 2> /dev/null
-	%{_sbindir}/userdel qmaill 2> /dev/null
-	%{_sbindir}/userdel qmailp 2> /dev/null
-	%{_sbindir}/userdel qmailq 2> /dev/null
-	%{_sbindir}/userdel qmailr 2> /dev/null
-	%{_sbindir}/userdel qmails 2> /dev/null
-	%{_sbindir}/userdel qmail 2> /dev/null
+	/usr/sbin/userdel qmaild 2> /dev/null
+	/usr/sbin/userdel alias 2> /dev/null
+	/usr/sbin/userdel qmaill 2> /dev/null
+	/usr/sbin/userdel qmailp 2> /dev/null
+	/usr/sbin/userdel qmailq 2> /dev/null
+	/usr/sbin/userdel qmailr 2> /dev/null
+	/usr/sbin/userdel qmails 2> /dev/null
+	/usr/sbin/userdel qmail 2> /dev/null
 
-	%{_sbindir}/groupdel nofiles 2> /dev/null
-	%{_sbindir}/groupdel qmail 2> /dev/null
+	/usr/sbin/groupdel nofiles 2> /dev/null
+	/usr/sbin/groupdel qmail 2> /dev/null
 
 	if [ -f /var/lock/subsys/rc-inetd ]; then
 		/etc/rc.d/init.d/rc-inetd reload
@@ -477,6 +485,7 @@ if [ ! -f /etc/mail/mailname -a -d /etc/mail ]; then
 	(cd /etc/mail && ln -sf ../qmail/control/me mailname && chmod a+r mailname)
 fi
 
+umask 022
 if [ ! -s /etc/qmail/control/me ]; then
 	FQDN=`/bin/hostname -f`
 	echo "$FQDN" > /etc/qmail/control/me
@@ -485,9 +494,6 @@ if [ ! -s /etc/qmail/control/me ]; then
 	echo "$FQDN" | /bin/sed 's/^.*\.\([^\.]*\)\.\([^\.]*\)$/\1.\2/' > /etc/qmail/control/plusdomain
 	chmod 644 /etc/qmail/control/*
 fi
-
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
@@ -502,20 +508,20 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,qmail) %dir %{_sysconfdir}/qmail/control
 %attr(755,root,root) %dir %{_sysconfdir}/qmail/users
 %attr(755,root,qmail) %dir %{_libdir}/qmail
-%attr(755,root,qmail) %dir /var/qmail
-%attr(750,qmailq,qmail) %dir /var/qmail/queue
-%attr(750,qmailq,qmail) %dir /var/qmail/queue/lock
-%attr(700,qmails,qmail) /var/qmail/queue/bounce
-%attr(700,qmails,qmail) /var/qmail/queue/info
-%attr(700,qmailq,qmail) /var/qmail/queue/intd
-%attr(700,qmails,qmail) /var/qmail/queue/local
-%attr(750,qmailq,qmail) /var/qmail/queue/mess
-%attr(700,qmailq,qmail) /var/qmail/queue/pid
-%attr(700,qmails,qmail) /var/qmail/queue/remote
-%attr(750,qmailq,qmail) /var/qmail/queue/todo
-%attr(600,qmails,qmail) %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/sendmutex
-%attr(644,qmailr,qmail) %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/tcpto
-%attr(622,qmails,qmail) %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/trigger
+%attr(755,root,qmail) %dir %{varqmail}
+%attr(750,qmailq,qmail) %dir %{varqmail}/queue
+%attr(750,qmailq,qmail) %dir %{varqmail}/queue/lock
+%attr(700,qmails,qmail) %{varqmail}/queue/bounce
+%attr(700,qmails,qmail) %{varqmail}/queue/info
+%attr(700,qmailq,qmail) %{varqmail}/queue/intd
+%attr(700,qmails,qmail) %{varqmail}/queue/local
+%attr(750,qmailq,qmail) %{varqmail}/queue/mess
+%attr(700,qmailq,qmail) %{varqmail}/queue/pid
+%attr(700,qmails,qmail) %{varqmail}/queue/remote
+%attr(750,qmailq,qmail) %{varqmail}/queue/todo
+%attr(600,qmails,qmail) %config(noreplace) %verify(not mtime md5) %{varqmail}/queue/lock/sendmutex
+%attr(644,qmailr,qmail) %config(noreplace) %verify(not mtime md5) %{varqmail}/queue/lock/tcpto
+%attr(622,qmails,qmail) %config(noreplace) %verify(not mtime md5) %{varqmail}/queue/lock/trigger
 %attr(644,root,nofiles) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/alias/.qmail-*
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/dot-qmail
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/defaultdomain
@@ -589,10 +595,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/mailq
 %attr(755,root,root) %{_sbindir}/sendmail
 %attr(755,root,root) %{_libdir}/sendmail
-%attr(2755,alias,qmail) /var/qmail/alias
-%attr(755,root,root) /var/qmail/bin
-%attr(755,root,root) /var/qmail/control
-%attr(755,root,root) /var/qmail/users
+%attr(2755,alias,qmail) %{varqmail}/alias
+%attr(755,root,root) %{varqmail}/bin
+%attr(755,root,root) %{varqmail}/control
+%attr(755,root,root) %{varqmail}/users
 %{_mandir}/man1/[!m]*
 %{_mandir}/man1/maildir2mbox*
 %{_mandir}/man1/maildirwatch*
@@ -622,9 +628,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %dir %{_sysconfdir}/qmail
 %attr(755,root,root) %dir %{_sysconfdir}/qmail/control
 %attr(755,root,root) %dir %{_libdir}/qmail
-%attr(755,root,root) %dir /var/qmail
-%attr(755,root,root) /var/qmail/bin
-%attr(755,root,root) /var/qmail/control
+%attr(755,root,root) %dir %{varqmail}
+%attr(755,root,root) %{varqmail}/bin
+%attr(755,root,root) %{varqmail}/control
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/defaultdomain
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/me
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/plusdomain
