@@ -35,7 +35,7 @@ Patch7:      qmail-1.03.checkpassword.patch
 Patch8:      tarpit.patch
 Patch9:      qmail-1.03-maxrcpt.patch
 Patch10:     qmHandle-0.3.0.PLD-init.patch
-Buildroot:   /tmp/%{name}-%{version}-root/
+BuildRoot:	/tmp/%{name}-%{version}-root
 Provides:    MTA smtpdaemon qmailmta qmail-server
 Requires:    %{_sbindir}/tcpd, setup >= 1.10.0-3
 Prereq:      /sbin/chkconfig, /bin/hostname, /bin/sed
