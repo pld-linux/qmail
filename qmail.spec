@@ -27,13 +27,13 @@
 %bcond_without tls		# disable tls
 %bcond_with ipv6		# enable ipv6
 #
-%define	qhpsi_ver	017
+%define	qhpsi_ver	0.1.7
 #
 Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.81
+Release:	56.82
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -59,7 +59,7 @@ Source13:	%{name}-default-delivery
 Source14:	%{name}-lint-0.51.pl
 Source15:	%{name}-qsanity-0.51.pl
 Source16:	tarpit.README
-Source17:	http://www.fehcom.de/qmail/qhpsi/qhpsi-%{qhpsi_ver}_tgz.bin
+Source17:	http://www.fehcom.de/qmail/qhpsi/qhpsi-%(echo %{qhpsi_ver} | tr -d .)_tgz.bin
 # Source17-md5:	18afa1762ba0b419deb26416b6a21a65
 Source18:	%{name}.logrotate
 Source19:	%{name}.logrotate-pop3
@@ -930,7 +930,7 @@ fi
 %doc README.auth README.remote-auth README.starttls README.qregex
 %endif
 
-# License requires all files to be distributed.
+# QHPSI License requires all files to be distributed.
 %doc qhpsi
 
 %attr(755,root,root) %dir %{_sysconfdir}/mail
