@@ -35,7 +35,7 @@ Release:	56.41
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
-# Source0-md5:	4c03848af9d37e281f3b82cc59230d9b
+# Source0-md5:	622f65f982e380dbe86e6574f3abcb7c
 Source1:	http://cr.yp.to/software/dot-forward-0.71.tar.gz
 # Source1-md5:	1fefd9760e4706491fb31c7511d69bed
 Source2:	http://cr.yp.to/software/fastforward-0.51.tar.gz
