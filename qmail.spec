@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	49
+Release:	50
 License:	Check with djb@koobera.math.uic.edu
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
@@ -67,7 +67,6 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Provides:	smtpdaemon
 Provides:	qmailmta
 Provides:	qmail-server
-
 Requires:	%{_sbindir}/tcpd
 Requires:	inetdaemon
 Prereq:		rc-scripts >= 0.2.0
@@ -76,6 +75,12 @@ Prereq:		/sbin/chkconfig
 Prereq:		/bin/hostname
 Prereq:		/bin/sed
 Prereq:		sh-utils
+Prereq:		/usr/bin/getgid
+Prereq:		/bin/id
+Prereq:		/usr/sbin/groupadd
+Prereq:		/usr/sbin/useradd
+Prereq:		/usr/sbin/groupdel
+Prereq:		/usr/sbin/userdel
 Conflicts:	qmail-client
 Obsoletes:	smtpdaemon
 Obsoletes:	exim
@@ -394,7 +399,7 @@ gzip -9nf boot/* checkpass-1.2/* qmHandle-0.5.1/* queue-fix-1.4/*
 gzip -9nf rblsmtpd-0.70/* tarpit.README README.TLS
 
 %pre
-if [ $1 = 1 ]; then
+if [ "$1" = "1" ]; then
 # Add few users and groups
 	if [ ! -n "`getgid nofiles`" ]; then
 		%{_sbindir}/groupadd -f -g 81 nofiles
