@@ -9,15 +9,15 @@ Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
 Release:	56
-License:	Check with djb@koobera.math.uic.edu
+License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
-Source0:	ftp://koobera.math.uic.edu/pub/software/%{name}-%{version}.tar.gz
+Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
 # Source0-md5:	622f65f982e380dbe86e6574f3abcb7c
-Source1:	ftp://koobera.math.uic.edu/pub/software/dot-forward-0.71.tar.gz
+Source1:	http://cr.yp.to/software/dot-forward-0.71.tar.gz
 # Source1-md5:	1fefd9760e4706491fb31c7511d69bed
 Source2:	http://cr.yp.to/software/fastforward-0.51.tar.gz
 # Source2-md5:	6dc619180ba9726380dc1047e45a1d8d
-Source3:	ftp://koobera.math.uic.edu/pub/software/rblsmtpd-0.70.tar.gz
+Source3:	http://cr.yp.to/software/rblsmtpd-0.70.tar.gz
 # Source3-md5:	2b9440db40aad2429ecbe8c964f69aa9
 Source4:	checkpass-1.2.tar.gz
 # Source4-md5:	6818629dc74737f3ca33ca97ab4ffcc4
