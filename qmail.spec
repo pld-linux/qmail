@@ -1,8 +1,8 @@
 #
 # Conditional build:
-%bcond_without msglog		# without qmail-msglog (advanced e-mail monitoring)
-%bcond_without routing		# without mail routing
-%bcond_without home_etc		# don't use home_etc
+%bcond_without	msglog		# without qmail-msglog (advanced e-mail monitoring)
+%bcond_without	routing		# without mail routing
+%bcond_without	home_etc	# don't use home_etc
 #
 Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
@@ -128,7 +128,7 @@ Following scripts and programs have been added:
   optional way to filter SPAM,
 - qmail-fix - a small utility for checking and repairing the qmail
   queue structure,
-%{!?_without_msglog:- qmail-msglog - advanced e-mail monitoring,}
+%{?with_msglog:- qmail-msglog - advanced e-mail monitoring,}
 - qmail-qsanity - examine all the files in the qmail queue,
 - qmail-lint - examine the qmail configuration,
 - tarpit - tool to fight with SPAM,
@@ -153,7 +153,7 @@ Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
   wyszczególnionych w RBL; sposób na filtrowanie SPAM-u,
 - qmail-fix - program do sprawdzania oraz naprawiania struktury
   kolejki pocztowej qmail-a,
-%{!?_without_msglog:- qmail-msglog - zaawansowane monitorowanie listów,}
+%{?with_msglog:- qmail-msglog - zaawansowane monitorowanie listów,}
 - qmail-qsanity - sprawdza kolejkê pocztow± qmail-a,
 - qmail-lint - sprawdza konfiguracjê qmail-a,
 - tarpit - kolejne narzêdzie do walki ze SPAM-em,
@@ -244,7 +244,7 @@ Serwer POP3 dla qmaila.
 install -d qmHandle-0.5.1
 tar zxf %{SOURCE6} -C qmHandle-0.5.1/
 %patch0 -p1
-%{!?_without_msglog:%patch1 -p1}
+%{?with_msglog:%patch1 -p1}
 %patch2 -p1
 %patch3 -p1
 %patch4 -p0
@@ -259,7 +259,7 @@ tar zxf %{SOURCE6} -C qmHandle-0.5.1/
 %patch16 -p1
 %patch18 -p1
 %patch19 -p1
-%{?_without_routing:%patch20 -p1}
+%{!?with_routing:%patch20 -p1}
 %patch21 -p1
 %patch22 -p1
 %patch23 -p1
@@ -311,7 +311,7 @@ install %{SOURCE19} $RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/qpop
 install %{SOURCE10} $RPM_BUILD_ROOT%{_sysconfdir}/aliases
 ln -sf ../aliases $RPM_BUILD_ROOT%{_sysconfdir}/mail/aliases
 install %{SOURCE11} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-default
-%{!?_without_msglog:install %{SOURCE12} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-msglog}
+%{?with_msglog:install %{SOURCE12} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-msglog}
 
 for i in mailer-daemon postmaster root; do
 	> $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-$i
