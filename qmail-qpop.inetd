@@ -1,9 +1,0 @@
-SERVICE_NAME=pop3
-SOCK_TYPE=stream
-PROTOCOL=tcp
-PORT=110
-FLAGS=nowait
-USER=root
-SERVER=tcpd
-DAEMON=/var/qmail/bin/qmail-popup
-DAEMONARGS="`hostname -f` /var/qmail/bin/checkpass /var/qmail/bin/qmail-pop3d Mail/Maildir"

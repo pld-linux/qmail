@@ -1,0 +1,44 @@
+--- qmail/qmail-smtpd.c.orig	Tue Sep 16 12:30:26 2003
++++ qmail/qmail-smtpd.c	Tue Sep 16 12:31:07 2003
+@@ -82,6 +82,18 @@
+ }
+ #endif
+ 
++/* ENFORCE_FQDN_HELO patch by Paul Gregg <pgregg@pgregg.com> 29/08/2003
++   This patch will refuse mail servers which do not pass a . in the HELO
++   command.  Caveat - Mail servers should send HELO <fqdn> when sending mail
++   but servers should not block on non-fqdn helo commands.  Viruses tend to
++   not use fqdn hosts - so this patch - whilst not strictly RFC "complient"
++   may help in reducing inbound virii (e.g. SoBig.F virus)
++   Modified to run if a environment variable ENFORCE_FQDN_HELO is set.
++    Thanks to Richard Lyons <frob-qmail@webcentral.com.au> for that tip.
++   This check is not performed if RELAYCLIENT is set to ''.
++*/
++#define ENFORCE_FQDN_HELO
++
+ int safewrite(fd,buf,len) int fd; char *buf; int len;
+ {
+   int r;
+@@ -106,6 +118,10 @@
+ void die_control() { out("421 unable to read controls (#4.3.0)\r\n"); flush(); _exit(1); }
+ void die_ipme() { out("421 unable to figure out my IP addresses (#4.3.0)\r\n"); flush(); _exit(1); }
+ void straynewline() { out("451 See http://pobox.com/~djb/docs/smtplf.html.\r\n"); flush(); _exit(1); }
++#ifdef ENFORCE_FQDN_HELO
++void die_nohelofqdn() { out("451 unable to accept non-FQDN HELO (#4.3.0)\r\n"); flush(); _exit(1); }
++#endif
++
+ 
+ void err_bmf() { out("553 sorry, your envelope sender is in my badmailfrom list (#5.7.1)\r\n"); }
+ void err_hmf() { out("553 sorry, your envelope sender domain must exist (#5.7.1)\r\n"); }
+@@ -153,6 +169,11 @@
+ void dohelo(arg) char *arg; {
+   if (!stralloc_copys(&helohost,arg)) die_nomem(); 
+   if (!stralloc_0(&helohost)) die_nomem(); 
++#ifdef ENFORCE_FQDN_HELO
++  if (!relayclient || str_len(relayclient)>0)
++    if (env_get("ENFORCE_FQDN_HELO") && (str_len(arg)-str_chr(arg, '.')==0))
++      die_nohelofqdn();
++#endif
+   fakehelo = case_diffs(remotehost,helohost.s) ? helohost.s : 0;
+ }
+ 

@@ -1,0 +1,48 @@
+From: Scott Moorhouse <smoorhou@kitomher.btigate.com>
+To: qmail@list.cr.yp.to
+Subject: Re: qmail-pop3d and Netscape
+Date: Tue, 27 Jul 1999 11:16:59 -0500
+
+
+After taking a look at qmail-pop3d.c, it looked easy to write a patch
+to make Messenger's progress meter work again, so I took the initiative
+to do so.  The diff is so tiny (1 pg with context), I'll just include
+it here for anybody to use.
+
+Thanks for pointing me in the right direction.
+
+*** qmail-pop3d.c.orig  Tue Jul 27 11:07:33 1999
+--- qmail-pop3d.c       Tue Jul 27 10:50:39 1999
+***************
+*** 267,273 ****
+   
+    fd = open_read(m[i].fn);
+    if (fd == -1) { err_nosuch(); return; }
+!   okay();
+    substdio_fdbuf(&ssmsg,read,fd,ssmsgbuf,sizeof(ssmsgbuf));
+    blast(&ssmsg,limit);
+    close(fd);
+--- 267,277 ----
+   
+    fd = open_read(m[i].fn);
+    if (fd == -1) { err_nosuch(); return; }
+!   /* okay(); */
+!   puts("+OK ");
+!   put(strnum,fmt_ulong(strnum,m[i].size));
+!   puts(" octets\r\n");
+!   flush();
+    substdio_fdbuf(&ssmsg,read,fd,ssmsgbuf,sizeof(ssmsgbuf));
+    blast(&ssmsg,limit);
+    close(fd);
+
+On Tue, Jul 27, 1999 at 09:29:34AM +0300, Anand Buddhdev wrote:
+> On Mon, Jul 26, 1999 at 09:04:09AM -0500, Scott Moorhouse wrote:
+> 
+> I believe this is a Netscape problem. It doesn't use the message size
+> value from the LIST command, but instead expects the message size to be
+> given after the OK to the RETR command, like this:
+> 
+> ...
+> RETR 1
+> +OK 345 octets
+[...]

@@ -1,0 +1,62 @@
+This patch is Copyright (C) 2003 by Matthias Andree. License below.
+
+This patch fixes qmail-1.03's ipme.c, a function supposed to retrieve all local
+addresses of a machine. qmail-1.03 assumes that only systems that have a
+"sa_len" member in "struct sockaddr" can have multiple IPv4 addresses (aka. IP
+aliases/virtual interfaces) for the same interface name. However, 4.3BSD systems
+that offered IP aliases do not have sa_len, so qmail is broken on 4.3BSD-derived
+TCP/IP stacks as found e. g. in Linux (ip addr add 1.2.3.4 dev eth0 ;
+ip addr add 4.3.2.1 dev eth0).
+
+License:
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+--- ./ipme.c.orig	2003-08-14 11:05:10.000000000 +0200
++++ ./ipme.c	2003-08-14 11:39:57.000000000 +0200
+@@ -67,26 +67,16 @@
+     ifr = (struct ifreq *) x;
+ #ifdef HASSALEN
+     len = sizeof(ifr->ifr_name) + ifr->ifr_addr.sa_len;
++#else
++    len = sizeof(*ifr);
++#endif
+     if (len < sizeof(*ifr))
+       len = sizeof(*ifr);
+     if (ifr->ifr_addr.sa_family == AF_INET) {
+       sin = (struct sockaddr_in *) &ifr->ifr_addr;
+       byte_copy(&ix.ip,4,&sin->sin_addr);
+-      if (ioctl(s,SIOCGIFFLAGS,x) == 0)
+-        if (ifr->ifr_flags & IFF_UP)
+-          if (!ipalloc_append(&ipme,&ix)) { close(s); return 0; }
++      if (!ipalloc_append(&ipme,&ix)) { close(s); return 0; }
+     }
+-#else
+-    len = sizeof(*ifr);
+-    if (ioctl(s,SIOCGIFFLAGS,x) == 0)
+-      if (ifr->ifr_flags & IFF_UP)
+-        if (ioctl(s,SIOCGIFADDR,x) == 0)
+-	  if (ifr->ifr_addr.sa_family == AF_INET) {
+-	    sin = (struct sockaddr_in *) &ifr->ifr_addr;
+-	    byte_copy(&ix.ip,4,&sin->sin_addr);
+-	    if (!ipalloc_append(&ipme,&ix)) { close(s); return 0; }
+-	  }
+-#endif
+     x += len;
+   }
+   close(s);

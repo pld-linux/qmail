@@ -1,6 +1,6 @@
 diff -urN qmail-1.03.orig/rblsmtpd-0.70/Makefile qmail-1.03/rblsmtpd-0.70/Makefile
 --- qmail-1.03.orig/rblsmtpd-0.70/Makefile	Mon Mar  6 05:10:23 2000
-+++ qmail-1.03/rblsmtpd-0.70/Makefile	Mon Mar  6 05:32:04 2000
++++ qmail-1.03/rblsmtpd-0.70/Makefile	2004-05-02 18:42:56.000000000 +0300
 @@ -128,10 +128,18 @@
  compile fmt_ulong.c fmt.h
  	./compile fmt_ulong.c
@@ -14,12 +14,12 @@ diff -urN qmail-1.03.orig/rblsmtpd-0.70/Makefile qmail-1.03/rblsmtpd-0.70/Makefi
 +	./compile fmt_uint0.c
 +
  fs.a: \
--makelib fmt_str.o fmt_ulong.o scan_uint.o scan_ulong.o scan_xlong.o
+-makelib fmt_str.o fmt_ulong.o scan_uint.o scan_ulong.o
 -	./makelib fs.a fmt_str.o fmt_ulong.o scan_uint.o \
--	scan_ulong.o scan_xlong.o
-+makelib fmt_str.o fmt_ulong.o scan_uint.o scan_ulong.o fmt_uint.o fmt_uint0.o scan_xlong.o
+-	scan_ulong.o
++makelib fmt_str.o fmt_ulong.o scan_uint.o scan_ulong.o fmt_uint.o fmt_uint0.o
 +	./makelib fs.a fmt_str.o fmt_ulong.o fmt_uint.o fmt_uint0.o \
-+	scan_uint.o scan_ulong.o scan_xlong.o
++	scan_uint.o scan_ulong.o
  
  getopt.a: \
  makelib subgetopt.o sgetopt.o
@@ -35,7 +35,7 @@ diff -urN qmail-1.03.orig/rblsmtpd-0.70/Makefile qmail-1.03/rblsmtpd-0.70/Makefi
  	substdio.a stralloc.a alloc.a error.a case.a env.a str.a \
  	fs.a  `cat dns.lib` `cat socket.lib`
  
-@@ -370,3 +378,7 @@
+@@ -366,3 +374,7 @@
  txt.o: \
  compile txt.c stralloc.h gen_alloc.h str.h fmt.h ip.h
  	./compile txt.c

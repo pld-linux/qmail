@@ -1,0 +1,12 @@
+--- qmail-1.03/qmail-smtpd.c	2004-01-30 12:12:49.000000000 +0200
++++ b/qmail-smtpd.c	2004-01-30 12:12:03.000000000 +0200
+@@ -336,6 +336,9 @@
+   int j;
+ 
+   if (!mfchk) return 0;
++  // check for triplebounce
++  if (str_equal(addr.s,"#@[]")) return 0;
++
+   random = now() + (getpid() << 16);
+   j = byte_rchr(addr.s,addr.len,'@') + 1;
+   if (j < addr.len) {

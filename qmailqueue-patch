@@ -1,3 +1,26 @@
+From: Bruce Guenter <bguenter-djb-qmail@qcc.sk.ca>
+To: qmail@list.cr.yp.to
+Subject: QMAILQUEUE patch for qmail-1.03
+Date: Mon, 25 Jan 1999 15:37:21 -0600
+
+Greetings.
+
+Appended is a patch to qmail-1.03 that causes any program that would run
+qmail-queue to look for an environment variable QMAILQUEUE.  If it is
+present, it is used in place of the string "bin/qmail-queue" when
+running qmail-queue.  This could be used, for example, to add a program
+into the qmail-smtpd->qmail-queue pipeline that could do filtering,
+rewrite broken headers, etc. (this is my planned usage for it).
+
+This has undergone virtually no testing, but it looks so simple that it
+almost has to be correct.  No warranties, etc.  Note that the chdir to
+/var/qmail is always done before exec'ing the program.
+
+Does this look like a reasonable thing to do?
+-- 
+Bruce Guenter, QCC Communications Corp.  EMail: bruce.guenter@qcc.sk.ca
+Phone: (306)249-0220               WWW: http://www.qcc.sk.ca/~bguenter/
+
 diff -u qmail-1.03-orig/Makefile qmail-1.03/Makefile
 --- qmail-1.03-orig/Makefile	Mon Jun 15 04:53:16 1998
 +++ qmail-1.03/Makefile	Tue Jan 19 10:52:24 1999

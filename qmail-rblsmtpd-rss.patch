@@ -103,7 +103,7 @@ diff -urN qmail-1.03/rblsmtpd-0.70/rblsmtpd.c qmail-1.03.rss/rblsmtpd-0.70/rblsm
  void main(argc,argv)
 diff -urN qmail-1.03/rblsmtpd-0.70/txt.c qmail-1.03.rss/rblsmtpd-0.70/txt.c
 --- qmail-1.03/rblsmtpd-0.70/txt.c	Fri Sep  1 00:21:44 2000
-+++ qmail-1.03.rss/rblsmtpd-0.70/txt.c	Fri Sep  1 00:21:18 2000
++++ qmail-1.03.rss/rblsmtpd-0.70/txt.c	2004-05-02 19:08:38.000000000 +0300
 @@ -14,6 +14,7 @@
  #include "str.h"
  #include "fmt.h"
@@ -112,16 +112,16 @@ diff -urN qmail-1.03/rblsmtpd-0.70/txt.c qmail-1.03.rss/rblsmtpd-0.70/txt.c
  
  static unsigned short getshort(c) unsigned char *c;
  { unsigned short u; u = c[0]; return (u << 8) + c[1]; }
-@@ -32,8 +33,19 @@
+@@ -32,7 +33,18 @@
    int len;
    unsigned char *pos;
    unsigned char *end;
+-
 +  char *altreply;
 +  int wanttype=T_TXT;
 +  int mindatalen=1;
-   struct ip_address *ip = &ix->addr.ip;
 +  stralloc sat = {0};
- 
++
 +  i = str_chr(base, ':');
 +  if (base[i]) {
 +    base[i] = 0;
@@ -132,7 +132,7 @@ diff -urN qmail-1.03/rblsmtpd-0.70/txt.c qmail-1.03.rss/rblsmtpd-0.70/txt.c
    if (!stralloc_ready(sa,100 + str_len(base))) return -1;
    x = sa->s;
    x += fmt_ulong(x,(unsigned long) ip->d[3]); *x++ = '.';
-@@ -44,7 +56,7 @@
+@@ -43,7 +55,7 @@
    *x = 0;
  
    errno = 0;
@@ -141,7 +141,7 @@ diff -urN qmail-1.03/rblsmtpd-0.70/txt.c qmail-1.03.rss/rblsmtpd-0.70/txt.c
    if (len < sizeof(HEADER)) {
      if (errno == ECONNREFUSED) return -1;
      if (h_errno == TRY_AGAIN) return -1;
-@@ -73,11 +85,38 @@
+@@ -72,11 +84,38 @@
      if (i < 0) return -1;
      pos += i;
  
