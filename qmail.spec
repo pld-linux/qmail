@@ -11,6 +11,8 @@
 #   http://www-dt.e-technik.uni-dortmund.de/~ma/qmail/patch-qmail-1.03-rfc2821.diff
 #
 #  - http://netdevice.com/qmail/rcptck/
+#   - goodrcptto http://netdevice.com/qmail/patch/
+#
 #  - http://www3.sympatico.ca/humungusfungus/code/validrcptto.html
 #
 # - http://www.google.com/search?hl=en&lr=&client=firefox-a&q=qmail+message-id+patch&btnG=Search
@@ -30,7 +32,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.39
+Release:	56.40
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -71,8 +73,8 @@ Source41:	%{name}-smtp-scanner.sh
 # based on source IP. As no inetd is capable of passing env vars depending on
 # connection, and besides tcpserver is recommended for qmail.
 # Instead of having here bunch of files I packaged them as tarball.
-Source50:	http://glen.alkohol.ee/pld/qmail/qmail-conf-20041128.2.tar.bz2
-# Source50-md5:	7aedead4171707113d3d283535a2947c
+Source50:	http://glen.alkohol.ee/pld/qmail/qmail-conf-20041128.3.tar.bz2
+# Source50-md5:	336c3de97fec593dfc4e76256caf7c22
 
 Patch0:		%{name}-1.03.install.patch
 Patch1:		%{name}-1.03.msglog.patch
@@ -549,7 +551,7 @@ install -d $RPM_BUILD_ROOT/var/qmail/control/tlshosts
 
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/qmail/supervise
 for i in send smtpd qmtpd qmqpd pop3d; do
-	install -d $RPM_BUILD_ROOT/var/log/qmail/qmail-$i
+	install -d $RPM_BUILD_ROOT/var/log/qmail/$i
 
 	install -d $RPM_BUILD_ROOT%{_sysconfdir}/qmail/supervise/qmail-${i}{,/log}
 	install run-qmail${i} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/supervise/qmail-${i}/run
@@ -1050,25 +1052,25 @@ fi
 %attr(1755,root,root) %dir %{_sysconfdir}/qmail/supervise/qmail-smtpd/log
 %attr(755,root,root) %{_sysconfdir}/qmail/supervise/qmail-smtpd/run
 %attr(755,root,root) %{_sysconfdir}/qmail/supervise/qmail-smtpd/log/run
-%attr(755,qmaill,root) %dir /var/log/qmail/qmail-smtpd
+%attr(755,qmaill,root) %dir /var/log/qmail/smtpd
 
 %attr(1755,root,root) %dir %{_sysconfdir}/qmail/supervise/qmail-send
 %attr(1755,root,root) %dir %{_sysconfdir}/qmail/supervise/qmail-send/log
 %attr(755,root,root) %{_sysconfdir}/qmail/supervise/qmail-send/run
 %attr(755,root,root) %{_sysconfdir}/qmail/supervise/qmail-send/log/run
-%attr(755,qmaill,root) %dir /var/log/qmail/qmail-send
+%attr(755,qmaill,root) %dir /var/log/qmail/send
 
 %attr(1755,root,root) %dir %{_sysconfdir}/qmail/supervise/qmail-qmtpd
 %attr(1755,root,root) %dir %{_sysconfdir}/qmail/supervise/qmail-qmtpd/log
 %attr(755,root,root) %{_sysconfdir}/qmail/supervise/qmail-qmtpd/run
 %attr(755,root,root) %{_sysconfdir}/qmail/supervise/qmail-qmtpd/log/run
-%attr(755,qmaill,root) %dir /var/log/qmail/qmail-qmtpd
+%attr(755,qmaill,root) %dir /var/log/qmail/qmtpd
 
 %attr(1755,root,root) %dir %{_sysconfdir}/qmail/supervise/qmail-qmqpd
 %attr(1755,root,root) %dir %{_sysconfdir}/qmail/supervise/qmail-qmqpd/log
 %attr(755,root,root) %{_sysconfdir}/qmail/supervise/qmail-qmqpd/run
 %attr(755,root,root) %{_sysconfdir}/qmail/supervise/qmail-qmqpd/log/run
-%attr(755,qmaill,root) %dir /var/log/qmail/qmail-qmqpd
+%attr(755,qmaill,root) %dir /var/log/qmail/qmqpd
 
 %attr(755,root,root) %{_bindir}/mailq
 %attr(755,root,root) %{_sbindir}/sendmail
@@ -1179,7 +1181,7 @@ fi
 %attr(1755,root,root) %dir %{_sysconfdir}/qmail/supervise/qmail-pop3d/log
 %attr(755,root,root) %{_sysconfdir}/qmail/supervise/qmail-pop3d/run
 %attr(755,root,root) %{_sysconfdir}/qmail/supervise/qmail-pop3d/log/run
-%attr(755,qmaill,root) %dir /var/log/qmail/qmail-pop3d
+%attr(755,qmaill,root) %dir /var/log/qmail/pop3d
 
 %attr(755,root,root) %{_libdir}/qmail/qmail-pop3d
 %attr(755,root,root) %{_libdir}/qmail/qmail-popup
