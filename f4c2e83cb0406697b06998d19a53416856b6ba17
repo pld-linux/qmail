@@ -1,0 +1,7 @@
+- update from pld
+- use new-style bconds
+- add obsoletes courier
+- remove rblsmtpd-glibc2.3.patch obsoleted by ac_rblsmtpd.patch
+- add source-md5s
+- update License
+- rel 56
