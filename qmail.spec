@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	22
+Release:	23
 Group:		Networking/Daemons
 Group(pl):	Sieciowe/Serwery
 Copyright:	Check with djb@koobera.math.uic.edu
@@ -28,6 +28,7 @@ Source17:	%{name}-qmqp.inetd
 Source18:	%{name}-smtp.inetd
 Source19:	%{name}-qpop.inetd
 Source20:	checkpassword.pamd
+Source21:	%{name}-client.html
 Patch0:		%{name}-1.03.install.patch
 Patch1:		%{name}-1.03.msglog.patch
 Patch2:		%{name}-1.03.redhat.patch
@@ -126,6 +127,36 @@ tarpit		- kolejne narzêdzie do walki ze SPAM-em
   istniej± ma³e, ale znacz±ce róznice pomiêdzy qmail-em oraz sendmail-em
   i programami, które wspó³pracuj± z nimi.
 
+%package client
+Summary:	qmail Mail Transport Agent - null client
+Summary(pl):	qmail - serwer pocztowy (MTA) - cienki klient
+Group:		Networking/Daemons
+Group(pl):	Sieciowe/Serwery
+Copyright:	Check with djb@koobera.math.uic.edu
+URL:		http://www.qmail.org/
+Provides:	smtpdaemon
+Provides:	qmailmta
+Prereq:		/bin/hostname
+Prereq:		/bin/sed
+Prereq:		sh-utils
+Conflicts:	qmail
+Obsoletes:	smtpdaemon
+Obsoletes:	sendmail
+Obsoletes:	postfix
+Obsoletes:	zmailer
+Obsoletes:	smail
+Obsoletes:	exim
+
+%description client
+qmail is a small, fast, secure replacement for the SENDMAIL package,
+which is the program that actually receives, routes, and delivers
+electronic mail. This qmail also support IPv6 protocol.
+
+%description -l pl client
+qmail jest ma³±, szybk± oraz bezpieczn± alternatyw± do sendmail-a,
+która umo¿liwia otrzymywanie, przesy³anie oraz wysy³anie poczty
+elektronicznej. Ten qmail dodatkowo wspiera protokó³ IPv6.
+
 %prep
 %setup -q
 %setup -D -T -q -a 1
@@ -207,7 +238,7 @@ touch $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-$i
 done
 
 # Set up control files.
-touch $RPM_BUILD_ROOT%{_sysconfdir}/qmail/control/{defaultdomain,locals,me,plusdomain,rcpthosts}
+touch $RPM_BUILD_ROOT%{_sysconfdir}/qmail/control/{defaultdomain,locals,me,plusdomain,rcpthosts,qmqpservers,idhost}
 
 # Set up blank qmail/users
 touch $RPM_BUILD_ROOT%{_sysconfdir}/qmail/users/{assign,include,exclude,mailnames,subusers,append}
@@ -271,6 +302,8 @@ mv $RPM_BUILD_ROOT/var/qmail/bin/qmail-qsanity	$RPM_BUILD_ROOT%{_bindir}
 mv $RPM_BUILD_ROOT/var/qmail/bin/qmail-qstat	$RPM_BUILD_ROOT%{_bindir}
 mv $RPM_BUILD_ROOT/var/qmail/bin/queue-fix	$RPM_BUILD_ROOT%{_bindir}
 mv $RPM_BUILD_ROOT/var/qmail/bin/newaliases	$RPM_BUILD_ROOT%{_bindir}
+
+install %{SOURCE21} .
 
 gzip -9nf FAQ INSTALL* PIC* REMOVE* SENDMAIL TEST* UPGRADE
 gzip -9nf BLURB* README SECURITY THANKS THOUGHTS TODO VERSION
@@ -368,6 +401,22 @@ if [ "$1" = "0" ]; then
 	fi
 fi
 
+%post client
+ln -sf qmail-qmqpc %{_libdir}/qmail/qmail-queue
+
+if [ ! -f /etc/mail/mailname -a -d /etc/mail ]; then
+	(cd /etc/mail && ln -sf ../qmail/control/me mailname && chmod a+r mailname)
+fi
+
+if [ ! -s /etc/qmail/control/me ]; then
+	FQDN=`/bin/hostname -f`
+	echo "$FQDN" > /etc/qmail/control/me
+	echo "$FQDN" > /etc/qmail/control/idhost
+	echo "$FQDN" | /bin/sed 's/^\([^\.]*\)\.\([^\.]*\)\./\2\./' > /etc/qmail/control/defaultdomain
+	echo "$FQDN" | /bin/sed 's/^.*\.\([^\.]*\)\.\([^\.]*\)$/\1.\2/' > /etc/qmail/control/plusdomain
+	chmod 644 /etc/qmail/control/*
+fi
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -400,7 +449,11 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 622,qmails, qmail)  %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/trigger
 %attr( 640, root,nofiles) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/alias/.qmail-*
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/dot-qmail
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/*
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/defaultdomain
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/locals
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/me
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/plusdomain
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/rcpthosts
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/users/*
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/aliases
 %{_sysconfdir}/mail/aliases
@@ -477,6 +530,57 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 755,  root,  root) /var/qmail/control
 %attr( 755,  root,  root) /var/qmail/users
 %{_mandir}/man?/*
+
+# default folder - Maildir/
+%attr( 700, root, root) %dir /etc/skel/C/Mail
+%attr( 700, root, root) %dir /etc/skel/C/Mail/Maildir
+%attr( 700, root, root) %dir /etc/skel/C/Mail/Maildir/cur
+%attr( 700, root, root) %dir /etc/skel/C/Mail/Maildir/new
+%attr( 700, root, root) %dir /etc/skel/C/Mail/Maildir/tmp
+
+%files client
+%defattr(644,root,root,755)
+%doc {FAQ,INSTALL*,PIC*,REMOVE*,SENDMAIL,TEST*,UPGRADE}.gz
+%doc {BLURB*,README,SECURITY,THANKS,THOUGHTS,TODO,VERSION}.gz
+%doc qmail-client.html
+
+%attr(755, root, root) %dir %{_sysconfdir}/mail
+%attr(755, root, root) %dir %{_sysconfdir}/qmail
+%attr(755, root, root) %dir %{_sysconfdir}/qmail/control
+%attr(755, root, root) %dir %{_libdir}/qmail
+%attr(755, root, root) %dir /var/qmail
+%attr(755, root, root) /var/qmail/bin
+%attr(755, root, root) /var/qmail/control
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/defaultdomain
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/me
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/plusdomain
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/idhost
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/qmqpservers
+%attr(755, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/profile.d/*
+%attr(755, root, root) %{_libdir}/qmail/datemail
+%attr(755, root, root) %{_libdir}/qmail/elq
+%attr(755, root, root) %{_libdir}/qmail/forward
+%attr(755, root, root) %{_bindir}/maildir2mbox
+%attr(755, root, root) %{_bindir}/maildirmake
+%attr(755, root, root) %{_bindir}/maildirwatch
+%attr(755, root, root) %{_libdir}/qmail/mailsubj
+%attr(755, root, root) %{_libdir}/qmail/pinq
+%attr(755, root, root) %{_libdir}/qmail/predate
+%attr(755, root, root) %{_libdir}/qmail/qail
+%attr(755, root, root) %{_libdir}/qmail/qmail-inject
+%attr(755, root, root) %{_libdir}/qmail/qmail-qmqpc
+%attr(755, root, root) %ghost %{_libdir}/qmail/qmail-queue
+%attr(755, root, root) %{_libdir}/qmail/qmail-showctl
+%attr(755, root, root) %{_libdir}/qmail/sendmail
+%attr(755, root, root) %{_sbindir}/sendmail
+%attr(755, root, root) %{_libdir}/sendmail
+%{_mandir}/man1/mail*
+%{_mandir}/man5/qmail-header*
+%{_mandir}/man5/qmail-log*
+%{_mandir}/man8/qmail-inject*
+%{_mandir}/man8/qmail-qmqpc*
+%{_mandir}/man8/qmail-queue*
+%{_mandir}/man8/qmail-showctl*
 
 # default folder - Maildir/
 %attr( 700, root, root) %dir /etc/skel/C/Mail
