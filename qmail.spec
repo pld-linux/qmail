@@ -33,7 +33,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.71
+Release:	56.75
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -46,8 +46,8 @@ Source4:	checkpass-1.2.tar.gz
 # Source4-md5:	6818629dc74737f3ca33ca97ab4ffcc4
 Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
 # Source5-md5:	43f915c104024e6f33a5b3ff52dfb75b
-Source6:    http://glen.alkohol.ee/pld/qmail/qmail-conf-20041222.tar.bz2
-# Source6-md5:	8733c4e19a5ba293e1e659b7cf2713f0
+Source6:    http://glen.alkohol.ee/pld/qmail/qmail-conf-20041223.tar.bz2
+# Source6-md5:	1f7a392e474089f04d9e00916db3d161
 Source7:	http://iidea.pl/~paweln/tlum/qmail-doki.tar.bz2
 # Source7-md5:	2d85f0f9f8408cf6caab9f9bc8f68657
 Source8:	%{name}-linux.sh
@@ -62,6 +62,7 @@ Source16:	tarpit.README
 Source17:	http://www.fehcom.de/qmail/qhpsi/qhpsi-%{qhpsi_ver}_tgz.bin
 # Source17-md5:	18afa1762ba0b419deb26416b6a21a65
 Source18:	%{name}.logrotate
+Source19:	%{name}.logrotate-pop3
 Source20:	checkpassword.pamd
 # Source20-md5:	78c3cb713ec00207f8fa0edcf3fe4fd2
 Source21:	%{name}-client.html
@@ -505,6 +506,7 @@ install %{SOURCE8} $RPM_BUILD_ROOT/etc/profile.d/qmail.sh
 install %{SOURCE9} $RPM_BUILD_ROOT/etc/profile.d/qmail.csh
 
 install %{SOURCE18} $RPM_BUILD_ROOT/etc/logrotate.d/qmail
+install %{SOURCE19} $RPM_BUILD_ROOT/etc/logrotate.d/qmail-pop3
 
 # tcpserver (supervise)
 PV=`basename %{SOURCE6}`
@@ -957,7 +959,7 @@ fi
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/users/*
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/aliases
 %{_sysconfdir}/mail/aliases
-%config(noreplace) %verify(not mtime) /etc/logrotate.d/*
+%config(noreplace) %verify(not mtime) /etc/logrotate.d/qmail
 %attr(755,root,root) %config(noreplace) %verify(not size mtime md5) /etc/profile.d/*
 %attr(754,root,root) /etc/rc.d/init.d/*
 %attr(644,root,root) %config(noreplace) %verify(not size mtime md5) /etc/pam.d/checkpass
@@ -1027,11 +1029,11 @@ fi
 %attr(755,root,mail) %dir %{tcprules}
 %{tcprules}/Makefile
 %attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{tcprules}/tcp.qmail-smtp
-%attr(640,qmaild,root) %config(noreplace) %verify(not size mtime md5) %{tcprules}/tcp.qmail-smtp.cdb
+%attr(640,qmaild,root) %config(noreplace) %verify(not size mtime md5) %ghost %{tcprules}/tcp.qmail-smtp.cdb
 %attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{tcprules}/tcp.qmail-qmtp
-%attr(640,qmaild,root) %config(noreplace) %verify(not size mtime md5) %{tcprules}/tcp.qmail-qmtp.cdb
+%attr(640,qmaild,root) %config(noreplace) %verify(not size mtime md5) %ghost %{tcprules}/tcp.qmail-qmtp.cdb
 %attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{tcprules}/tcp.qmail-qmqp
-%attr(640,qmaild,root) %config(noreplace) %verify(not size mtime md5) %{tcprules}/tcp.qmail-qmqp.cdb
+%attr(640,qmaild,root) %config(noreplace) %verify(not size mtime md5) %ghost %{tcprules}/tcp.qmail-qmqp.cdb
 
 %attr(755,qmaill,root) %dir /var/log/qmail
 %attr(750,root,root) %dir /var/log/archiv/qmail
@@ -1187,8 +1189,9 @@ fi
 %files pop3
 %defattr(644,root,root,755)
 %attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{tcprules}/tcp.qmail-pop3
-%attr(640,qmaild,root) %config(noreplace) %verify(not size mtime md5) %{tcprules}/tcp.qmail-pop3.cdb
+%attr(640,qmaild,root) %config(noreplace) %verify(not size mtime md5) %ghost %{tcprules}/tcp.qmail-pop3.cdb
 %config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-pop3d
+%config(noreplace) %verify(not mtime) /etc/logrotate.d/qmail-pop3
 
 %attr(1755,root,root) %dir %{supervise}/pop3d
 %attr(755,root,root) %{supervise}/pop3d/run
