@@ -1,6 +1,6 @@
 diff -ur qmail-1.03.orig/INSTALL.maildir qmail-1.03/INSTALL.maildir
 --- qmail-1.03.orig/INSTALL.maildir	Mon Jun 15 12:53:16 1998
-+++ qmail-1.03/INSTALL.maildir	Sun Dec  5 16:13:16 1999
++++ qmail-1.03/INSTALL.maildir	Sun Dec  5 16:48:30 1999
 @@ -45,7 +45,9 @@
  Here's how to set up qmail to use maildir for your incoming mail:
  
@@ -14,7 +14,7 @@ diff -ur qmail-1.03.orig/INSTALL.maildir qmail-1.03/INSTALL.maildir
  
 diff -ur qmail-1.03.orig/PIC.local2ext qmail-1.03/PIC.local2ext
 --- qmail-1.03.orig/PIC.local2ext	Mon Jun 15 12:53:16 1998
-+++ qmail-1.03/PIC.local2ext	Sun Dec  5 16:13:16 1999
++++ qmail-1.03/PIC.local2ext	Sun Dec  5 16:48:30 1999
 @@ -36,6 +36,7 @@
       V          
                     
@@ -27,7 +27,7 @@ diff -ur qmail-1.03.orig/PIC.local2ext qmail-1.03/PIC.local2ext
                  Write message to ./Extramail in mbox format.
 diff -ur qmail-1.03.orig/PIC.local2local qmail-1.03/PIC.local2local
 --- qmail-1.03.orig/PIC.local2local	Mon Jun 15 12:53:16 1998
-+++ qmail-1.03/PIC.local2local	Sun Dec  5 16:13:16 1999
++++ qmail-1.03/PIC.local2local	Sun Dec  5 16:48:30 1999
 @@ -36,5 +36,6 @@
                     
  qmail-local fred ~fred fred '' '' heaven.af.mil joe@heaven.af.mil ./Mailbox
@@ -37,7 +37,7 @@ diff -ur qmail-1.03.orig/PIC.local2local qmail-1.03/PIC.local2local
                  Write message to ./Mailbox in mbox format.
 diff -ur qmail-1.03.orig/PIC.rem2local qmail-1.03/PIC.rem2local
 --- qmail-1.03.orig/PIC.rem2local	Mon Jun 15 12:53:16 1998
-+++ qmail-1.03/PIC.rem2local	Sun Dec  5 16:13:16 1999
++++ qmail-1.03/PIC.rem2local	Sun Dec  5 16:48:30 1999
 @@ -32,5 +32,6 @@
                     
  qmail-local joe ~joe joe '' '' heaven.af.mil bill@irs.gov ./Mailbox
@@ -47,7 +47,7 @@ diff -ur qmail-1.03.orig/PIC.rem2local qmail-1.03/PIC.rem2local
                  Write message to ./Mailbox in mbox format.
 diff -ur qmail-1.03.orig/UPGRADE qmail-1.03/UPGRADE
 --- qmail-1.03.orig/UPGRADE	Mon Jun 15 12:53:16 1998
-+++ qmail-1.03/UPGRADE	Sun Dec  5 16:13:16 1999
++++ qmail-1.03/UPGRADE	Sun Dec  5 16:48:30 1999
 @@ -57,6 +57,10 @@
  
  10. Read TEST.receive.
@@ -61,7 +61,7 @@ diff -ur qmail-1.03.orig/UPGRADE qmail-1.03/UPGRADE
         % ( echo 'First M. Last'; cat `cat SYSDEPS` ) | mail djb-qst@cr.yp.to
 diff -ur qmail-1.03.orig/dot-qmail.9 qmail-1.03/dot-qmail.9
 --- qmail-1.03.orig/dot-qmail.9	Mon Jun 15 12:53:16 1998
-+++ qmail-1.03/dot-qmail.9	Sun Dec  5 16:18:23 1999
++++ qmail-1.03/dot-qmail.9	Sun Dec  5 16:48:30 1999
 @@ -22,8 +22,16 @@
  behavior, set up a
  .B .qmail
@@ -317,7 +317,7 @@ diff -ur qmail-1.03.orig/dot-qmail.9 qmail-1.03/dot-qmail.9
  maildir(5),
 diff -ur qmail-1.03.orig/qmail-local.8 qmail-1.03/qmail-local.8
 --- qmail-1.03.orig/qmail-local.8	Mon Jun 15 12:53:16 1998
-+++ qmail-1.03/qmail-local.8	Sun Dec  5 16:18:23 1999
++++ qmail-1.03/qmail-local.8	Sun Dec  5 16:48:30 1999
 @@ -55,6 +55,9 @@
  .I ext
  identify the
@@ -345,7 +345,7 @@ diff -ur qmail-1.03.orig/qmail-local.8 qmail-1.03/qmail-local.8
  
 diff -ur qmail-1.03.orig/qmail-local.c qmail-1.03/qmail-local.c
 --- qmail-1.03.orig/qmail-local.c	Mon Jun 15 12:53:16 1998
-+++ qmail-1.03/qmail-local.c	Sun Dec  5 16:18:23 1999
++++ qmail-1.03/qmail-local.c	Sun Dec  5 23:04:20 1999
 @@ -43,6 +43,7 @@
  
  int flagdoit;
@@ -360,7 +360,7 @@ diff -ur qmail-1.03.orig/qmail-local.c qmail-1.03/qmail-local.c
  
 - if (stat(".",&st) == -1)
 -   strerr_die3x(111,"Unable to stat home directory: ",error_str(errno),". (#4.3.0)");
-+ if (stat("./etc/qmail",&st) == -1) 
++ if (stat("./etc/qmail",&st) == -1 || !(S_ISDIR(st.st_mode)))
 +         {
 +	 useetc = 0;
 +	 if (stat(".",&st) == -1) 
