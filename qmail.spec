@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	17
+Release:	18
 Group:		Networking/Daemons
 Group(pl):	Sieciowe/Serwery
 Copyright:	Check with djb@koobera.math.uic.edu
@@ -48,7 +48,7 @@ Provides:	qmailmta
 Provides:	qmail-server
 Requires:	%{_sbindir}/tcpd
 Requires:	inetdaemon
-Requires:	rc-scripts
+Requires:	rc-scripts >= 0.2.0
 Prereq:		rc-inetd
 Prereq:		/sbin/chkconfig
 Prereq:		/bin/hostname
@@ -443,7 +443,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 755,  root,  root) %{_bindir}/qmail-qread
 %attr( 755,  root,  root) %{_bindir}/qmail-qsanity
 %attr( 755,  root,  root) %{_bindir}/qmail-qstat
-%attr(4754,qmailq, qmail) %{_libdir}/qmail/qmail-queue
+%attr(4755,qmailq, qmail) %{_libdir}/qmail/qmail-queue
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-remote
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-rspawn
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-send
