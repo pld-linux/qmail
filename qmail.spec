@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	32
+Release:	33
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
@@ -163,6 +163,16 @@ Maildirmake is a tool for making mail folders in Maildir format
 
 %description -l maildirmake
 Maildirmake jest narzêdziem do zak³adania folderów w formacie Maildir 
+
+%package perl
+Summary:	perl scripts for qmail
+Summary(pl):	skrypty perlowe dla qmaila
+Group:		Applications/Mail
+Group(pl):	Aplikacje/Poczta
+Requires:	%{name} = %{version}
+
+%description perl
+Perl scripts for qmail
 
 %prep
 %setup -q
@@ -430,7 +440,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc {FAQ,INSTALL*,PIC*,REMOVE*,SENDMAIL,TEST*,UPGRADE}.gz
 %doc {BLURB*,README,SECURITY,THANKS,THOUGHTS,TODO,VERSION}.gz
-%doc checkpass-1.0/ queue-fix-1.3/ qmHandle-0.4.0/ rblsmtpd-0.70/ boot/ 
+%doc checkpass-1.0/ queue-fix-1.3/ rblsmtpd-0.70/ boot/ 
 %doc tarpit.README.gz
 
 %attr( 755, root, root) %dir %{_sysconfdir}/mail
@@ -485,11 +495,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 755,  root,  root) %{_libdir}/qmail/preline
 %attr( 755,  root,  root) %{_libdir}/qmail/qail
 %attr( 755,  root,  root) %{_libdir}/qmail/qbiff
-%attr( 755,  root,  root) %{_bindir}/qmHandle
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-clean
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-getpw
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-inject
-%attr( 755,  root,  root) %{_libdir}/qmail/qmail-lint
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-local
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-lspawn
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-newmrh
@@ -501,7 +509,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-qmqpd
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-qmtpd
 %attr( 755,  root,  root) %{_bindir}/qmail-qread
-%attr( 755,  root,  root) %{_bindir}/qmail-qsanity
 %attr( 755,  root,  root) %{_bindir}/qmail-qstat
 %attr(4755,qmailq, qmail) %{_libdir}/qmail/qmail-queue
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-remote
@@ -603,3 +610,9 @@ rm -rf $RPM_BUILD_ROOT
 %files maildirmake
 %attr(755, root, root) %{_bindir}/maildirmake
 %{_mandir}/man1/maildirmake*
+
+%files perl
+%doc qmHandle-0.4.0/
+%attr( 755,  root,  root) %{_bindir}/qmHandle
+%attr( 755,  root,  root) %{_bindir}/qmail-qsanity
+%attr( 755,  root,  root) %{_libdir}/qmail/qmail-lint
