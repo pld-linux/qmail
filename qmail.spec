@@ -73,6 +73,9 @@ Patch24:	%{name}-tls.patch
 Patch25:	%{name}-queue.patch
 Patch26:	%{name}-errno.patch
 Patch27:	%{name}-home_etc.patch
+Patch28:	%{name}-1.03.errno.patch
+Patch29:	%{name}-1.03.qmail_local.patch
+Patch30:	%{name}-ac_rblsmtpd.patch
 URL:		http://www.qmail.org/
 BuildRequires:	groff
 BuildRequires:	pam-devel
@@ -270,6 +273,9 @@ tar zxf %{SOURCE6} -C qmHandle-0.5.1/
 %patch25 -p1
 %patch26 -p1
 %{?with_home_etc:%patch27 -p1}
+%patch28 -p1
+%patch29 -p1
+%patch30 -p1
 
 %build
 %{__make} CFLAGS="%{rpmcflags}"
