@@ -1,0 +1,53 @@
+
+This patch makes qmail-send read /var/qmail/control/extbouncer file, and if
+it exists use it contents as all single-bounce message recipients.
+This make further processing (eg. by qmail-superbounce) of bounce message possible.
+
+	Jacek Konieczny <jajcus@pld.org.pl>
+
+diff -durN qmail-1.03.orig/qmail-send.9 qmail-1.03/qmail-send.9
+--- qmail-1.03.orig/qmail-send.9	Mon Jun 15 12:53:16 1998
++++ qmail-1.03/qmail-send.9	Sat Apr  7 12:49:33 2001
+@@ -77,6 +77,14 @@
+ .B From: \fIbouncefrom\fB@\fIbouncehost\fR,
+ although its envelope sender is empty.
+ .TP 5
++.I extbouncer
++External bouncer.
++Default:
++.IR none .
++If it is supplied
++.B qmail-send
++sends the bounce to this address instead of  the message's envelope sender.
++.TP 5
+ .I concurrencylocal
+ Maximum number of simultaneous local delivery attempts.
+ Default: 10.
+diff -durN qmail-1.03.orig/qmail-send.c qmail-1.03/qmail-send.c
+--- qmail-1.03.orig/qmail-send.c	Mon Jun 15 12:53:16 1998
++++ qmail-1.03/qmail-send.c	Sat Apr  7 12:50:36 2001
+@@ -53,6 +53,7 @@
+ stralloc envnoathost = {0};
+ stralloc bouncefrom = {0};
+ stralloc bouncehost = {0};
++stralloc extbouncer = {0};
+ stralloc doublebounceto = {0};
+ stralloc doublebouncehost = {0};
+ 
+@@ -748,6 +749,7 @@
+        qmail_fail(&qqt);
+     }
+ 
++   if (*extbouncer.s && *sender.s) { bouncerecip = extbouncer.s; }
+    qmail_from(&qqt,bouncesender);
+    qmail_to(&qqt,bouncerecip);
+    if (*qmail_close(&qqt))
+@@ -1448,6 +1450,8 @@
+  if (control_rldef(&envnoathost,"control/envnoathost",1,"envnoathost") != 1) return 0;
+  if (control_rldef(&bouncefrom,"control/bouncefrom",0,"MAILER-DAEMON") != 1) return 0;
+  if (control_rldef(&bouncehost,"control/bouncehost",1,"bouncehost") != 1) return 0;
++ if (control_rldef(&extbouncer,"control/extbouncer",0,"") != 1) return 0;
++ if (!stralloc_0(&extbouncer)) return 0;
+  if (control_rldef(&doublebouncehost,"control/doublebouncehost",1,"doublebouncehost") != 1) return 0;
+  if (control_rldef(&doublebounceto,"control/doublebounceto",0,"postmaster") != 1) return 0;
+  if (!stralloc_cats(&doublebounceto,"@")) return 0;
