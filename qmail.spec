@@ -5,12 +5,6 @@ Version:	1.03
 Release:	51
 License:	Check with djb@koobera.math.uic.edu
 Group:		Networking/Daemons
-Group(de):	Netzwerkwesen/Server
-Group(es):	Red/Servidores
-Group(fr):	Réseau/Serveurs
-Group(pl):	Sieciowe/Serwery
-Group(pt):	Rede/Server
-Group(ru):	óÅÔÅ×ÙÅ/äÅÍÏÎÙ
 Source0:	ftp://koobera.math.uic.edu/pub/software/%{name}-%{version}.tar.gz
 Source1:	ftp://koobera.math.uic.edu/pub/software/dot-forward-0.71.tar.gz
 Source2:	ftp://koobera.math.uic.edu/pub/software/fastforward-0.51.tar.gz
@@ -149,12 +143,6 @@ Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
 Summary:	qmail Mail Transport Agent - null client
 Summary(pl):	qmail - serwer pocztowy (MTA) - cienki klient
 Group:		Networking/Daemons
-Group(de):	Netzwerkwesen/Server
-Group(es):	Red/Servidores
-Group(fr):	Réseau/Serveurs
-Group(pl):	Sieciowe/Serwery
-Group(pt):	Rede/Server
-Group(ru):	óÅÔÅ×ÙÅ/äÅÍÏÎÙ
 URL:		http://www.qmail.org/
 Requires(post):	/bin/hostname
 Requires(post):	/bin/sed
@@ -187,11 +175,6 @@ elektronicznej. Ten qmail dodatkowo wspiera protokó³ IPv6.
 Summary:	maildirmake - tool for making qmails' Maildirs
 Summary(pl):	maildirmake - narzêdzie do zak³adania folerow Maildir
 Group:		Applications/Mail
-Group(de):	Applikationen/Post
-Group(es):	Aplicaciones/Correo Electrónico
-Group(fr):	Applications/Courrier
-Group(pl):	Aplikacje/Poczta
-Group(pt):	Aplicações/Correio Eletrônico
 Conflicts:	courier-imap-maildirmake
 
 %description maildirmake
@@ -204,11 +187,6 @@ Maildirmake jest narzêdziem do zak³adania folderów w formacie Maildir.
 Summary:	perl scripts for qmail
 Summary(pl):	Skrypty perlowe dla qmaila
 Group:		Applications/Mail
-Group(de):	Applikationen/Post
-Group(es):	Aplicaciones/Correo Electrónico
-Group(fr):	Applications/Courrier
-Group(pl):	Aplikacje/Poczta
-Group(pt):	Aplicações/Correio Eletrônico
 Requires:	%{name} = %{version}
 
 %description perl
@@ -221,12 +199,6 @@ Skrypty perlowe dla qmaila.
 Summary:	POP3 server for qmail
 Summary(pl):	Serwer POP3 dla qmaila
 Group:		Networking/Daemons
-Group(de):	Netzwerkwesen/Server
-Group(es):	Red/Servidores
-Group(fr):	Réseau/Serveurs
-Group(pl):	Sieciowe/Serwery
-Group(pt):	Rede/Server
-Group(ru):	óÅÔÅ×ÙÅ/äÅÍÏÎÙ
 Requires:	%{name} = %{version}
 Provides:	pop3daemon
 Obsoletes:	qpopper
