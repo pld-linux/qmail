@@ -64,6 +64,7 @@ Obsoletes:	sendmail
 Obsoletes:	postfix
 Obsoletes:	zmailer
 Obsoletes:	smail
+Obsoletes:	exim
 BuildRequires:	pam-devel
 
 %description
