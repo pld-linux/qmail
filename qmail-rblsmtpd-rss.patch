@@ -1,0 +1,180 @@
+diff -urN qmail-1.03.orig/rblsmtpd-0.70/INSTALL qmail-1.03/rblsmtpd-0.70/INSTALL
+--- qmail-1.03.orig/rblsmtpd-0.70/INSTALL	Tue Aug 25 17:58:22 1998
++++ qmail-1.03/rblsmtpd-0.70/INSTALL	Thu Aug 31 21:43:58 2000
+@@ -71,20 +71,49 @@
+        quit
+        221 rblsmtpd.local
+ 
++10. See if rblsmtpd understands A record lookups:
++       % env TCPREMOTEIP=127.0.0.2 rblsmtpd -r \
++         "relays.mail-abuse.org:Open relay" echo whoops
++       rblsmtpd: pid ...: 451 Open relay
++       220 rblsmtpd.local
++       help
++       451 Open relay
++       quit
++       221 rblsmtpd.local
++
++11. See if rblsmtpd understands A record lookups with %IP% interpolation:
++       % env TCPREMOTEIP=127.0.0.2 rblsmtpd -r \
++         "relays.mail-abuse.org:See mail-abuse.org/cgi-bin/nph-rss?%IP%" \
++         echo whoops
++       rblsmtpd: pid ...: 451 See mail-abuse.org/cgi-bin/nph-rss?127.0.0.2
++       220 rblsmtpd.local
++       help
++       451 See mail-abuse.org/cgi-bin/nph-rss?127.0.0.2
++       quit
++       221 rblsmtpd.local
++
+ 
+ How to reject mail from sites listed on the RBL:
+ 
+-10. Insert rblsmtpd before the real SMTP server in your tcpserver line.
++12. Insert rblsmtpd before the real SMTP server in your tcpserver line.
+     For example, with sendmail, you can run
+        # tcpserver -v 0 25 rblsmtpd sendmail -bs &
+     See rblsmtpd.0 and antirbl.0 for further documentation.
+ 
+-11. Send some test messages from other hosts to make sure that normal
++13. Send some test messages from other hosts to make sure that normal
+     mail still works.
+ 
+-12. Send a test message to nelson-rbl-test@crynwr.com from the same
++14. Send a test message to nelson-rbl-test@crynwr.com from the same
+     host. You should receive one response message showing a blocked SMTP
+     conversation.
++
++15. If you want to reject mail from sites listed on MAPS RSS, you need to
++    use A lookups rather than TXT, and supply your own error message, since
++    TXT records were discontinued as of August 8, 2000. Here is how to get
++    the same message that used to be in the TXT records:
++       # tcpserver -v 0 25 rblsmtpd -r \
++         "relays.mail-abuse.org:Open relay problem - see <URL:http://www.mail-abuse.org/cgi-bin/nph-rss?%IP%>" \
++         sendmail -bs &
+ 
+ 
+ That's it! To report success:
+diff -urN qmail-1.03.orig/rblsmtpd-0.70/rblsmtpd.8 qmail-1.03/rblsmtpd-0.70/rblsmtpd.8
+--- qmail-1.03.orig/rblsmtpd-0.70/rblsmtpd.8	Thu Aug 31 21:43:45 2000
++++ qmail-1.03/rblsmtpd-0.70/rblsmtpd.8	Thu Aug 31 21:43:58 2000
+@@ -11,6 +11,9 @@
+ .B \-R
+ ] [
+ .B \-r \fIdomain
++[
++.BR : replystring
++]
+ ] [
+ .B \-t \fItimeout
+ ]
+@@ -98,6 +101,21 @@
+ .B rblsmtpd
+ uses the contents of the TXT record
+ as an error message for the client.
++
++If
++.I domain
++does not include TXT records, an alternative reply string may be specified
++with
++.B \-r
++with a colon separating it from the domain. rblsmtpd then uses an A lookup
++instead of TXT, and uses the alternative reply string in the error message.
++If
++.I replystring
++contains the string
++.BR \%IP\% ,
++then the value of
++.B $TCPREMOTEIP
++will be substituted at that point in the error message.
+ .SH "TEMPORARY ERRORS"
+ Normally
+ .B rblsmtpd
+diff -urN qmail-1.03.orig/rblsmtpd-0.70/rblsmtpd.c qmail-1.03/rblsmtpd-0.70/rblsmtpd.c
+--- qmail-1.03.orig/rblsmtpd-0.70/rblsmtpd.c	Thu Aug 31 21:43:45 2000
++++ qmail-1.03/rblsmtpd-0.70/rblsmtpd.c	Thu Aug 31 21:44:45 2000
+@@ -108,7 +108,7 @@
+ 
+ void usage()
+ {
+-  strerr_die1x(100,"rblsmtpd: usage: rblsmtpd [ -b ] [ -l ] [ -R ] [ -r domain ] [ -t timeout ] smtpd [ arg ... ]");
++  strerr_die1x(100,"rblsmtpd: usage: rblsmtpd [ -b ] [ -l ] [ -R ] [ -r domain [:replytring] ] [ -t timeout ] smtpd [ arg ... ]");
+ }
+ 
+ void main(argc,argv)
+diff -urN qmail-1.03.orig/rblsmtpd-0.70/txt.c qmail-1.03/rblsmtpd-0.70/txt.c
+--- qmail-1.03.orig/rblsmtpd-0.70/txt.c	Thu Aug 31 21:43:45 2000
++++ qmail-1.03/rblsmtpd-0.70/txt.c	Thu Aug 31 21:45:31 2000
+@@ -14,6 +14,7 @@
+ #include "str.h"
+ #include "fmt.h"
+ #include "ip.h"
++#include "env.h"
+ 
+ static unsigned short getshort(c) unsigned char *c;
+ { unsigned short u; u = c[0]; return (u << 8) + c[1]; }
+@@ -32,8 +33,18 @@
+   int len;
+   unsigned char *pos;
+   unsigned char *end;
++  char *altreply;
++  int wanttype=T_TXT;
++  int mindatalen=1;
+   struct ip_address *ip = &ix->addr.ip;
+ 
++  i = str_chr(base, ':');
++  if (base[i]) {
++    base[i] = 0;
++    altreply = base+i+1;
++    wanttype = T_A;
++    mindatalen = 4;
++  }
+   if (!stralloc_ready(sa,100 + str_len(base))) return -1;
+   x = sa->s;
+   x += fmt_ulong(x,(unsigned long) ip->d[3]); *x++ = '.';
+@@ -44,7 +55,7 @@
+   *x = 0;
+ 
+   errno = 0;
+-  len = res_query(sa->s,C_IN,T_TXT,response.buf,sizeof response);
++  len = res_query(sa->s,C_IN,wanttype,response.buf,sizeof response);
+   if (len < sizeof(HEADER)) {
+     if (errno == ECONNREFUSED) return -1;
+     if (h_errno == TRY_AGAIN) return -1;
+@@ -73,11 +84,32 @@
+     if (i < 0) return -1;
+     pos += i;
+ 
+-    if (end - pos < 11) return -1;
+-    if (getshort(pos) == T_TXT) {
+-      i = (unsigned long) pos[10];
+-      if (pos + 11 + i > end) return -1;
+-      if (!stralloc_copyb(sa,pos + 11,i)) return -1;
++    if (end - pos < 10 + mindatalen) return -1;
++    if (getshort(pos) == wanttype) {
++      if (wanttype==T_TXT) {
++        i = (unsigned long) pos[10];
++        if (pos + 11 + i > end) return -1;
++        if (!stralloc_copyb(sa,pos + 11,i)) return -1;
++      } else {
++        if(!stralloc_copys(sa, "")) return -1;
++        while(*altreply) {
++          i = str_chr(altreply, '%');
++          if(!stralloc_catb(sa, altreply, i)) return -1;
++          if(altreply[i] &&
++             altreply[i+1]=='I' &&
++             altreply[i+2]=='P' &&
++             altreply[i+3]=='%') {
++            x=env_get("TCPREMOTEIP");
++            if(!stralloc_catb(sa, x, str_len(x))) return -1;
++            altreply+=i+4;
++          } else if(altreply[i]) {
++            if(!stralloc_cats(sa, "%")) return -1;
++            altreply+=i+1;
++          } else {
++            altreply+=i;
++          }
++        }
++      }
+       return 1;
+     }
+ 
