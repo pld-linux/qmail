@@ -70,9 +70,9 @@ Copyright: Same terms as qmail
 
 Bug reports: mailto:<jos-tls@kotnet.org>
 
-diff -urN qmail-1.03.orig/Makefile qmail-1.03/Makefile
---- qmail-1.03.orig/Makefile	Mon May 28 15:36:19 2001
-+++ qmail-1.03/Makefile	Mon May 28 15:39:39 2001
+diff -durN qmail-1.03.orig/Makefile qmail-1.03/Makefile
+--- qmail-1.03.orig/Makefile	Thu Jul 19 12:41:57 2001
++++ qmail-1.03/Makefile	Thu Jul 19 12:42:15 2001
 @@ -1447,7 +1447,8 @@
  	timeoutwrite.o timeoutconn.o tcpto.o now.o dns.o ip.o \
  	ipalloc.o ipme.o quote.o ndelay.a case.a sig.a open.a \
@@ -113,18 +113,18 @@ diff -urN qmail-1.03.orig/Makefile qmail-1.03/Makefile
 +	@echo
 +	@echo "Send req.pem to your CA to obtain signed_req.pem, and do:"
 +	@echo "cat signed_req.pem >> /var/qmail/control/cert.pem"
-diff -urN qmail-1.03.orig/conf-cc qmail-1.03/conf-cc
---- qmail-1.03.orig/conf-cc	Mon May 28 15:36:19 2001
-+++ qmail-1.03/conf-cc	Mon May 28 15:36:36 2001
+diff -durN qmail-1.03.orig/conf-cc qmail-1.03/conf-cc
+--- qmail-1.03.orig/conf-cc	Thu Jul 19 12:41:56 2001
++++ qmail-1.03/conf-cc	Thu Jul 19 12:42:15 2001
 @@ -1,4 +1,3 @@
 -cc -O2 -DINET6
 -cc -O2
 +cc -O2 -DINET6 -DTLS -I/usr/include/openssl
  
  This will be used to compile .c files.
-diff -urN qmail-1.03.orig/dns.c qmail-1.03/dns.c
---- qmail-1.03.orig/dns.c	Mon May 28 15:36:19 2001
-+++ qmail-1.03/dns.c	Mon May 28 15:40:47 2001
+diff -durN qmail-1.03.orig/dns.c qmail-1.03/dns.c
+--- qmail-1.03.orig/dns.c	Thu Jul 19 12:41:56 2001
++++ qmail-1.03/dns.c	Thu Jul 19 12:42:15 2001
 @@ -380,6 +380,14 @@
   int r;
   struct ip_mx ix;
@@ -150,9 +150,9 @@ diff -urN qmail-1.03.orig/dns.c qmail-1.03/dns.c
       if (!ipalloc_append(ia,&ix)) return DNS_MEM;
       return 0;
      }
-diff -urN qmail-1.03.orig/ipalloc.h qmail-1.03/ipalloc.h
---- qmail-1.03.orig/ipalloc.h	Mon May 28 15:36:19 2001
-+++ qmail-1.03/ipalloc.h	Mon May 28 15:42:03 2001
+diff -durN qmail-1.03.orig/ipalloc.h qmail-1.03/ipalloc.h
+--- qmail-1.03.orig/ipalloc.h	Thu Jul 19 12:41:56 2001
++++ qmail-1.03/ipalloc.h	Thu Jul 19 12:42:15 2001
 @@ -3,6 +3,10 @@
  
  #include "ip.h"
@@ -174,9 +174,9 @@ diff -urN qmail-1.03.orig/ipalloc.h qmail-1.03/ipalloc.h
  };
  
  #include "gen_alloc.h"
-diff -urN qmail-1.03.orig/qmail-remote.c qmail-1.03/qmail-remote.c
---- qmail-1.03.orig/qmail-remote.c	Mon May 28 15:36:19 2001
-+++ qmail-1.03/qmail-remote.c	Mon May 28 15:42:52 2001
+diff -durN qmail-1.03.orig/qmail-remote.c qmail-1.03/qmail-remote.c
+--- qmail-1.03.orig/qmail-remote.c	Thu Jul 19 12:41:56 2001
++++ qmail-1.03/qmail-remote.c	Thu Jul 19 12:42:15 2001
 @@ -26,8 +26,16 @@
  #include "tcpto.h"
  #include "readwrite.h"
@@ -375,7 +375,6 @@ diff -urN qmail-1.03.orig/qmail-remote.c qmail-1.03/qmail-remote.c
 +  }
 +#else
    if (smtpcode() != 250) quit("ZConnected to "," but my name was rejected");
-- 
 +#endif
 +
 +#ifdef TLS
@@ -405,7 +404,7 @@ diff -urN qmail-1.03.orig/qmail-remote.c qmail-1.03/qmail-remote.c
 +        /* if I was unable to set a good cert I will fail only when a
 +        cert is required */
 +        SSL_CTX_set_client_cert_cb(ctx, client_cert_cb);
-+ 
+  
 +      /*SSL_CTX_set_options(ctx, SSL_OP_NO_TLSv1);*/
 +
 +      if (needtlsauth){
@@ -507,9 +506,9 @@ diff -urN qmail-1.03.orig/qmail-remote.c qmail-1.03/qmail-remote.c
      }
      tcpto_err(&ip.ix[i],errno == error_timeout);
      close(smtpfd);
-diff -urN qmail-1.03.orig/qmail-smtpd.c qmail-1.03/qmail-smtpd.c
---- qmail-1.03.orig/qmail-smtpd.c	Mon May 28 15:36:19 2001
-+++ qmail-1.03/qmail-smtpd.c	Mon May 28 15:48:08 2001
+diff -durN qmail-1.03.orig/qmail-smtpd.c qmail-1.03/qmail-smtpd.c
+--- qmail-1.03.orig/qmail-smtpd.c	Thu Jul 19 12:41:57 2001
++++ qmail-1.03/qmail-smtpd.c	Thu Jul 19 12:43:27 2001
 @@ -22,9 +22,17 @@
  #include "now.h"
  #include "exit.h"
@@ -593,7 +592,7 @@ diff -urN qmail-1.03.orig/qmail-smtpd.c qmail-1.03/qmail-smtpd.c
  void err_wantmail() { out("503 MAIL first (#5.5.1)\r\n"); }
 @@ -273,7 +326,12 @@
  #ifdef USE_SMTPAUTH
-   out("\r\n250-AUTH=LOGIN");
+   if (smtpauth_argv) out("\r\n250-AUTH=LOGIN");
  #endif
 +#ifdef TLS
 +  if (ssl) out("\r\n250-PIPELINING\r\n250 8BITMIME\r\n");
@@ -719,7 +718,7 @@ diff -urN qmail-1.03.orig/qmail-smtpd.c qmail-1.03/qmail-smtpd.c
    blast(&hops);
    hops = (hops >= MAXHOPS);
    if (hops) qmail_fail(&qqt);
-@@ -575,6 +707,55 @@
+@@ -578,6 +710,55 @@
  }
  #endif
  
@@ -775,7 +774,7 @@ diff -urN qmail-1.03.orig/qmail-smtpd.c qmail-1.03/qmail-smtpd.c
  struct commands smtpcommands[] = {
    { "rcpt", smtp_rcpt, 0 }
  , { "mail", smtp_mail, 0 }
-@@ -587,6 +768,9 @@
+@@ -590,6 +771,9 @@
  , { "ehlo", smtp_ehlo, flush }
  , { "rset", smtp_rset, 0 }
  , { "help", smtp_help, flush }
@@ -785,10 +784,10 @@ diff -urN qmail-1.03.orig/qmail-smtpd.c qmail-1.03/qmail-smtpd.c
  , { "noop", err_noop, flush }
  , { "vrfy", err_vrfy, flush }
  , { 0, err_unimpl, flush }
-@@ -598,6 +782,9 @@
-   char *u;
+@@ -602,6 +786,9 @@
  
-   smtpauth_argv = argv;
+   if (argc>0) smtpauth_argv = argv;
+   else smtpauth_argv=NULL;
 +#endif
 +#ifdef TLS
 +  sig_alarmcatch(sigalrm);
