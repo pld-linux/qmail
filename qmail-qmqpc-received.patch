@@ -1,0 +1,100 @@
+diff -ur qmail-1.03.orig/Makefile qmail-1.03/Makefile
+--- qmail-1.03.orig/Makefile	Sat Mar 24 20:36:05 2001
++++ qmail-1.03/Makefile	Sat Mar 24 21:01:50 2001
+@@ -1335,7 +1335,8 @@
+ load qmail-qmqpc.o slurpclose.o timeoutread.o timeoutwrite.o \
+ timeoutconn.o ip.o control.o auto_qmail.o sig.a ndelay.a open.a \
+ getln.a substdio.a stralloc.a alloc.a error.a str.a fs.a socket.lib
+-	./load qmail-qmqpc slurpclose.o timeoutread.o \
++	./load qmail-qmqpc slurpclose.o timeoutread.o now.o \
++	date822fmt.o datetime.a \
+ 	timeoutwrite.o timeoutconn.o ip.o control.o auto_qmail.o \
+ 	sig.a ndelay.a open.a getln.a substdio.a stralloc.a alloc.a \
+ 	error.a str.a fs.a  `cat socket.lib`
+diff -ur qmail-1.03.orig/qmail-qmqpc.c qmail-1.03/qmail-qmqpc.c
+--- qmail-1.03.orig/qmail-qmqpc.c	Mon Jun 15 12:53:16 1998
++++ qmail-1.03/qmail-qmqpc.c	Sat Mar 24 21:24:37 2001
+@@ -17,6 +17,9 @@
+ #include "auto_qmail.h"
+ #include "control.h"
+ #include "fmt.h"
++#include "datetime.h"
++#include "date822fmt.h"
++#include "now.h"
+ 
+ #define PORT_QMQP 628
+ 
+@@ -34,6 +37,37 @@
+ int lasterror = 55;
+ int qmqpfd;
+ 
++datetime_sec starttime;
++struct datetime dt;
++unsigned long mypid;
++unsigned long uid;
++unsigned int receivedlen;
++char *received;
++/* "Received: (qmail-qmqpc invoked by uid 666); 26 Sep 1995 04:46:54 -0000\n" */
++
++static unsigned int receivedfmt(s)
++char *s;
++{
++ unsigned int i;
++ unsigned int len;
++ len = 0;
++ i = fmt_str(s,"Received: (qmail-qmqpc "); len += i; if (s) s += i;
++ i = fmt_ulong(s,mypid); len += i; if (s) s += i;
++ i = fmt_str(s," invoked by uid "); len += i; if (s) s += i;
++ i = fmt_ulong(s,uid); len += i; if (s) s += i;
++ i = fmt_str(s,"); "); len += i; if (s) s += i;
++ i = date822fmt(s,&dt); len += i; if (s) s += i;
++ return len;
++}
++
++void received_setup()
++{
++ receivedlen = receivedfmt((char *) 0);
++ received = alloc(receivedlen + 1);
++ if (!received) nomem();
++ receivedfmt(received);
++}
++
+ int saferead(fd,buf,len) int fd; char *buf; int len;
+ {
+   int r;
+@@ -68,7 +102,7 @@
+ 
+   if (slurpclose(0,&message,1024) == -1) die_read();
+ 
+-  strnum[fmt_ulong(strnum,(unsigned long) message.len)] = 0;
++  strnum[fmt_ulong(strnum,(unsigned long) message.len + receivedlen)] = 0;
+   if (!stralloc_copys(&beforemessage,strnum)) nomem();
+   if (!stralloc_cats(&beforemessage,":")) nomem();
+   if (!stralloc_copys(&aftermessage,",")) nomem();
+@@ -116,10 +150,11 @@
+     return;
+   }
+ 
+-  strnum[fmt_ulong(strnum,(unsigned long) (beforemessage.len + message.len + aftermessage.len))] = 0;
++  strnum[fmt_ulong(strnum,(unsigned long) (beforemessage.len + receivedlen + message.len + aftermessage.len))] = 0;
+   substdio_puts(&to,strnum);
+   substdio_puts(&to,":");
+   substdio_put(&to,beforemessage.s,beforemessage.len);
++  substdio_bput(&to,received,receivedlen);
+   substdio_put(&to,message.s,message.len);
+   substdio_put(&to,aftermessage.s,aftermessage.len);
+   substdio_puts(&to,",");
+@@ -139,6 +174,13 @@
+ {
+   int i;
+   int j;
++
++  mypid = getpid();
++  uid = getuid();
++  starttime = now();
++  datetime_tai(&dt,starttime);
++
++  received_setup();
+ 
+   sig_pipeignore();
+ 
