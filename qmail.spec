@@ -3,11 +3,10 @@ Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
 Release:	44
+LIcense:	Check with djb@koobera.math.uic.edu
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
-Copyright:	Check with djb@koobera.math.uic.edu
-URL:		http://www.qmail.org/
 Source0:	ftp://koobera.math.uic.edu/pub/software/%{name}-%{version}.tar.gz
 Source1:	ftp://koobera.math.uic.edu/pub/software/dot-forward-0.71.tar.gz
 Source2:	ftp://koobera.math.uic.edu/pub/software/fastforward-0.51.tar.gz
@@ -31,7 +30,7 @@ Source19:	%{name}-qpop.inetd
 Source20:	checkpassword.pamd
 Source21:	%{name}-client.html
 Patch0:		%{name}-1.03.install.patch
-%{?!_without_msglog:Patch1:		%{name}-1.03.msglog.patch}
+%{?!_without_msglog:Patch1: %{name}-1.03.msglog.patch}
 Patch2:		%{name}-1.03.redhat.patch
 Patch3:		%{name}-1.03.fixed-ids.patch
 Patch4:		%{name}-1.03.rbl.conf.patch
@@ -48,7 +47,7 @@ Patch15:	%{name}-rblsmtpd-syslog.patch
 Patch16:	%{name}-smtpauth.patch
 Patch18:	%{name}-wildmat.patch
 Patch19:	%{name}-rblsmtpd-rss.patch
-%{?no_mail_routing:Patch20:	%{name}-no_mail_routing.patch}
+%{?no_mail_routing:Patch20: %{name}-no_mail_routing.patch}
 Patch21:	%{name}-qmqpc-received.patch
 Patch22:	%{name}-rblsmtpd-glibc2.2.patch
 Patch23:	%{name}-extbouncer.patch
@@ -56,6 +55,7 @@ Patch23:	%{name}-extbouncer.patch
 Patch24:	%{name}-tls.patch
 # http://www.qmail.org/qmailqueue-patch
 Patch25:	%{name}-queue.patch
+URL:		http://www.qmail.org/
 BuildRequires:	pam-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Provides:	smtpdaemon
@@ -118,14 +118,14 @@ Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
 - rblsmtpd - podstawowe narzêdzie do blokowania listów z miejsc
   wyszczególnionych w RBL; sposób na filtrowanie SPAM-u,
 - qmail-fix - program do sprawdzania oraz naprawiania struktury
-  kolejki pocztowej qmail-a,
-%{!?_without_msglog:- qmail-msglog - zaawansowane monitorowanie listów,}
+  kolejki pocztowej qmail-a, %{!?_without_msglog:- qmail-msglog -
+  zaawansowane monitorowanie listów,}
 - qmail-qsanity - sprawdza kolejkê pocztow± qmail-a,
 - qmail-lint - sprawdza konfiguracjê qmail-a,
 - tarpit - kolejne narzêdzie do walki ze SPAM-em.
 
-- Ops³uga TLS/SSL. Je¶li chcesz tego u¿ywaæ musisz mieæ certyfikat
-  w /etc/qmail/control/cert.pem.
+- Ops³uga TLS/SSL. Je¶li chcesz tego u¿ywaæ musisz mieæ certyfikat w
+  /etc/qmail/control/cert.pem.
 
 ================================================================================
 - *** Uwaga! Przeczytaj uwa¿nie dokumentacjê do tego pakietu, poniewa¿
@@ -190,13 +190,12 @@ Requires:	%{name} = %{version}
 %description perl
 Perl scripts for qmail.
 
-
 %package pop3
 Summary:	POP3 server for qmail
 Summary(pl):	Serwer POP3 dla qmaila
-Group:          Networking/Daemons
-Group(de):      Netzwerkwesen/Server
-Group(pl):      Sieciowe/Serwery
+Group:		Networking/Daemons
+Group(de):	Netzwerkwesen/Server
+Group(pl):	Sieciowe/Serwery
 Requires:	%{name} = %{version}
 Provides:	pop3daemon
 Obsoletes:	qpopper
@@ -207,7 +206,6 @@ Obsoletes:	solid-pop3d
 
 %description pop3
 POP3 server for qmail.
-
 
 %prep
 %setup -q
@@ -372,34 +370,34 @@ gzip -9nf rblsmtpd-0.70/* tarpit.README README.TLS
 %pre
 if [ $1 = 1 ]; then
 # Add few users and groups
-    if [ ! -n "`getgid nofiles`" ]; then
-	%{_sbindir}/groupadd -f -g 81 nofiles
-    fi
-    if [ ! -n "`getgid qmail`" ]; then
-	%{_sbindir}/groupadd -f -g 82 qmail
-    fi
+	if [ ! -n "`getgid nofiles`" ]; then
+		%{_sbindir}/groupadd -f -g 81 nofiles
+	fi
+	if [ ! -n "`getgid qmail`" ]; then
+		%{_sbindir}/groupadd -f -g 82 qmail
+	fi
 
-    if [ ! -n "`id -u qmaild 2>/dev/null`" ]; then
-	%{_sbindir}/useradd -g nofiles -d /var/qmail -u 81 -s /bin/false qmaild 2> /dev/null
-    fi
-    if [ ! -n "`id -u alias 2>/dev/null`" ]; then
-	%{_sbindir}/useradd -g nofiles -d /var/qmail/alias -u 82 -s /bin/false alias 2> /dev/null
-    fi
-    if [ ! -n "`id -u qmailq 2>/dev/null`" ]; then
-	%{_sbindir}/useradd -g qmail -d /var/qmail -u 83 -s /bin/false qmailq 2> /dev/null
-    fi
-    if [ ! -n "`id -u qmailr 2>/dev/null`" ]; then
-	%{_sbindir}/useradd -g qmail -d /var/qmail -u 84 -s /bin/false qmailr 2> /dev/null
-    fi
-    if [ ! -n "`id -u qmails 2>/dev/null`" ]; then
-	%{_sbindir}/useradd -g qmail -d /var/qmail -u 85 -s /bin/false qmails 2> /dev/null
-    fi
-    if [ ! -n "`id -u qmaill 2>/dev/null`" ]; then
-	%{_sbindir}/useradd -g nofiles -d /var/qmail -u 86 -s /bin/false qmaill 2> /dev/null
-    fi
-    if [ ! -n "`id -u qmailp 2>/dev/null`" ]; then
-	%{_sbindir}/useradd -g nofiles -d /var/qmail -u 87 -s /bin/false qmailp 2> /dev/null
-    fi
+	if [ ! -n "`id -u qmaild 2>/dev/null`" ]; then
+		%{_sbindir}/useradd -g nofiles -d /var/qmail -u 81 -s /bin/false qmaild 2> /dev/null
+	fi
+	if [ ! -n "`id -u alias 2>/dev/null`" ]; then
+		%{_sbindir}/useradd -g nofiles -d /var/qmail/alias -u 82 -s /bin/false alias 2> /dev/null
+	fi
+	if [ ! -n "`id -u qmailq 2>/dev/null`" ]; then
+		%{_sbindir}/useradd -g qmail -d /var/qmail -u 83 -s /bin/false qmailq 2> /dev/null
+	fi
+	if [ ! -n "`id -u qmailr 2>/dev/null`" ]; then
+		%{_sbindir}/useradd -g qmail -d /var/qmail -u 84 -s /bin/false qmailr 2> /dev/null
+	fi
+	if [ ! -n "`id -u qmails 2>/dev/null`" ]; then
+		%{_sbindir}/useradd -g qmail -d /var/qmail -u 85 -s /bin/false qmails 2> /dev/null
+	fi
+	if [ ! -n "`id -u qmaill 2>/dev/null`" ]; then
+		%{_sbindir}/useradd -g nofiles -d /var/qmail -u 86 -s /bin/false qmaill 2> /dev/null
+	fi
+	if [ ! -n "`id -u qmailp 2>/dev/null`" ]; then
+		%{_sbindir}/useradd -g nofiles -d /var/qmail -u 87 -s /bin/false qmailp 2> /dev/null
+	fi
 fi
 
 %post
