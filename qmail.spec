@@ -922,7 +922,7 @@ fi
 %attr(700,qmails,qmail) %{varqmail}/queue/remote
 %attr(750,qmailq,qmail) %{varqmail}/queue/todo
 %attr(600,qmails,qmail) %config(noreplace) %verify(not mtime md5) %{varqmail}/queue/lock/sendmutex
-%attr(644,qmailr,qmail) %config(noreplace) %verify(not mtime md5) %{varqmail}/queue/lock/tcpto
+%attr(644,qmailr,qmail) %config(noreplace) %verify(not size mtime md5) %{varqmail}/queue/lock/tcpto
 %attr(622,qmails,qmail) %config(noreplace) %verify(not mtime md5) %{varqmail}/queue/lock/trigger
 %attr(644,root,nofiles) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/alias/.qmail-*
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/defaultdomain
