@@ -1,0 +1,3 @@
+- %ghost .cdb files
+- qmail-conf updated to 20041223
+- pop3 logrotate in -pop3 subpackage
