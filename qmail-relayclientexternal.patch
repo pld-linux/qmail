@@ -1,0 +1,92 @@
+diff -uNr qmail-1.03/qmail-smtpd.8 qmail-1.03-relayclientexternal/qmail-smtpd.8
+--- qmail-1.03/qmail-smtpd.8	Mon Jun 15 12:53:16 1998
++++ qmail-1.03-relayclientexternal/qmail-smtpd.8	Sun May  9 19:09:45 1999
+@@ -130,7 +130,7 @@
+ any envelope recipient address with a domain not listed in
+ .IR rcpthosts .
+ 
+-Exception:
++Exceptions:
+ If the environment variable
+ .B RELAYCLIENT
+ is set,
+@@ -140,6 +140,19 @@
+ and will append the value of
+ .B RELAYCLIENT
+ to each incoming recipient address.
++If the environment variable
++.B RELAYCLIENTEXTERNAL
++is set,
++.B qmail-smtpd
++will accept envelope sender address with a domain listed in
++.IR rcpthosts , and will append the value of
++.B RELAYCLIENTEXTERNAL
++to each incoming recipient address.
++If
++.B RELAYCLIENT
++is set,
++.B RELAYCLIENTEXTERNAL
++is not checked nor appended to incoming recipient address.
+ 
+ .I rcpthosts
+ may include wildcards:
+diff -uNr qmail-1.03/qmail-smtpd.c qmail-1.03-relayclientexternal/qmail-smtpd.c
+--- qmail-1.03/qmail-smtpd.c	Mon Jun 15 12:53:16 1998
++++ qmail-1.03-relayclientexternal/qmail-smtpd.c	Sun May  9 19:39:47 1999
+@@ -51,6 +51,7 @@
+ 
+ void err_bmf() { out("553 sorry, your envelope sender is in my badmailfrom list (#5.7.1)\r\n"); }
+ void err_nogateway() { out("553 sorry, that domain isn't in my list of allowed rcpthosts (#5.7.1)\r\n"); }
++void err_nogwforyou() { out("553 sorry, YOU are not authorized to relay here (#5.7.1)\r\n"); }
+ void err_unimpl() { out("502 unimplemented (#5.5.1)\r\n"); }
+ void err_syntax() { out("555 syntax error (#5.5.4)\r\n"); }
+ void err_wantmail() { out("503 MAIL first (#5.5.1)\r\n"); }
+@@ -81,6 +82,7 @@
+ char *remoteinfo;
+ char *local;
+ char *relayclient;
++char *relayclientexternal;
+ 
+ stralloc helohost = {0};
+ char *fakehelo; /* pointer into helohost, or 0 */
+@@ -131,6 +133,7 @@
+   if (!remotehost) remotehost = "unknown";
+   remoteinfo = env_get("TCPREMOTEINFO");
+   relayclient = env_get("RELAYCLIENT");
++  relayclientexternal = env_get("RELAYCLIENTEXTERNAL");
+   dohelo(remotehost);
+ }
+ 
+@@ -219,6 +222,7 @@
+ 
+ int seenmail = 0;
+ int flagbarf; /* defined if seenmail */
++int mailfromlocal = 0; /* is ``MAIL From: <addr>'' in control/rcpthosts? */
+ stralloc mailfrom = {0};
+ stralloc rcptto = {0};
+ 
+@@ -241,6 +245,7 @@
+ {
+   if (!addrparse(arg)) { err_syntax(); return; }
+   flagbarf = bmfcheck();
++  mailfromlocal = addrallowed();
+   seenmail = 1;
+   if (!stralloc_copys(&rcptto,"")) die_nomem();
+   if (!stralloc_copys(&mailfrom,addr.s)) die_nomem();
+@@ -255,9 +260,13 @@
+     --addr.len;
+     if (!stralloc_cats(&addr,relayclient)) die_nomem();
+     if (!stralloc_0(&addr)) die_nomem();
+-  }
+-  else
+-    if (!addrallowed()) { err_nogateway(); return; }
++  } else if (relayclientexternal) {
++    --addr.len;
++    if (!stralloc_cats(&addr,relayclientexternal)) die_nomem();
++    if (!stralloc_0(&addr)) die_nomem();
++    if (!mailfromlocal && !addrallowed()) { err_nogwforyou(); return; }
++  } else if (!addrallowed()) { err_nogateway(); return; }
++       
+   if (!stralloc_cats(&rcptto,"T")) die_nomem();
+   if (!stralloc_cats(&rcptto,addr.s)) die_nomem();
+   if (!stralloc_0(&rcptto)) die_nomem();
