@@ -73,13 +73,15 @@ Prereq:		/bin/sed
 Prereq:		sh-utils
 Conflicts:	qmail-client
 Obsoletes:	smtpdaemon
+Obsoletes:	exim
+Obsoletes:	masqmail
+Obsoletes:	omta
+Obsoletes:	postfix
 Obsoletes:	sendmail
 Obsoletes:	sendmail-cf
 Obsoletes:	sendmail-doc
-Obsoletes:	postfix
-Obsoletes:	zmailer
 Obsoletes:	smail
-Obsoletes:	exim
+Obsoletes:	zmailer
 
 %description
 qmail is a small, fast, secure replacement for the SENDMAIL package,
@@ -137,7 +139,6 @@ Summary(pl):	qmail - serwer pocztowy (MTA) - cienki klient
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
-Copyright:	Check with djb@koobera.math.uic.edu
 URL:		http://www.qmail.org/
 Provides:	smtpdaemon
 Provides:	qmailmta
@@ -179,7 +180,7 @@ Maildirmake jest narzêdziem do zak³adania folderów w formacie Maildir.
 
 %package perl
 Summary:	perl scripts for qmail
-Summary(pl):	skrypty perlowe dla qmaila
+Summary(pl):	Skrypty perlowe dla qmaila
 Group:		Applications/Mail
 Group(de):	Applikationen/Post
 Group(pl):	Aplikacje/Poczta
@@ -188,6 +189,9 @@ Requires:	%{name} = %{version}
 
 %description perl
 Perl scripts for qmail.
+
+%description perl -l pl
+Skrypty perlowe dla qmaila.
 
 %package pop3
 Summary:	POP3 server for qmail
@@ -205,6 +209,9 @@ Obsoletes:	solid-pop3d
 
 %description pop3
 POP3 server for qmail.
+
+%description pop3 -l pl
+Serwer POP3 dla qmaila.
 
 %prep
 %setup -q
