@@ -109,7 +109,7 @@ diff -urN qmail-1.03.orig/rblsmtpd-0.70/logger.c qmail-1.03/rblsmtpd-0.70/logger
 +      syslog(priority,"%s+%s",stamp,buf); /* logger folds invisibly; GPACIC */
 +    else {
 +      stamp_make();
-+      priority = LOG_WARN;
++      priority = LOG_WARNING;
 +      syslog(priority,"%s %s",stamp,buf);
 +      flagcont = 1;
 +    }
