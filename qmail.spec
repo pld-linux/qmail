@@ -44,6 +44,8 @@ Source21:	%{name}-client.html
 Source22:	%{name}-cert.pem
 Source23:	%{name}-pl-man-pages.tar.bz2
 # Source23-md5:	e6230e950257cf46b9b243685d682e3f
+Source24:	http://iidea.pl/~paweln/tlum/qmail-doki.tar.bz2
+# Source24-md5: 2d85f0f9f8408cf6caab9f9bc8f68657
 Patch0:		%{name}-1.03.install.patch
 Patch1:		%{name}-1.03.msglog.patch
 Patch2:		%{name}-1.03.redhat.patch
@@ -73,6 +75,7 @@ Patch26:	%{name}-errno.patch
 URL:		http://www.qmail.org/
 BuildRequires:	groff
 BuildRequires:	pam-devel
+BuildRequires:	openssl-devel
 PreReq:		rc-scripts >= 0.2.0
 PreReq:		rc-inetd
 PreReq:		sh-utils
@@ -390,6 +393,10 @@ install %{SOURCE21} .
 install %{SOURCE22} $RPM_BUILD_ROOT%{varqmail}/control/cert.pem
 bzip2 -dc %{SOURCE23} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 
+bzip2 -dc %{SOURCE24} | tar xf - 
+echo "These are pl-translations taken from: \
+   http://iidea.pl/~paweln/tlum/qmail-doki.tar.bz2" > qmail-doki/00-INDEX
+
 sed /^diff/q %{PATCH24} >README.TLS
 
 %clean
@@ -514,6 +521,7 @@ fi
 %doc BLURB* README SECURITY THANKS THOUGHTS TODO VERSION
 %doc boot checkpass-1.2 qmHandle-0.5.1 queue-fix-1.4
 %doc rblsmtpd-0.70 tarpit.README README.TLS
+%doc qmail-doki
 
 %attr(755,root,root) %dir %{_sysconfdir}/mail
 %attr(755,root,root) %dir %{_sysconfdir}/qmail
