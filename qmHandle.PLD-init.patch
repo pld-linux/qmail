@@ -1,0 +1,47 @@
+diff -Nur qmHandle-0.4.0.orig/qmHandle qmHandle-0.4.0/qmHandle
+--- qmHandle-0.4.0.orig/qmHandle	Fri Feb  5 11:41:42 1999
++++ qmHandle-0.4.0/qmHandle	Fri Jun  4 22:55:08 1999
+@@ -10,12 +10,10 @@
+ 
+ # Set this to your qmail queue directory (be sure to include the final slash!)
+ $queue = "/var/qmail/queue/";
+-$qmcmd = "csh -cf '/var/qmail/rc &'";
++$qmcmd = '/etc/rc.d/init.d/qmail start';
+ # Replace the above with this if you have qmail < 1.03:
+ ## $qmcmd = '/var/qmail/bin/qmail-start ./Mailbox splogger qmail &';
+ 
+-$pidcmd = 'pidof qmail-send';
+-
+ # Print help
+ sub Usage {
+   print "qmHandle v0.4.0\n";
+@@ -183,15 +181,7 @@
+ sub DelMsg {
+   $rmsg = shift;
+ 
+-  $qmpid = `$pidcmd`;
+-  chop ($qmpid);
+-  if ($qmpid != 0) {
+-    print "Terminating qmail (pid $qmpid)... this might take a while if qmail is working.\n";
+-    kill 'TERM', $qmpid;
+-    while (`$pidcmd` eq "$qmpid\n") { sleep 1; }
+-  } else {
+-    print "Qmail isn't running... good.\n";
+-  }
++	system('/etc/rc.d/init.d/qmail stop');
+ 
+   # Search message
+   $ok = 0;
+@@ -214,11 +204,7 @@
+     print "Message $rmsg not found in the queue!\n";
+   }
+ 
+-  if ($qmpid != 0) {
+-    print "Restarting qmail... ";
+-    system($qmcmd);
+-    print "done (hopefully).\n";
+-  }
++	system($qmcmd);
+ }
+ 
+ # Make statistics
