@@ -4,6 +4,6 @@ PROTOCOL=tcp
 PORT=25
 FLAGS=nowait
 USER=qmaild
-SERVER=tcd
+SERVER=tcpd
 DAEMON=/var/qmail/bin/rblsmtpd
 DAEMONARGS="/var/qmail/bin/qmail-smtpd"

@@ -4,6 +4,6 @@ PROTOCOL=tcp
 PORT=628
 FLAGS=nowait
 USER=qmaild
-SERVER=tcd
+SERVER=tcpd
 DAEMON=/var/qmail/bin/tcp-env
 DAEMONARGS="/var/qmail/bin/qmail-qmqpd"
