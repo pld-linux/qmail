@@ -18,12 +18,17 @@
 [ -f /etc/sysconfig/qmail ] && . /etc/sysconfig/qmail
 
 # Check that networking is up.
-if is_no "${NETWORKING}"; then
-	msg_Network_Down Qmail
-	exit 1
+if is_yes "${NETWORKING}"; then
+	if [ ! -f /var/lock/subsys/network ]; then
+		msg_network_down Qmail
+		exit 1
+	fi
+else
+	exit 0
 fi
 
 RETVAL=0
+
 
 # See how we were called.
 case "$1" in
@@ -42,38 +47,41 @@ case "$1" in
 
 		if ps ax | grep -v grep | grep -q qmail-send
 		then
-			deltext
 			ok
 			touch /var/lock/subsys/qmail
 		else
-			deltext
-			fail	  
+			fail
 			RETVAL=1
 		fi
 	else
-		msg_Already_Running qmail
+		msg_already_running qmail
 		exit 1
 	fi
 	;;
   stop)
-	# Stop daemons.
-	msg_stopping qmail
-	killproc qmail-send
-	rm -f /var/lock/subsys/qmail
+	if [ -f /var/lock/subsys/qmail ]; then
+		# Stop daemons.
+		msg_stopping qmail
+		killproc qmail-send
+		rm -f /var/lock/subsys/qmail
+	else
+		msg_not_running qmail
+		exit 1
+	fi
 	;;
   queue)
 	qmail-qstat
 	qmail-qread
 	;;
   restart|reload)
-  	$0 stop
+	$0 stop
 	$0 start
 	;;
   status)
-  	status qmail-send
+	status qmail-send
 	;;
   *)
-	msg_Usage "$0 {start|stop|status|queue|restart|reload}"
+	msg_usage "$0 {start|stop|queue|restart|reload|status}"
 	exit 1
 esac
 
