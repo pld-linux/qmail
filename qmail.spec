@@ -2,7 +2,7 @@ Summary:     qmail Mail Transport Agent
 Summary(pl): qmail - serwer pocztowy (MTA)
 Name:        qmail
 Version:     1.03
-Release:     11
+Release:     12
 Group:       Networking/Daemons
 Group(pl):   Sieciowe/Serwery
 Copyright:   Check with djb@koobera.math.uic.edu
@@ -35,20 +35,25 @@ Patch7:      qmail-1.03.checkpassword.patch
 Patch8:      tarpit.patch
 Patch9:      qmail-1.03-maxrcpt.patch
 Patch10:     qmHandle.PLD-init.patch
-#Doesn't work for me: <wrobell@posexperts.com.pl>
-#Patch11:     http://www.rcac.tdi.co.jp/fujiwara/qmail-1.03-v6-980618.diff
-BuildRoot:	/tmp/%{name}-%{version}-root
-Provides:    MTA smtpdaemon qmailmta qmail-server
-Requires:    %{_sbindir}/tcpd, setup >= 1.10.0-3
-Prereq:      /sbin/chkconfig, /bin/hostname, /bin/sed
+Patch11:     qmail-1.03-IPv6-PLD.patch
+BuildRoot:   /tmp/%{name}-%{version}-root
+Provides:    smtpdaemon
+Provides:    qmailmta
+Provides:    qmail-server
+Requires:    %{_sbindir}/tcpd
+Prereq:      /sbin/chkconfig
+Prereq:      /bin/hostname
+Prereq:      /bin/sed
 Conflicts:   qmail-client
 Obsoletes:   sendmail
 Obsoletes:   smail
-Obsoletes:   zmail
+Obsoletes:   exim
+Obsoletes:   zmailer
 
 %description
 qmail is a small, fast, secure replacement for the SENDMAIL package, which is
 the program that actually receives, routes, and delivers electronic mail.
+This qmail also support IPv6 protocol.
 
 Following scripts and programs have been added:
 
@@ -82,6 +87,7 @@ interact with them.
 %description -l pl
 qmail jest ma³±, szybk± oraz bezpieczn± alternatyw± do sendmail-a, która
 umo¿liwia otrzymywanie, przesy³anie oraz wysy³anie poczty elektronicznej.
+Ten qmail dodatkowo wspiera protokó³ IPv6.
 
 Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
 
@@ -136,17 +142,17 @@ tar zxf %{SOURCE6} -C qmHandle-0.4.0/
 %patch8 -p0
 %patch9 -p0
 %patch10 -p0
-#%patch11 -p0
+%patch11 -p1
 
 
 %build
-make
+make CFLAGS="$RPM_OPT_FLAGS"
 make man
 make -C dot-forward-0.71
 make -C fastforward-0.51
 make -C rblsmtpd-0.70
 make -C queue-fix-1.3
-make -C checkpassword-0.76
+make -C checkpassword-0.76 SHADOWLIBS=-DPW_SHADOW
 
 
 %install
@@ -269,6 +275,18 @@ if [ $1 = 1 ]; then
 		echo "#qmqp	stream  tcp 	nowait  qmaild  %{_sbindir}/tcpd /var/qmail/bin/tcp-env /var/qmail/bin/qmail-qmqpd" >> /etc/inetd.conf
 		echo >> /etc/inetd.conf
 	fi
+
+# Add few users and groups
+%{_sbindir}/groupadd -f -g 81 nofiles
+%{_sbindir}/groupadd -f -g 82 qmail
+%{_sbindir}/useradd -M -g nofiles -d /var/qmail/ -u 81 -s /bin/true qmaild 2> /dev/null
+%{_sbindir}/useradd -M -g nofiles -d /var/qmail/alias/ -u 82 -s /bin/true alias 2> /dev/null
+%{_sbindir}/useradd -M -g qmail -d /var/qmail/ -u 83 -s /bin/true qmailq 2> /dev/null
+%{_sbindir}/useradd -M -g qmail -d /var/qmail/ -u 84 -s /bin/true qmailr 2> /dev/null
+%{_sbindir}/useradd -M -g qmail -d /var/qmail/ -u 85 -s /bin/true qmails 2> /dev/null
+%{_sbindir}/useradd -M -g nofiles -d /var/qmail/ -u 86 -s /bin/true qmaill 2> /dev/null
+%{_sbindir}/useradd -M -g nofiles -d /var/qmail/ -u 87 -s /bin/true qmailp 2> /dev/null
+
 fi
 
 
@@ -301,6 +319,21 @@ if [ $1 = 0 ]; then
 	echo "Remember to restart INETD (killall -HUP inetd)"
 fi
 
+%postun
+# If package is being erased for the last time.
+if [ $1 = 0 ]; then
+%{_sbindir}/userdel qmaild 2> /dev/null
+%{_sbindir}/userdel alias 2> /dev/null
+%{_sbindir}/userdel qmaill 2> /dev/null
+%{_sbindir}/userdel qmailp 2> /dev/null
+%{_sbindir}/userdel qmailq 2> /dev/null
+%{_sbindir}/userdel qmailr 2> /dev/null
+%{_sbindir}/userdel qmails 2> /dev/null
+%{_sbindir}/userdel qmail 2> /dev/null
+
+%{_sbindir}/groupdel nofiles 2> /dev/null
+%{_sbindir}/groupdel qmail 2> /dev/null
+fi
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -416,6 +449,15 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Jun 05 1999 Arkadiusz Mi¶kiewicz <misiek@pld.org.pl>
+- qmail's users and groups are added in %pre script
+  and removed in %postun
+- corrected IPv6 patch (not tested yet)
+- removed Requires: setup (now it's obsolete)
+- modified UIDs and GID in qmail-1.03.fixed-ids.patch
+  to avoid conflict with amanda (see uid_gid.db.txt for details)
+- fixed qmail-1.03.checkpassword.patch for shadow passwords
+
 * Tue May 18 1999 Jan Rêkorajski <baggins@hunter.mimuw.edu.pl>
   [1.03-10]
 - removed relay-allow patch - I realized it was dumb, and added
