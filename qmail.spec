@@ -24,6 +24,8 @@ Source13:    qmail-default-delivery
 Source14:    qmail-lint-0.51.pl
 Source15:    qmail-qsanity-0.51.pl
 Source16:    tarpit.README
+Source17:    qmqp.rc-inetd
+Source18:    smtp.rc-inetd
 Patch0:      qmail-1.03.install.patch
 Patch1:      qmail-1.03.msglog.patch
 Patch2:      qmail-1.03.redhat.patch
@@ -164,7 +166,7 @@ install -d $RPM_BUILD_ROOT%{_mandir}
 install -d $RPM_BUILD_ROOT%{_var}/qmail
 install -d $RPM_BUILD_ROOT%{_bindir}/qmail
 install -d $RPM_BUILD_ROOT%{_libdir}/qmail
-install -d $RPM_BUILD_ROOT/etc/{qmail/{alias,control,users},rc.d/init.d,profile.d,mail}
+install -d $RPM_BUILD_ROOT/etc/{qmail/{alias,control,users},rc.d/init.d,profile.d,mail,sysconfig/rc-inetd}
 
 ln -sf ../../etc/qmail/alias			$RPM_BUILD_ROOT/var/qmail/
 ln -sf ../../etc/qmail/control			$RPM_BUILD_ROOT/var/qmail/
@@ -183,6 +185,10 @@ ln -sf ../../var/qmail/bin/sendmail		$RPM_BUILD_ROOT%{_libdir}/sendmail
 install %{SOURCE7}				$RPM_BUILD_ROOT/etc/rc.d/init.d/qmail
 install %{SOURCE8}				$RPM_BUILD_ROOT/etc/profile.d/qmail.sh
 install %{SOURCE9}				$RPM_BUILD_ROOT/etc/profile.d/qmail.csh
+
+install %{SOURCE17}				$RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/qmqp
+install %{SOURCE18}				$RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/smtp
+
 
 # Set up mailing aliases
 install %{SOURCE10}				$RPM_BUILD_ROOT/etc/aliases
@@ -265,22 +271,7 @@ gzip -9nf rblsmtpd-0.70/* tarpit.README
 gzip -9nf $RPM_BUILD_ROOT%{_mandir}/man*/*
 
 %pre
-# If package is being installed for the first time
 if [ $1 = 1 ]; then
-	g=`grep -c "qmail" /etc/inetd.conf || true`
-	if [ $g -gt 0 ]; then
-		echo "qmail already installed in /etc/inetd.conf, no need to add."
-	else
-		echo "Adding qmail to /etc/inetd.conf and /etc/services."
-		cp -f /etc/services /etc/services.pre-qmail
-		echo "qmqp		628/tcp		qmqp		# QMAIL Queuing Protocol" >> /etc/services
-		echo >> /etc/services
-		cp -f /etc/inetd.conf /etc/inetd.conf.pre-qmail
-		echo "#smtp	stream  tcp 	nowait  qmaild  %{_sbindir}/tcpd /var/qmail/bin/tcp-env /var/qmail/bin/qmail-smtpd" >> /etc/inetd.conf
-		echo "#qmqp	stream  tcp 	nowait  qmaild  %{_sbindir}/tcpd /var/qmail/bin/tcp-env /var/qmail/bin/qmail-qmqpd" >> /etc/inetd.conf
-		echo >> /etc/inetd.conf
-	fi
-
 # Add few users and groups
 %{_sbindir}/groupadd -f -g 81 nofiles
 %{_sbindir}/groupadd -f -g 82 qmail
@@ -325,7 +316,7 @@ if [ $1 = 0 ]; then
 	/etc/rc.d/init.d/qmail stop
 	/sbin/chkconfig --del qmail
 
-	echo "Remember to restart INETD (killall -HUP inetd)"
+	echo "Remember to restart INETD (/etc/rc.d/init.d/rc-inetd restart)"
 fi
 
 %postun
@@ -372,6 +363,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 754,   root,  root) %config(noreplace) %verify(not size mtime md5) /etc/rc.d/init.d/*
 %attr( 644,   root,  root) %config(noreplace) %verify(not size mtime md5) /etc/aliases
 %attr( 644,   root,  root) /etc/mail/aliases
+%attr( 640,   root,  root) /etc/sysconfig/rc-inetd/qmqp
+%attr( 640,   root,  root) /etc/sysconfig/rc-inetd/smtp
 %attr( 755,   root, qmail) %{_libdir}/qmail/bouncesaying
 %attr( 755,   root, qmail) %{_libdir}/qmail/condredirect
 %attr( 755,   root, qmail) %{_libdir}/qmail/checkpassword
