@@ -14,7 +14,7 @@ Source3:	ftp://koobera.math.uic.edu/pub/software/rblsmtpd-0.70.tar.gz
 Source4:	ftp://koobera.math.uic.edu/pub/software/checkpassword-0.76.shar.gz
 Source5:	http://www.netmeridian.com/e-huss/queue-fix.tar.gz
 Source6:	http://www.io.com/~mick/soft/qmHandle-0.4.0.tar.gz
-Source7:	qmail-1.03-linux.init
+Source7:	qmail.init
 Source8:	qmail-linux.sh
 Source9:	qmail-linux.csh
 Source10:	qmail-aliases
@@ -37,7 +37,7 @@ Patch7:		qmail-1.03.checkpassword.patch
 Patch8:		tarpit.patch
 Patch9:		qmail-1.03-maxrcpt.patch
 Patch10:	qmHandle.PLD-init.patch
-Patch11:	qmail-1.03-IPv6-PLD.patch
+Patch11:	qmail-IPv6-PLD.patch
 Patch12:	http://www.ckdhr.com/ckd/qmail-dns.patch
 Patch13:	ftp://dione.ids.pl/people/siewca/patches/%{name}-%{version}-etc.patch
 Patch14:	qmail-rblsmtpd-IPv6-PLD.patch
