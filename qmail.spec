@@ -4,8 +4,8 @@ Name:		qmail
 Version:	1.03
 Release:	29
 Group:		Networking/Daemons
-Group(pl):	Sieciowe/Serwery
 Group(de):	Netzwerkwesen/Server
+Group(pl):	Sieciowe/Serwery
 Copyright:	Check with djb@koobera.math.uic.edu
 URL:		http://www.qmail.org/
 Source0:	ftp://koobera.math.uic.edu/pub/software/%{name}-%{version}.tar.gz
@@ -122,8 +122,8 @@ Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
 Summary:	qmail Mail Transport Agent - null client
 Summary(pl):	qmail - serwer pocztowy (MTA) - cienki klient
 Group:		Networking/Daemons
-Group(pl):	Sieciowe/Serwery
 Group(de):	Netzwerkwesen/Server
+Group(pl):	Sieciowe/Serwery
 Copyright:	Check with djb@koobera.math.uic.edu
 URL:		http://www.qmail.org/
 Provides:	smtpdaemon
