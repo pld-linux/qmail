@@ -54,6 +54,10 @@ Prereq:		/bin/hostname
 Prereq:		/bin/sed
 Conflicts:	qmail-client
 Obsoletes:	smtpdaemon
+Obsoletes:	sendmail
+Obsoletes:	postfix
+Obsoletes:	zmailer
+Obsoletes:	smail
 
 %description
 qmail is a small, fast, secure replacement for the SENDMAIL package, which is
@@ -66,22 +70,22 @@ Following scripts and programs have been added:
  Name                 Features
 ================================================================================
 checkpassword        password-checking interface
---------------------------------------------------------------------------------
+
 qmHandle             more powerful viewing and managing qmail queue
                      (remote and local)
---------------------------------------------------------------------------------
+
 rblsmtpd             a generic tool to block mail from RBL-listed sites; 
                      an optional way to fight SPAM
---------------------------------------------------------------------------------
+
 qmail-fix            a small utility for checking and repairing the qmail
                      queue structure
---------------------------------------------------------------------------------
+
 qmail-msglog         advanced e-mail monitoring
---------------------------------------------------------------------------------
+
 qmail-qsanity        examine all the files in the qmail queue
---------------------------------------------------------------------------------
+
 qmail-lint           examine the qmail configuration
---------------------------------------------------------------------------------
+
 tarpit               tool to fight with SPAM
 ================================================================================
 
@@ -100,22 +104,22 @@ Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
  Nazwa                Opis
 ================================================================================
 checkpassword        interfejs do sprawdzania hase³
---------------------------------------------------------------------------------
+
 qmHandle             bardziej zaawansowane przegl±danie oraz zarz±dzanie
                      kolejk± pocztow±
---------------------------------------------------------------------------------
+
 rblsmtpd             podstawowe narzêdzie do blokowania listów z miejsc
                      wyszczególnionych w RBL; sposób na walkê ze SPAM-em
---------------------------------------------------------------------------------
+
 qmail-fix            program do sprawdzania oraz naprawiania struktury kolejki 
                      pocztowej qmail-a
---------------------------------------------------------------------------------
+
 qmail-msglog         zaawansowane monitorowanie listów
---------------------------------------------------------------------------------
+
 qmail-qsanity        sprawdza kolejkê pocztow± qmail-a
---------------------------------------------------------------------------------
+
 qmail-lint           sprawdza konfiguracjê qmail-a
---------------------------------------------------------------------------------
+
 tarpit               kolejne narzêdzie do walki ze SPAM-em
 ================================================================================
 
