@@ -310,7 +310,11 @@ fi
 # Set up aliases
 %{_bindir}/newaliases
 /sbin/chkconfig --add qmail
-
+if [ -f /var/lock/subsys/rc-inetd ]; then
+	/etc/rc.d/init.d/rc-inetd restart 1>&2
+else
+	echo "Type \"/etc/rc.d/init.d/rc-inetd start\" to start inet sever" 1>&2
+fi
 
 %preun
 # If package is being erased for the last time.
@@ -335,6 +339,9 @@ if [ $1 = 0 ]; then
 
 %{_sbindir}/groupdel nofiles 2> /dev/null
 %{_sbindir}/groupdel qmail 2> /dev/null
+fi
+if [ -f /var/lock/subsys/rc-inetd ]; then
+	/etc/rc.d/init.d/rc-inetd stop
 fi
 
 %clean
@@ -365,8 +372,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 754,   root,  root) %config(noreplace) %verify(not size mtime md5) /etc/rc.d/init.d/*
 %attr( 644,   root,  root) %config(noreplace) %verify(not size mtime md5) /etc/aliases
 %attr( 644,   root,  root) /etc/mail/aliases
-%attr( 640,   root,  root) /etc/sysconfig/rc-inetd/qmqp
-%attr( 640,   root,  root) /etc/sysconfig/rc-inetd/smtp
+%attr( 640,   root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/rc-inetd/qmqp
+%attr( 640,   root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/rc-inetd/smtp
 %attr( 755,   root, qmail) %{_libdir}/qmail/bouncesaying
 %attr( 755,   root, qmail) %{_libdir}/qmail/condredirect
 %attr( 755,   root, qmail) %{_libdir}/qmail/checkpassword
