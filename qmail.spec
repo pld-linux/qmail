@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	18
+Release:	19
 Group:		Networking/Daemons
 Group(pl):	Sieciowe/Serwery
 Copyright:	Check with djb@koobera.math.uic.edu
@@ -26,6 +26,8 @@ Source15:	qmail-qsanity-0.51.pl
 Source16:	tarpit.README
 Source17:	%{name}-qmqp.inetd
 Source18:	%{name}-smtp.inetd
+Source19:	%{name}-qpop.inetd
+Source20:	checkpassword.pamd
 Patch0:		qmail-1.03.install.patch
 Patch1:		qmail-1.03.msglog.patch
 Patch2:		qmail-1.03.redhat.patch
@@ -42,6 +44,8 @@ Patch12:	http://www.ckdhr.com/ckd/qmail-dns.patch
 Patch13:	ftp://dione.ids.pl/people/siewca/patches/%{name}-%{version}-etc.patch
 Patch14:	qmail-rblsmtpd-IPv6-PLD.patch
 Patch15:	qmail-rblsmtpd-syslog.patch
+Patch16:	qmail-smtpauth.patch
+Patch17:	qmail-checkpassword-PAM.patch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Provides:	smtpdaemon
 Provides:	qmailmta
@@ -156,6 +160,8 @@ tar zxf %{SOURCE6} -C qmHandle-0.4.0/
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p0
+%patch17 -p1
 
 %build
 make CFLAGS="$RPM_OPT_FLAGS"
@@ -170,39 +176,36 @@ make -C checkpassword-0.76 SHADOWLIBS=-DPW_SHADOW
 rm -rf $RPM_BUILD_ROOT
 
 install -d boot
-install -d $RPM_BUILD_ROOT%{_sbindir}
-install -d $RPM_BUILD_ROOT%{_mandir}
-install -d $RPM_BUILD_ROOT%{_var}/qmail
-install -d $RPM_BUILD_ROOT%{_bindir}/qmail
-install -d $RPM_BUILD_ROOT%{_libdir}/qmail
-install -d $RPM_BUILD_ROOT/etc/{qmail/{alias,control,users},rc.d/init.d,profile.d,mail,sysconfig/rc-inetd}
+install -d $RPM_BUILD_ROOT{%{_sbindir},%{_mandir},{%{_var},%{_bindir},%{_libdir}}/qmail}
+install -d $RPM_BUILD_ROOT/etc/{qmail/{alias,control,users},rc.d/init.d,profile.d,mail,sysconfig/rc-inetd,pam.d}
 
-ln -sf ../../etc/qmail/alias			$RPM_BUILD_ROOT/var/qmail/
-ln -sf ../../etc/qmail/control			$RPM_BUILD_ROOT/var/qmail/
-ln -sf ../../etc/qmail/users			$RPM_BUILD_ROOT/var/qmail/
-ln -sf ../..%{_libdir}/qmail			$RPM_BUILD_ROOT/var/qmail/bin
-ln -sf ../..%{_mandir}				$RPM_BUILD_ROOT/var/qmail/man
-ln -sf $RPM_BUILD_DIR/%{name}-%{version}/boot	$RPM_BUILD_ROOT/var/qmail/boot
+ln -sf ../../etc/qmail/alias $RPM_BUILD_ROOT/var/qmail/
+ln -sf ../../etc/qmail/control $RPM_BUILD_ROOT/var/qmail/
+ln -sf ../../etc/qmail/users $RPM_BUILD_ROOT/var/qmail/
+ln -sf ../..%{_libdir}/qmail $RPM_BUILD_ROOT/var/qmail/bin
+ln -sf ../..%{_mandir} $RPM_BUILD_ROOT/var/qmail/man
+ln -sf $RPM_BUILD_DIR/%{name}-%{version}/boot $RPM_BUILD_ROOT/var/qmail/boot
 
-./install -s					$RPM_BUILD_ROOT
+./install -s $RPM_BUILD_ROOT
 
-ln -s qmail-qread				$RPM_BUILD_ROOT%{_bindir}/mailq
-ln -sf ../../var/qmail/bin/sendmail		$RPM_BUILD_ROOT%{_sbindir}/sendmail
-ln -sf ../../var/qmail/bin/sendmail		$RPM_BUILD_ROOT%{_libdir}/sendmail
+ln -s qmail-qread $RPM_BUILD_ROOT%{_bindir}/mailq
+ln -sf ../../var/qmail/bin/sendmail $RPM_BUILD_ROOT%{_sbindir}/sendmail
+ln -sf ../../var/qmail/bin/sendmail $RPM_BUILD_ROOT%{_libdir}/sendmail
 
 # Set up boot procedures
-install %{SOURCE7}				$RPM_BUILD_ROOT/etc/rc.d/init.d/qmail
-install %{SOURCE8}				$RPM_BUILD_ROOT/etc/profile.d/qmail.sh
-install %{SOURCE9}				$RPM_BUILD_ROOT/etc/profile.d/qmail.csh
+install %{SOURCE7} $RPM_BUILD_ROOT/etc/rc.d/init.d/qmail
+install %{SOURCE8} $RPM_BUILD_ROOT/etc/profile.d/qmail.sh
+install %{SOURCE9} $RPM_BUILD_ROOT/etc/profile.d/qmail.csh
 
-install %{SOURCE17}				$RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/qmqp
-install %{SOURCE18}				$RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/smtp
+install %{SOURCE17} $RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/qmqp
+install %{SOURCE18} $RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/smtp
+install %{SOURCE19} $RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/qpop
 
 # Set up mailing aliases
-install %{SOURCE10}				$RPM_BUILD_ROOT/etc/aliases
-ln -sf ../aliases				$RPM_BUILD_ROOT/etc/mail/aliases
-install %{SOURCE11}				$RPM_BUILD_ROOT/etc/qmail/alias/.qmail-default
-install %{SOURCE12}				$RPM_BUILD_ROOT/etc/qmail/alias/.qmail-msglog
+install %{SOURCE10} $RPM_BUILD_ROOT/etc/aliases
+ln -sf ../aliases $RPM_BUILD_ROOT/etc/mail/aliases
+install %{SOURCE11} $RPM_BUILD_ROOT/etc/qmail/alias/.qmail-default
+install %{SOURCE12} $RPM_BUILD_ROOT/etc/qmail/alias/.qmail-msglog
 
 for i in mailer-daemon postmaster root; do
 	touch $RPM_BUILD_ROOT/etc/qmail/alias/.qmail-$i
@@ -216,42 +219,43 @@ touch $RPM_BUILD_ROOT/etc/qmail/users/{assign,include,exclude,mailnames,subusers
 echo -n "." > $RPM_BUILD_ROOT/etc/qmail/users/assign
 
 # Set up default delivery
-install %{SOURCE13}				$RPM_BUILD_ROOT/etc/qmail/dot-qmail
+install %{SOURCE13} $RPM_BUILD_ROOT/etc/qmail/dot-qmail
 
-install %{SOURCE14}				$RPM_BUILD_ROOT/var/qmail/bin/qmail-lint
-install %{SOURCE15}				$RPM_BUILD_ROOT/var/qmail/bin/qmail-qsanity
+install %{SOURCE14} $RPM_BUILD_ROOT/var/qmail/bin/qmail-lint
+install %{SOURCE15} $RPM_BUILD_ROOT/var/qmail/bin/qmail-qsanity
 
 # qmHandle command
-install qmHandle-0.4.0/qmHandle			$RPM_BUILD_ROOT/var/qmail/bin/qmHandle
+install qmHandle-0.4.0/qmHandle $RPM_BUILD_ROOT/var/qmail/bin/qmHandle
 
 # QUEUE FIX command
-install queue-fix-1.3/queue-fix			$RPM_BUILD_ROOT/var/qmail/bin
+install queue-fix-1.3/queue-fix $RPM_BUILD_ROOT/var/qmail/bin
 
 # CHECKPASSWORD command
-install checkpassword-0.76/checkpassword	$RPM_BUILD_ROOT/var/qmail/bin
+install checkpassword-0.76/checkpassword $RPM_BUILD_ROOT/var/qmail/bin
+install %{SOURCE20} $RPM_BUILD_ROOT/etc/pam.d/checkpassword
 
 # DOT FORWARD command and doc
-install dot-forward-0.71/dot-forward		$RPM_BUILD_ROOT/var/qmail/bin
-install dot-forward-0.71/dot-forward.1		$RPM_BUILD_ROOT/var/qmail/man/man1
+install dot-forward-0.71/dot-forward $RPM_BUILD_ROOT/var/qmail/bin
+install dot-forward-0.71/dot-forward.1 $RPM_BUILD_ROOT/var/qmail/man/man1
 
 # FAST FORWARD commands and docs
-install fastforward-0.51/fastforward		$RPM_BUILD_ROOT/var/qmail/bin
-install fastforward-0.51/newaliases		$RPM_BUILD_ROOT/var/qmail/bin
-install fastforward-0.51/newinclude		$RPM_BUILD_ROOT/var/qmail/bin
-install fastforward-0.51/printforward		$RPM_BUILD_ROOT/var/qmail/bin
-install fastforward-0.51/printmaillist		$RPM_BUILD_ROOT/var/qmail/bin
-install fastforward-0.51/setforward		$RPM_BUILD_ROOT/var/qmail/bin
-install fastforward-0.51/setmaillist		$RPM_BUILD_ROOT/var/qmail/bin
-install fastforward-0.51/*.1			$RPM_BUILD_ROOT/var/qmail/man/man1/
+install fastforward-0.51/fastforward $RPM_BUILD_ROOT/var/qmail/bin
+install fastforward-0.51/newaliases $RPM_BUILD_ROOT/var/qmail/bin
+install fastforward-0.51/newinclude $RPM_BUILD_ROOT/var/qmail/bin
+install fastforward-0.51/printforward $RPM_BUILD_ROOT/var/qmail/bin
+install fastforward-0.51/printmaillist $RPM_BUILD_ROOT/var/qmail/bin
+install fastforward-0.51/setforward $RPM_BUILD_ROOT/var/qmail/bin
+install fastforward-0.51/setmaillist $RPM_BUILD_ROOT/var/qmail/bin
+install fastforward-0.51/*.1 $RPM_BUILD_ROOT/var/qmail/man/man1/
 
 # RBLSMTPD commands and doc
-install rblsmtpd-0.70/antirbl			$RPM_BUILD_ROOT/var/qmail/bin
-install rblsmtpd-0.70/rblsmtpd			$RPM_BUILD_ROOT/var/qmail/bin
-install rblsmtpd-0.70/*.8			$RPM_BUILD_ROOT/var/qmail/man/man8
+install rblsmtpd-0.70/antirbl $RPM_BUILD_ROOT/var/qmail/bin
+install rblsmtpd-0.70/rblsmtpd $RPM_BUILD_ROOT/var/qmail/bin
+install rblsmtpd-0.70/*.8 $RPM_BUILD_ROOT/var/qmail/man/man8
 
 # default folder in /etc/skel
-install -d					$RPM_BUILD_ROOT/etc/skel/Mail
-./maildirmake					$RPM_BUILD_ROOT/etc/skel/Mail/Maildir
+install -d $RPM_BUILD_ROOT/etc/skel/Mail
+./maildirmake $RPM_BUILD_ROOT/etc/skel/Mail/Maildir
 
 (set +x; rm -f checkpassword-0.76/{[a-z]*,Makefile,FILES})
 (set +x; rm -f dot-forward-0.71/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
@@ -409,6 +413,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 754,  root,  root) /etc/rc.d/init.d/*
 %attr( 640,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/rc-inetd/qmqp
 %attr( 640,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/rc-inetd/smtp
+%attr( 640,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/rc-inetd/qpop
+%attr( 644,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/pam.d/checkpassword
 %attr( 755,  root,  root) %{_libdir}/qmail/bouncesaying
 %attr( 755,  root,  root) %{_libdir}/qmail/condredirect
 %attr( 755,  root,  root) %{_libdir}/qmail/checkpassword
