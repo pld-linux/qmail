@@ -24,8 +24,8 @@ Source13:    qmail-default-delivery
 Source14:    qmail-lint-0.51.pl
 Source15:    qmail-qsanity-0.51.pl
 Source16:    tarpit.README
-Source17:    qmqp.rc-inetd
-Source18:    smtp.rc-inetd
+Source17:    %{name}-qmqp.inetd
+Source18:    %{name}-smtp.inetd
 Patch0:      qmail-1.03.install.patch
 Patch1:      qmail-1.03.msglog.patch
 Patch2:      qmail-1.03.redhat.patch
