@@ -885,10 +885,10 @@ fi
 
 %post pop3
 # build .cdb if missing
-if [ ! -e %{tcprules}/tcp.qmail-$i.cdb ]; then
-	tcprules %{tcprules}/tcp.qmail-$i.cdb %{tcprules}/.tcp.qmail-$i.tmp < %{tcprules}/tcp.qmail-$i
-	chown qmaild:root %{tcprules}/tcp.qmail-$i.cdb
-	chmod 640 %{tcprules}/tcp.qmail-$i.cdb
+if [ ! -e %{tcprules}/tcp.qmail-pop3.cdb ]; then
+	tcprules %{tcprules}/tcp.qmail-pop3.cdb %{tcprules}/.tcp.qmail-pop3.tmp < %{tcprules}/tcp.qmail-pop3
+	chown qmaild:root %{tcprules}/tcp.qmail-pop3.cdb
+	chmod 640 %{tcprules}/tcp.qmail-pop3.cdb
 fi
 
 # add to supervise
