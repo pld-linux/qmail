@@ -28,7 +28,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.34
+Release:	56.38
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -69,8 +69,8 @@ Source41:	%{name}-smtp-scanner.sh
 # based on source IP. As no inetd is capable of passing env vars depending on
 # connection, and besides tcpserver is recommended for qmail.
 # Instead of having here bunch of files I packaged them as tarball.
-Source50:	http://glen.alkohol.ee/pld/qmail/qmail-conf-20041128.tar.bz2
-# Source50-md5:	7b2275356fc25f6d0b1cb74043f6e4a7
+Source50:	http://glen.alkohol.ee/pld/qmail/qmail-conf-20041128.2.tar.bz2
+# Source50-md5:	7aedead4171707113d3d283535a2947c
 
 Patch0:		%{name}-1.03.install.patch
 Patch1:		%{name}-1.03.msglog.patch
@@ -217,6 +217,7 @@ BuildRequires:	ucspi-tcp >= 0.88
 %{?with_home_etc:BuildRequires: home-etc-devel >= 1.0.8}
 BuildRequires:	pam-devel
 %{?with_tls:BuildRequires:	openssl-devel >= 0.9.7d}
+%{?with_tls:Requires:	openssl-tools >= 0.9.7d}
 BuildRequires:	rpmbuild(macros) >= 1.159
 PreReq:		rc-scripts >= 0.2.0
 PreReq:		sh-utils
@@ -541,6 +542,7 @@ install qmail-genrsacert.sh $RPM_BUILD_ROOT%{_sysconfdir}/cron.hourly
 
 # for some files
 install -d $RPM_BUILD_ROOT/var/qmail/control/tlshosts
+> $RPM_BUILD_ROOT%{_sysconfdir}/qmail/control/clientcert.pem
 %endif
 
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/qmail/supervise
@@ -937,7 +939,8 @@ fi
 %if %{with tls}
 %ghost %{_sysconfdir}/qmail/control/rsa512.pem
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/servercert.cnf
-%attr(640,qmaild,qmail) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/servercert.pem
+%attr(640,qmaild,qmail) %ghost %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/servercert.pem
+%ghost %{_sysconfdir}/qmail/control/clientcert.pem
 %endif
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/defaultdelivery
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/conf-*
