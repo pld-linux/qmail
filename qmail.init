@@ -28,8 +28,6 @@ else
 fi
 
 RETVAL=0
-
-
 # See how we were called.
 case "$1" in
   start)
@@ -39,7 +37,7 @@ case "$1" in
 
 		# build aliases database
 		newaliases
-		
+
 		msg_starting qmail
 		busy
 		qmail-start "`cat /etc/qmail/dot-qmail`" splogger qmail &
@@ -55,7 +53,6 @@ case "$1" in
 		fi
 	else
 		msg_already_running qmail
-		exit 1
 	fi
 	;;
   stop)
@@ -66,23 +63,24 @@ case "$1" in
 		rm -f /var/lock/subsys/qmail
 	else
 		msg_not_running qmail
-		exit 1
 	fi
 	;;
   queue)
 	qmail-qstat
 	qmail-qread
 	;;
-  restart|reload)
+  restart|force-reload)
 	$0 stop
 	$0 start
+	exit $?
 	;;
   status)
 	status qmail-send
+	exit $?
 	;;
   *)
-	msg_usage "$0 {start|stop|queue|restart|reload|status}"
-	exit 1
+	msg_usage "$0 {start|stop|queue|restart|force-reload|status}"
+	exit 3
 esac
 
 exit $RETVAL
