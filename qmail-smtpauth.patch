@@ -1,0 +1,195 @@
+--- qmail-smtpd.c	Mon Jun 15 12:53:16 1998
++++ qmail-smtpd.c.auth	Fri Nov 19 02:01:25 1999
+@@ -1,4 +1,5 @@
+ #include "sig.h"
++#include <stdio.h>
+ #include "readwrite.h"
+ #include "stralloc.h"
+ #include "substdio.h"
+@@ -16,6 +17,7 @@
+ #include "scan.h"
+ #include "byte.h"
+ #include "case.h"
++#include "wait.h"
+ #include "env.h"
+ #include "now.h"
+ #include "exit.h"
+@@ -25,6 +27,7 @@
+ #include "commands.h"
+ 
+ #define MAXHOPS 100
++#define USE_SMTPAUTH
+ unsigned int databytes = 0;
+ int timeout = 1200;
+ 
+@@ -229,7 +232,11 @@
+ }
+ void smtp_ehlo(arg) char *arg;
+ {
+-  smtp_greet("250-"); out("\r\n250-PIPELINING\r\n250 8BITMIME\r\n");
++  smtp_greet("250-");
++#ifdef USE_SMTPAUTH
++  out("\r\n250-AUTH=LOGIN");
++#endif
++  out("\r\n250-PIPELINING\r\n250 8BITMIME\r\n");
+   seenmail = 0; dohelo(arg);
+ }
+ void smtp_rset()
+@@ -394,10 +401,142 @@
+   out("\r\n");
+ }
+ 
++#ifdef USE_SMTPAUTH
++static unsigned char *base64_alphabet =
++"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
++static int unbase64(ch) int ch; {
++  int i;
++  if (ch == '=') return 0;
++  for (i = 0; i < 64; i++)
++    if (ch == base64_alphabet[i])
++      return i;
++  return 0;
++}
++static int base64_dec_buffer(str,dst,len) const char *str;void *dst;int len;
++{
++  int i, j, l;
++  unsigned char input[4], output[3], *result = (char *)dst;
++  if (str == 0)
++    return 0;
++  l = str_len(str);
++  if (dst == 0 || l > len)
++    return (l / 4) * 3;
++  memset(dst,0,len);
++  for (i=j=0; i<l; i +=4) {
++    input[0] = unbase64(str[i]);
++    input[1] = unbase64(str[i+1]);
++    input[2] = unbase64(str[i+2]);
++    input[3] = unbase64(str[i+3]);
++    output[0] = (input[0] << 2) | (input[1] >> 4);
++    output[1] = (input[1] << 4) | (input[2] >> 2);
++    output[2] = (input[2] << 6) | (input[3]);
++    result[j] = output[0];
++    if (str[i+1] == '=') return j+1;
++    result[j+1]=output[1];
++    if (str[i+2] == '=') return j+2;
++    result[j+2]=output[2];
++    j += 3;
++  }
++  return j;
++}
++static stralloc smtpauth = {0};
++static char smtpauthlogin[65];
++static char smtpauthpass[65];
++static int smtpauth_getl(void) {
++  int i;
++  if (!stralloc_copys(&smtpauth, "")) return -1;
++  for (;;) {
++    if (!stralloc_readyplus(&smtpauth,1)) return -1;
++    i = substdio_get(&ssin, smtpauth.s + smtpauth.len, 1);
++    if (i != 1) return i;
++    if (smtpauth.s[smtpauth.len] == '\n') break;
++    ++smtpauth.len;
++  }
++  if (smtpauth.len > 0) if (smtpauth.s[smtpauth.len-1] == '\r') --smtpauth.len;
++  smtpauth.s[smtpauth.len] = 0;
++  return smtpauth.len;
++}
++static char **smtpauth_argv;
++void smtp_auth(arg) char *arg; {
++  int st, pid, fds[2];
++  /* netscape 4.5 sends AUTH LOGIN <base64encodedusername>
++     microsoft outlook express sends AUTH LOGIN
++
++     idea is simple
++
++     use an external program to test authority
++     if success, set 'RELAYCLIENT'
++     otherwise, let them know nicely (hangup)
++
++     note, i really don't like djb's coding style even though i'm using it here.
++     i think using spaces for tabs is bad.
++                                                -mrs.brisby@nimh.org
++  */
++  while (arg && *arg && *arg != ' ') arg++;
++
++  /* pass over the space */
++  while (arg && *arg && *arg == ' ') arg++;
++
++  if (arg && *arg) {
++    /* here's the base64 encoded login */
++    base64_dec_buffer(arg, smtpauthlogin, sizeof(smtpauthlogin));
++  } else {
++    out("334 VXNlcm5hbWU6\r\n"); /* b64 <- 'Username:' */
++    flush();
++    if (smtpauth_getl() > 0)
++      base64_dec_buffer(smtpauth.s, smtpauthlogin, sizeof(smtpauthlogin));
++    else
++      die_read();
++  }
++  out("334 UGFzc3dvcmQ6\r\n"); /* b64 <- 'Password:' */
++  flush();
++  if (smtpauth_getl() > 0)
++    base64_dec_buffer(smtpauth.s, smtpauthpass, sizeof(smtpauthpass));
++  else
++    die_read();
++  if (pipe(fds)) {
++    out("535 pipe failure\r\n");
++    flush();
++    _exit(0);
++  }
++  /* spawn external program
++
++  external program should return '0' if it was successful,
++
++  submit: /bin/checkpassword /bin/true
++  
++  */
++  switch ((pid=fork())) {
++    case -1: die_nomem();
++    case 0: close(fds[1]);
++      fd_copy(3,fds[0]);
++      execvp(smtpauth_argv[1], smtpauth_argv+1);
++      die_nomem();
++  };
++  close(fds[0]);
++  write(fds[1], smtpauthlogin, str_len(smtpauthlogin)+1);
++  write(fds[1], smtpauthpass, str_len(smtpauthpass)+1);
++  close(fds[1]);
++  wait_pid(&st, pid);
++  if (wait_exitcode(st) == 0) {
++    out("235 go ahead\r\n");
++    flush();
++    relayclient="";
++    return;
++  }
++  sleep(2);
++  out("535 auth failure\r\n"); flush(); _exit(0);
++  /* done */
++}
++#endif
++
+ struct commands smtpcommands[] = {
+   { "rcpt", smtp_rcpt, 0 }
+ , { "mail", smtp_mail, 0 }
+ , { "data", smtp_data, flush }
++#ifdef USE_SMTPAUTH
++, { "auth", smtp_auth, flush }
++#endif
+ , { "quit", smtp_quit, flush }
+ , { "helo", smtp_helo, flush }
+ , { "ehlo", smtp_ehlo, flush }
+@@ -408,8 +547,13 @@
+ , { 0, err_unimpl, flush }
+ } ;
+ 
+-void main()
++void main(argc,argv) int argc; char **argv;
+ {
++#ifdef USE_SMTPAUTH
++  char *u;
++
++  smtpauth_argv = argv;
++#endif
+   sig_pipeignore();
+   if (chdir(auto_qmail) == -1) die_control();
+   setup();
