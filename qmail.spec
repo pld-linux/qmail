@@ -3,7 +3,7 @@ Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
 Release:	46
-LIcense:	Check with djb@koobera.math.uic.edu
+License:	Check with djb@koobera.math.uic.edu
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
