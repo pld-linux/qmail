@@ -61,6 +61,10 @@ case "$1" in
 	killproc qmail-send
 	rm -f /var/lock/subsys/qmail
 	;;
+  queue)
+	qmail-qstat
+	qmail-qread
+	;;
   restart|reload)
   	$0 stop
 	$0 start
@@ -69,7 +73,7 @@ case "$1" in
   	status qmail-send
 	;;
   *)
-	msg_Usage "$0 {start|stop|status|restart|reload}"
+	msg_Usage "$0 {start|stop|status|queue|restart|reload}"
 	exit 1
 esac
 
