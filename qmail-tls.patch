@@ -22,6 +22,12 @@ Usage: - install OpenSSL-0.9.6 http://www.openssl.org/
          s/cert\.pem/clientcert\.pem/ in qmail-remote.c.
          Note: you can add the CA certificate and intermediate
          certs to the end of cert.pem.
+	 Note: you can run
+
+	 openssl req -new -x509 -nodes -out cert.pem \
+	 	-days 365 -keyout cert.pem
+	 
+	 to get a self-signed certificate.
        - replace qmail-smtpd and/or qmail-remote binary
        - verify operation (header information should show
          something like
