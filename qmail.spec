@@ -222,6 +222,7 @@ Requires(post):	/bin/sed
 Requires(post):	fileutils
 Requires(postun):	/usr/sbin/groupdel
 Requires(postun):	/usr/sbin/userdel
+Requires:	crondaemon
 Requires:	pam >= 0.77.3
 Requires:	ucspi-tcp >= 0.88
 Requires:	daemontools >= 0.76-1.4
