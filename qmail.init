@@ -15,7 +15,7 @@
 . /etc/sysconfig/network
 
 # Get service config
-[ -f /etc/sysconfig/rwhod ] && . /etc/sysconfig/rwhod
+[ -f /etc/sysconfig/qmail ] && . /etc/sysconfig/qmail
 
 # Check that networking is up.
 if [ "${NETWORKING}" = "no" ]; then
@@ -31,6 +31,8 @@ case "$1" in
 	if [ ! -f /var/lock/subsys/qmail ]; then
 		PATH="/var/qmail/bin:$PATH"; export PATH
 
+		show Starting qmail
+		busy
 		qmail-start "`cat /etc/qmail/dot-qmail`" splogger qmail &
 		sleep 1
 
