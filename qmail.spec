@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	38
+Release:	39
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
@@ -412,6 +412,11 @@ fi
 # Set up aliases
 %{_bindir}/newaliases
 /sbin/chkconfig --add qmail
+if [ -f /var/lock/subsys/qmail ]; then
+	/etc/rc.d/init.d/qmail restart 1>&2
+else
+	echo "Type \"/etc/rc.d/init.d/qmail start to start qmail" 1>&2
+fi
 if [ -f /var/lock/subsys/rc-inetd ]; then
 	/etc/rc.d/init.d/rc-inetd reload 1>&2
 else
