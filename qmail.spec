@@ -66,38 +66,39 @@ Obsoletes:	smail
 BuildRequires:	pam-devel
 
 %description
-qmail is a small, fast, secure replacement for the SENDMAIL package, which is
-the program that actually receives, routes, and delivers electronic mail.
-This qmail also support IPv6 protocol.
+qmail is a small, fast, secure replacement for the SENDMAIL package, which
+is the program that actually receives, routes, and delivers electronic
+mail. This qmail also support IPv6 protocol.
 
 Following scripts and programs have been added:
 
+
 ================================================================================
- Name                 Features
+Name			Features
 ================================================================================
-checkpassword        password-checking interface
+checkpassword		password-checking interface
 
-qmHandle             more powerful viewing and managing qmail queue
-                     (remote and local)
+qmHandle		more powerful viewing and managing qmail queue
+			(remote and local)
 
-rblsmtpd             a generic tool to block mail from RBL-listed sites; 
-                     an optional way to fight SPAM
+rblsmtpd		a generic tool to block mail from RBL-listed sites;
+			an optional way to fight SPAM
 
-qmail-fix            a small utility for checking and repairing the qmail
-                     queue structure
+qmail-fix		a small utility for checking and repairing the qmail
+			queue structure
 
-qmail-msglog         advanced e-mail monitoring
+qmail-msglog		advanced e-mail monitoring
 
-qmail-qsanity        examine all the files in the qmail queue
+qmail-qsanity		examine all the files in the qmail queue
 
-qmail-lint           examine the qmail configuration
+qmail-lint		examine the qmail configuration
 
-tarpit               tool to fight with SPAM
+tarpit			tool to fight with SPAM
 ================================================================================
 
-*** Note: Be sure and read the documentation as there are some small but very
-significant differences between SENDMAIL and QMAIL and the programs that
-interact with them.
+- *** Note: Be sure and read the documentation as there are some small but
+  very significant differences between SENDMAIL and QMAIL and the programs
+  that interact with them.
 
 %description -l pl
 qmail jest ma³±, szybk± oraz bezpieczn± alternatyw± do sendmail-a, która
@@ -106,32 +107,33 @@ Ten qmail dodatkowo wspiera protokó³ IPv6.
 
 Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
 
+
 ================================================================================
- Nazwa                Opis
+Nazwa			Opis
 ================================================================================
-checkpassword        interfejs do sprawdzania hase³
+checkpassword		interfejs do sprawdzania hase³
 
-qmHandle             bardziej zaawansowane przegl±danie oraz zarz±dzanie
-                     kolejk± pocztow±
+qmHandle		bardziej zaawansowane przegl±danie oraz zarz±dzanie
+			kolejk± pocztow±
 
-rblsmtpd             podstawowe narzêdzie do blokowania listów z miejsc
-                     wyszczególnionych w RBL; sposób na walkê ze SPAM-em
+rblsmtpd 		podstawowe narzêdzie do blokowania listów z miejsc
+			wyszczególnionych w RBL; sposób na walkê ze SPAM-em
 
-qmail-fix            program do sprawdzania oraz naprawiania struktury kolejki 
-                     pocztowej qmail-a
+qmail-fix		program do sprawdzania oraz naprawiania struktury
+			kolejki pocztowej qmail-a
 
-qmail-msglog         zaawansowane monitorowanie listów
+qmail-msglog		zaawansowane monitorowanie listów
 
-qmail-qsanity        sprawdza kolejkê pocztow± qmail-a
+qmail-qsanity		sprawdza kolejkê pocztow± qmail-a
 
-qmail-lint           sprawdza konfiguracjê qmail-a
+qmail-lint		sprawdza konfiguracjê qmail-a
 
-tarpit               kolejne narzêdzie do walki ze SPAM-em
+tarpit			kolejne narzêdzie do walki ze SPAM-em
 ================================================================================
 
-*** Uwaga! Przeczytaj uwa¿nie dokumentacjê do tego pakietu, poniewa¿ istniej± 
-ma³e, ale znacz±ce róznice pomiêdzy qmail-em oraz sendmail-em i programami,
-które wspó³pracuj± z nimi.
+- *** Uwaga! Przeczytaj uwa¿nie dokumentacjê do tego pakietu, poniewa¿
+  istniej± ma³e, ale znacz±ce róznice pomiêdzy qmail-em oraz sendmail-em i
+  programami, które wspó³pracuj± z nimi.
 
 %prep
 %setup -q
@@ -178,11 +180,11 @@ rm -rf $RPM_BUILD_ROOT
 
 install -d boot
 install -d $RPM_BUILD_ROOT{%{_sbindir},%{_mandir},{%{_var},%{_bindir},%{_libdir}}/qmail}
-install -d $RPM_BUILD_ROOT/etc/{qmail/{alias,control,users},rc.d/init.d,profile.d,mail,sysconfig/rc-inetd,pam.d}
+install -d $RPM_BUILD_ROOT%{_sysconfdir}/{qmail/{alias,control,users},rc.d/init.d,profile.d,mail,sysconfig/rc-inetd,pam.d}
 
-ln -sf ../../etc/qmail/alias $RPM_BUILD_ROOT/var/qmail/
-ln -sf ../../etc/qmail/control $RPM_BUILD_ROOT/var/qmail/
-ln -sf ../../etc/qmail/users $RPM_BUILD_ROOT/var/qmail/
+ln -sf ../..%{_sysconfdir}/qmail/alias $RPM_BUILD_ROOT/var/qmail/
+ln -sf ../..%{_sysconfdir}/qmail/control $RPM_BUILD_ROOT/var/qmail/
+ln -sf ../..%{_sysconfdir}/qmail/users $RPM_BUILD_ROOT/var/qmail/
 ln -sf ../..%{_libdir}/qmail $RPM_BUILD_ROOT/var/qmail/bin
 ln -sf ../..%{_mandir} $RPM_BUILD_ROOT/var/qmail/man
 ln -sf $RPM_BUILD_DIR/%{name}-%{version}/boot $RPM_BUILD_ROOT/var/qmail/boot
@@ -195,32 +197,32 @@ ln -sf ../../var/qmail/bin/sendmail $RPM_BUILD_ROOT%{_libdir}/sendmail
 
 # Set up boot procedures
 install %{SOURCE7} $RPM_BUILD_ROOT/etc/rc.d/init.d/qmail
-install %{SOURCE8} $RPM_BUILD_ROOT/etc/profile.d/qmail.sh
-install %{SOURCE9} $RPM_BUILD_ROOT/etc/profile.d/qmail.csh
+install %{SOURCE8} $RPM_BUILD_ROOT%{_sysconfdir}/profile.d/qmail.sh
+install %{SOURCE9} $RPM_BUILD_ROOT%{_sysconfdir}/profile.d/qmail.csh
 
 install %{SOURCE17} $RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/qmqp
 install %{SOURCE18} $RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/smtp
 install %{SOURCE19} $RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/qpop
 
 # Set up mailing aliases
-install %{SOURCE10} $RPM_BUILD_ROOT/etc/aliases
-ln -sf ../aliases $RPM_BUILD_ROOT/etc/mail/aliases
-install %{SOURCE11} $RPM_BUILD_ROOT/etc/qmail/alias/.qmail-default
-install %{SOURCE12} $RPM_BUILD_ROOT/etc/qmail/alias/.qmail-msglog
+install %{SOURCE10} $RPM_BUILD_ROOT%{_sysconfdir}/aliases
+ln -sf ../aliases $RPM_BUILD_ROOT%{_sysconfdir}/mail/aliases
+install %{SOURCE11} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-default
+install %{SOURCE12} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-msglog
 
 for i in mailer-daemon postmaster root; do
-	touch $RPM_BUILD_ROOT/etc/qmail/alias/.qmail-$i
+touch $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-$i
 done
 
 # Set up control files.
-touch $RPM_BUILD_ROOT/etc/qmail/control/{defaultdomain,locals,me,plusdomain,rcpthosts}
+touch $RPM_BUILD_ROOT%{_sysconfdir}/qmail/control/{defaultdomain,locals,me,plusdomain,rcpthosts}
 
 # Set up blank qmail/users
-touch $RPM_BUILD_ROOT/etc/qmail/users/{assign,include,exclude,mailnames,subusers,append}
-echo -n "." > $RPM_BUILD_ROOT/etc/qmail/users/assign
+touch $RPM_BUILD_ROOT%{_sysconfdir}/qmail/users/{assign,include,exclude,mailnames,subusers,append}
+echo -n "." > $RPM_BUILD_ROOT%{_sysconfdir}/qmail/users/assign
 
 # Set up default delivery
-install %{SOURCE13} $RPM_BUILD_ROOT/etc/qmail/dot-qmail
+install %{SOURCE13} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/dot-qmail
 
 install %{SOURCE14} $RPM_BUILD_ROOT/var/qmail/bin/qmail-lint
 install %{SOURCE15} $RPM_BUILD_ROOT/var/qmail/bin/qmail-qsanity
@@ -384,11 +386,11 @@ rm -rf $RPM_BUILD_ROOT
 %doc checkpassword-0.76/ queue-fix-1.3/ qmHandle-0.4.0/ rblsmtpd-0.70/ boot/ 
 %doc tarpit.README.gz
 
-%attr( 755,  root,  root) %dir /etc/mail
-%attr( 755,  root,  root) %dir /etc/qmail
-%attr(2754, alias,nofiles) %dir /etc/qmail/alias
-%attr( 755,  root, qmail) %dir /etc/qmail/control
-%attr( 755,  root,  root) %dir /etc/qmail/users
+%attr( 755, root, root) %dir %{_sysconfdir}/mail
+%attr( 755, root, root) %dir %{_sysconfdir}/qmail
+%attr(2754, alias,nofiles) %dir %{_sysconfdir}/qmail/alias
+%attr( 755, root, qmail) %dir %{_sysconfdir}/qmail/control
+%attr( 755, root, root) %dir %{_sysconfdir}/qmail/users
 %attr( 755,  root, qmail) %dir %{_libdir}/qmail
 %attr( 755,  root, qmail) %dir /var/qmail
 %attr( 750,qmailq, qmail) %dir /var/qmail/queue
@@ -404,13 +406,13 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 600,qmails, qmail)  %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/sendmutex
 %attr( 644,qmailr, qmail)  %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/tcpto
 %attr( 622,qmails, qmail)  %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/trigger
-%attr( 640,  root,nofiles) %config(noreplace) %verify(not size mtime md5) /etc/qmail/alias/.qmail-*
-%config(noreplace) %verify(not size mtime md5) /etc/qmail/dot-qmail
-%config(noreplace) %verify(not size mtime md5) /etc/qmail/control/*
-%config(noreplace) %verify(not size mtime md5) /etc/qmail/users/*
-%config(noreplace) %verify(not size mtime md5) /etc/aliases
-/etc/mail/aliases
-%attr( 755,  root,  root) %config(noreplace) %verify(not size mtime md5) /etc/profile.d/*
+%attr( 640, root,nofiles) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/alias/.qmail-*
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/dot-qmail
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/*
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/users/*
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/aliases
+%{_sysconfdir}/mail/aliases
+%attr( 755, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/profile.d/*
 %attr( 754,  root,  root) /etc/rc.d/init.d/*
 %attr( 640,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/rc-inetd/qmqp
 %attr( 640,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/rc-inetd/smtp
@@ -485,8 +487,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man?/*
 
 # default folder - Maildir/
-%attr( 700,  root,  root) %dir /etc/skel/C/Mail
-%attr( 700,  root,  root) %dir /etc/skel/C/Mail/Maildir
-%attr( 700,  root,  root) %dir /etc/skel/C/Mail/Maildir/cur
-%attr( 700,  root,  root) %dir /etc/skel/C/Mail/Maildir/new
-%attr( 700,  root,  root) %dir /etc/skel/C/Mail/Maildir/tmp
+%attr( 700, root, root) %dir /etc/skel/C/Mail
+%attr( 700, root, root) %dir /etc/skel/C/Mail/Maildir
+%attr( 700, root, root) %dir /etc/skel/C/Mail/Maildir/cur
+%attr( 700, root, root) %dir /etc/skel/C/Mail/Maildir/new
+%attr( 700, root, root) %dir /etc/skel/C/Mail/Maildir/tmp
