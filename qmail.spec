@@ -159,24 +159,28 @@ elektronicznej. Ten qmail dodatkowo wspiera protokó³ IPv6.
 Summary:	maildirmake - tool for making qmails' Maildirs
 Summary(pl):	maildirmake - narzêdzie do zak³adania folerow Maildir
 Group:		Applications/Mail
+Group(de):	Applikationen/Post
 Group(pl):	Aplikacje/Poczta
+Group(pt):	Aplicações/Correio Eletrônico
 Conflicts:	maildrop
 
 %description maildirmake
-Maildirmake is a tool for making mail folders in Maildir format
+Maildirmake is a tool for making mail folders in Maildir format.
 
 %description -l maildirmake
-Maildirmake jest narzêdziem do zak³adania folderów w formacie Maildir 
+Maildirmake jest narzêdziem do zak³adania folderów w formacie Maildir.
 
 %package perl
 Summary:	perl scripts for qmail
 Summary(pl):	skrypty perlowe dla qmaila
 Group:		Applications/Mail
+Group(de):	Applikationen/Post
 Group(pl):	Aplikacje/Poczta
+Group(pt):	Aplicações/Correio Eletrônico
 Requires:	%{name} = %{version}
 
 %description perl
-Perl scripts for qmail
+Perl scripts for qmail.
 
 
 %package pop3
@@ -187,14 +191,14 @@ Group(de):      Netzwerkwesen/Server
 Group(pl):      Sieciowe/Serwery
 Requires:	%{name} = %{version}
 Provides:	pop3daemon
-Obsoletes:      qpopper
-Obsoletes:      qpopper6
-Obsoletes:      imap-pop
-Obsoletes:      solid-pop3d-ssl
-Obsoletes:      solid-pop3d
+Obsoletes:	qpopper
+Obsoletes:	qpopper6
+Obsoletes:	imap-pop
+Obsoletes:	solid-pop3d-ssl
+Obsoletes:	solid-pop3d
 
 %description pop3
-POP3 server for qmail
+POP3 server for qmail.
 
 
 %prep
@@ -232,7 +236,7 @@ tar zxf %{SOURCE6} -C qmHandle-0.4.0/
 %patch23 -p1
 
 %build
-%{__make} CFLAGS="$RPM_OPT_FLAGS"
+%{__make} CFLAGS="%{rpmcflags}"
 %{__make} man
 %{__make} -C dot-forward-0.71
 %{__make} -C fastforward-0.51
@@ -256,7 +260,7 @@ ln -sf $RPM_BUILD_DIR/%{name}-%{version}/boot $RPM_BUILD_ROOT/var/qmail/boot
 
 ./install -s $RPM_BUILD_ROOT
 
-ln -s qmail-qread $RPM_BUILD_ROOT%{_bindir}/mailq
+ln -sf qmail-qread $RPM_BUILD_ROOT%{_bindir}/mailq
 ln -sf ../../var/qmail/bin/sendmail $RPM_BUILD_ROOT%{_sbindir}/sendmail
 ln -sf ../../var/qmail/bin/sendmail $RPM_BUILD_ROOT%{_libdir}/sendmail
 
@@ -352,7 +356,6 @@ gzip -9nf FAQ INSTALL* PIC* REMOVE* SENDMAIL TEST* UPGRADE
 gzip -9nf BLURB* README SECURITY THANKS THOUGHTS TODO VERSION
 gzip -9nf boot/* checkpass-1.0/* qmHandle-0.4.0/* queue-fix-1.3/*
 gzip -9nf rblsmtpd-0.70/* tarpit.README
-gzip -9nf $RPM_BUILD_ROOT%{_mandir}/man*/*
 
 %pre
 if [ $1 = 1 ]; then
