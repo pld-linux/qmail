@@ -2,7 +2,7 @@ Summary:     qmail Mail Transport Agent
 Summary(pl): qmail - serwer pocztowy (MTA)
 Name:        qmail
 Version:     1.03
-Release:     12
+Release:     13
 Group:       Networking/Daemons
 Group(pl):   Sieciowe/Serwery
 Copyright:   Check with djb@koobera.math.uic.edu
@@ -45,10 +45,7 @@ Prereq:      /sbin/chkconfig
 Prereq:      /bin/hostname
 Prereq:      /bin/sed
 Conflicts:   qmail-client
-Obsoletes:   sendmail
-Obsoletes:   smail
-Obsoletes:   exim
-Obsoletes:   zmailer
+Obsoletes:   smtpdaemon
 
 %description
 qmail is a small, fast, secure replacement for the SENDMAIL package, which is
@@ -124,10 +121,10 @@ które wspó³pracuj± z nimi.
 %setup -D -T -q -a 1
 %setup -D -T -q -a 2
 %setup -D -T -q -a 3
-mkdir checkpassword-0.76
+install -d checkpassword-0.76
 (cd checkpassword-0.76; gzip -dc %{SOURCE4} | /bin/sh)
 %setup -D -T -q -a 5
-mkdir qmHandle-0.4.0
+install -d qmHandle-0.4.0
 tar zxf %{SOURCE6} -C qmHandle-0.4.0/
 %patch0 -p1
 %patch1 -p1
@@ -157,7 +154,7 @@ make -C checkpassword-0.76 SHADOWLIBS=-DPW_SHADOW
 
 %install
 rm -rf $RPM_BUILD_ROOT
-mkdir -p boot
+install -d boot
 install -d $RPM_BUILD_ROOT/etc/{qmail/{alias,control,users},rc.d/init.d,profile.d}
 install -d $RPM_BUILD_ROOT/{usr/{bin/qmail,lib,man,sbin},var/qmail}
 install -d $RPM_BUILD_ROOT/%{_mandir}
@@ -449,6 +446,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jun 23 1999 Micha³ Kuratczyk <kura@pld.org.pl>
+  [1.0.3-13]
+- "Obsoletes: smtpdaemon" instead a lot of obsoletes
+- install -d instead mkdir
+
 * Sat Jun 05 1999 Arkadiusz Mi¶kiewicz <misiek@pld.org.pl>
 - qmail's users and groups are added in %pre script
   and removed in %postun
