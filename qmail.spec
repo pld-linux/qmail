@@ -276,8 +276,8 @@ ln -sf ../../var/qmail/bin/sendmail $RPM_BUILD_ROOT%{_libdir}/sendmail
 
 # Set up boot procedures
 install %{SOURCE7} $RPM_BUILD_ROOT/etc/rc.d/init.d/qmail
-install %{SOURCE8} $RPM_BUILD_ROOT%{_sysconfdir}/profile.d/qmail.sh
-install %{SOURCE9} $RPM_BUILD_ROOT%{_sysconfdir}/profile.d/qmail.csh
+install %{SOURCE8} $RPM_BUILD_ROOT/etc/profile.d/qmail.sh
+install %{SOURCE9} $RPM_BUILD_ROOT/etc/profile.d/qmail.csh
 
 install %{SOURCE17} $RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/qmqp
 install %{SOURCE18} $RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/smtp
@@ -527,7 +527,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/users/*
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/aliases
 %{_sysconfdir}/mail/aliases
-%attr(755,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/profile.d/*
+%attr(755,root,root) %config(noreplace) %verify(not size mtime md5) /etc/profile.d/*
 %attr(754,root,root) /etc/rc.d/init.d/*
 %attr(640,root,root) %config(noreplace) %verify(not size mtime md5) /etc/sysconfig/rc-inetd/qmqp
 %attr(640,root,root) %config(noreplace) %verify(not size mtime md5) /etc/sysconfig/rc-inetd/smtp
@@ -630,7 +630,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/plusdomain
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/idhost
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/qmqpservers
-%attr(755,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/profile.d/*
+%attr(755,root,root) %config(noreplace) %verify(not size mtime md5) /etc/profile.d/*
 %attr(755,root,root) %{_libdir}/qmail/datemail
 %attr(755,root,root) %{_libdir}/qmail/elq
 %attr(755,root,root) %{_libdir}/qmail/forward
