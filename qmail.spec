@@ -93,11 +93,10 @@ Following scripts and programs have been added:
   optional way to filter SPAM,
 - qmail-fix - a small utility for checking and repairing the qmail
   queue structure,
-- qmail-msglog - advanced e-mail monitoring,
+%{!?_without_msglog:- qmail-msglog - advanced e-mail monitoring,}
 - qmail-qsanity - examine all the files in the qmail queue,
 - qmail-lint - examine the qmail configuration,
-- tarpit - tool to fight with SPAM.
-
+- tarpit - tool to fight with SPAM,
 - TLS/SSL support. If you want to use it you must have certificate in
   /etc/qmail/control/cert.pem.
 
@@ -118,12 +117,11 @@ Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
 - rblsmtpd - podstawowe narzêdzie do blokowania listów z miejsc
   wyszczególnionych w RBL; sposób na filtrowanie SPAM-u,
 - qmail-fix - program do sprawdzania oraz naprawiania struktury
-  kolejki pocztowej qmail-a, %{!?_without_msglog:- qmail-msglog -
-  zaawansowane monitorowanie listów,}
+  kolejki pocztowej qmail-a,
+%{!?_without_msglog:- qmail-msglog - zaawansowane monitorowanie listów,}
 - qmail-qsanity - sprawdza kolejkê pocztow± qmail-a,
 - qmail-lint - sprawdza konfiguracjê qmail-a,
-- tarpit - kolejne narzêdzie do walki ze SPAM-em.
-
+- tarpit - kolejne narzêdzie do walki ze SPAM-em,
 - Ops³uga TLS/SSL. Je¶li chcesz tego u¿ywaæ musisz mieæ certyfikat w
   /etc/qmail/control/cert.pem.
 
