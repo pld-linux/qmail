@@ -6,4 +6,4 @@ FLAGS=nowait
 USER=root
 SERVER=tcpd
 DAEMON=/var/qmail/bin/qmail-popup
-DAEMONARGS="`hostname -f` /var/qmail/bin/checkpassword /var/qmail/bin/qmail-pop3d Mail/Maildir"
+DAEMONARGS="`hostname -f` /var/qmail/bin/checkpass /var/qmail/bin/qmail-pop3d Mail/Maildir"
