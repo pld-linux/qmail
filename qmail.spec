@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	39
+Release:	40
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
@@ -12,7 +12,7 @@ Source0:	ftp://koobera.math.uic.edu/pub/software/%{name}-%{version}.tar.gz
 Source1:	ftp://koobera.math.uic.edu/pub/software/dot-forward-0.71.tar.gz
 Source2:	ftp://koobera.math.uic.edu/pub/software/fastforward-0.51.tar.gz
 Source3:	ftp://koobera.math.uic.edu/pub/software/rblsmtpd-0.70.tar.gz
-Source4:	ftp://ftp.pld.org.pl/people/zagrodzki/checkpass-1.0.tar.gz
+Source4:	ftp://ftp.pld.org.pl/people/zagrodzki/checkpass-1.1.tar.gz
 Source5:	http://www.netmeridian.com/e-huss/queue-fix.tar.gz
 Source6:	http://www.io.com/~mick/soft/qmHandle-0.4.0.tar.gz
 Source7:	%{name}.init
