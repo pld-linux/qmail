@@ -1,2 +1,2 @@
 setenv MAIL $HOME/Mail/Maildir/
-setenv MAILDIR $MAIL
+setenv MAILDROP $MAIL
