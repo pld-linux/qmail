@@ -38,16 +38,16 @@ diff -urN qmail-1.03.orig/auto_uids.c qmail-1.03/auto_uids.c
 --- qmail-1.03.orig/auto_uids.c	Thu Jan  1 01:00:00 1970
 +++ qmail-1.03/auto_uids.c	Sun Feb 21 17:24:02 1999
 @@ -0,0 +1,10 @@
-+int auto_uida = 81;
-+int auto_uidd = 80;
-+int auto_uidl = 85;
++int auto_uida = 82;
++int auto_uidd = 81;
++int auto_uidl = 86;
 +int auto_uido = 0;
-+int auto_uidp = 86;
-+int auto_uidq = 82;
-+int auto_uidr = 83;
-+int auto_uids = 84;
-+int auto_gidq = 81;
-+int auto_gidn = 80;
++int auto_uidp = 87;
++int auto_uidq = 83;
++int auto_uidr = 84;
++int auto_uids = 85;
++int auto_gidq = 82;
++int auto_gidn = 81;
 diff -urN qmail-1.03.orig/brand.c qmail-1.03/brand.c
 --- qmail-1.03.orig/brand.c	Thu Jan  1 01:00:00 1970
 +++ qmail-1.03/brand.c	Sun Feb 21 17:24:02 1999
