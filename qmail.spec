@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	20
+Release:	21
 Group:		Networking/Daemons
 Group(pl):	Sieciowe/Serwery
 Copyright:	Check with djb@koobera.math.uic.edu
@@ -57,6 +57,7 @@ Prereq:		rc-inetd
 Prereq:		/sbin/chkconfig
 Prereq:		/bin/hostname
 Prereq:		/bin/sed
+Prereq:		sh-utils
 Conflicts:	qmail-client
 Obsoletes:	smtpdaemon
 Obsoletes:	sendmail
