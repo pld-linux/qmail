@@ -69,8 +69,6 @@ Source21:	%{name}-client.html
 Source22:	%{name}-cert.pem
 Source23:	%{name}-pl-man-pages.tar.bz2
 # Source23-md5:	e6230e950257cf46b9b243685d682e3f
-Source40:	%{name}-rblsmtpd.sh
-Source41:	%{name}-smtp-scanner.sh
 Patch0:		%{name}-1.03.install.patch
 Patch1:		%{name}-1.03.msglog.patch
 Patch2:		%{name}-1.03.redhat.patch
