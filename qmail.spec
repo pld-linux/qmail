@@ -254,8 +254,8 @@ install rblsmtpd-0.70/rblsmtpd $RPM_BUILD_ROOT/var/qmail/bin
 install rblsmtpd-0.70/*.8 $RPM_BUILD_ROOT/var/qmail/man/man8
 
 # default folder in /etc/skel
-install -d $RPM_BUILD_ROOT/etc/skel/Mail
-./maildirmake $RPM_BUILD_ROOT/etc/skel/Mail/Maildir
+install -d $RPM_BUILD_ROOT/etc/skel/C/Mail
+./maildirmake $RPM_BUILD_ROOT/etc/skel/C/Mail/Maildir
 
 (set +x; rm -f checkpassword-0.76/{[a-z]*,Makefile,FILES})
 (set +x; rm -f dot-forward-0.71/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
@@ -484,8 +484,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man?/*
 
 # default folder - Maildir/
-%attr( 700,  root,  root) %dir /etc/skel/Mail
-%attr( 700,  root,  root) %dir /etc/skel/Mail/Maildir
-%attr( 700,  root,  root) %dir /etc/skel/Mail/Maildir/cur
-%attr( 700,  root,  root) %dir /etc/skel/Mail/Maildir/new
-%attr( 700,  root,  root) %dir /etc/skel/Mail/Maildir/tmp
+%attr( 700,  root,  root) %dir /etc/skel/C/Mail
+%attr( 700,  root,  root) %dir /etc/skel/C/Mail/Maildir
+%attr( 700,  root,  root) %dir /etc/skel/C/Mail/Maildir/cur
+%attr( 700,  root,  root) %dir /etc/skel/C/Mail/Maildir/new
+%attr( 700,  root,  root) %dir /etc/skel/C/Mail/Maildir/tmp
