@@ -287,25 +287,25 @@ if [ $1 = 1 ]; then
     fi
 
     if [ ! -n "`id -u qmaild 2>/dev/null`" ]; then
-	%{_sbindir}/useradd -g nofiles -m -d /var/qmail -u 81 -s /bin/false qmaild 2> /dev/null
+	%{_sbindir}/useradd -g nofiles -d /var/qmail -u 81 -s /bin/false qmaild 2> /dev/null
     fi
     if [ ! -n "`id -u alias 2>/dev/null`" ]; then
-	%{_sbindir}/useradd -g nofiles -m -d /var/qmail/alias -u 82 -s /bin/false alias 2> /dev/null
+	%{_sbindir}/useradd -g nofiles -d /var/qmail/alias -u 82 -s /bin/false alias 2> /dev/null
     fi
     if [ ! -n "`id -u qmailq 2>/dev/null`" ]; then
-	%{_sbindir}/useradd -g qmail -m -d /var/qmail -u 83 -s /bin/false qmailq 2> /dev/null
+	%{_sbindir}/useradd -g qmail -d /var/qmail -u 83 -s /bin/false qmailq 2> /dev/null
     fi
     if [ ! -n "`id -u qmailr 2>/dev/null`" ]; then
-	%{_sbindir}/useradd -g qmail -m -d /var/qmail -u 84 -s /bin/false qmailr 2> /dev/null
+	%{_sbindir}/useradd -g qmail -d /var/qmail -u 84 -s /bin/false qmailr 2> /dev/null
     fi
     if [ ! -n "`id -u qmails 2>/dev/null`" ]; then
-	%{_sbindir}/useradd -g qmail -m -d /var/qmail -u 85 -s /bin/false qmails 2> /dev/null
+	%{_sbindir}/useradd -g qmail -d /var/qmail -u 85 -s /bin/false qmails 2> /dev/null
     fi
     if [ ! -n "`id -u qmaill 2>/dev/null`" ]; then
-	%{_sbindir}/useradd -g nofiles -m -d /var/qmail -u 86 -s /bin/false qmaill 2> /dev/null
+	%{_sbindir}/useradd -g nofiles -d /var/qmail -u 86 -s /bin/false qmaill 2> /dev/null
     fi
     if [ ! -n "`id -u qmailp 2>/dev/null`" ]; then
-	%{_sbindir}/useradd -g nofiles -m -d /var/qmail -u 87 -s /bin/false qmailp 2> /dev/null
+	%{_sbindir}/useradd -g nofiles -d /var/qmail -u 87 -s /bin/false qmailp 2> /dev/null
     fi
 fi
 
