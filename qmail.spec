@@ -7,7 +7,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	53
+Release:	54
 License:	Check with djb@koobera.math.uic.edu
 Group:		Networking/Daemons
 Source0:	ftp://koobera.math.uic.edu/pub/software/%{name}-%{version}.tar.gz
@@ -59,6 +59,7 @@ Patch23:	%{name}-extbouncer.patch
 Patch24:	%{name}-tls.patch
 # http://www.qmail.org/qmailqueue-patch
 Patch25:	%{name}-queue.patch
+Patch26:	%{name}-errno.patch
 URL:		http://www.qmail.org/
 BuildRequires:	groff
 BuildRequires:	pam-devel
@@ -248,6 +249,7 @@ tar zxf %{SOURCE6} -C qmHandle-0.5.1/
 %patch23 -p1
 %patch24 -p1
 %patch25 -p1
+%patch26 -p1
 
 %build
 %{__make} CFLAGS="%{rpmcflags}"
