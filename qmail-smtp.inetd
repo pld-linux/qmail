@@ -6,4 +6,4 @@ FLAGS=nowait
 USER=qmaild
 SERVER=tcpd
 DAEMON=/var/qmail/bin/rblsmtpd
-DAEMONARGS="/var/qmail/bin/qmail-smtpd /var/qmail/bin/checkpassword /bin/true"
+DAEMONARGS="/var/qmail/bin/qmail-smtpd /var/qmail/bin/checkpass"
