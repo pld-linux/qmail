@@ -96,6 +96,8 @@ Following scripts and programs have been added:
 - qmail-lint - examine the qmail configuration,
 - tarpit - tool to fight with SPAM.
 
+- TLS/SSL support. If you want to use it you must have certificate in
+  /etc/qmail/control/cert.pem.
 
 ================================================================================
 - *** Note: Be sure and read the documentation as there are some small
@@ -120,6 +122,8 @@ Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
 - qmail-lint - sprawdza konfiguracjê qmail-a,
 - tarpit - kolejne narzêdzie do walki ze SPAM-em.
 
+- Ops³uga TLS/SSL. Je¶li chcesz tego u¿ywaæ musisz mieæ certyfikat
+  w /etc/qmail/control/cert.pem.
 
 ================================================================================
 - *** Uwaga! Przeczytaj uwa¿nie dokumentacjê do tego pakietu, poniewa¿
@@ -236,6 +240,7 @@ tar zxf %{SOURCE6} -C qmHandle-0.4.0/
 %patch21 -p1
 %patch22 -p1
 %patch23 -p1
+%patch24 -p1
 
 %build
 %{__make} CFLAGS="%{rpmcflags}"
@@ -354,10 +359,12 @@ mv -f $RPM_BUILD_ROOT/var/qmail/bin/newaliases	$RPM_BUILD_ROOT%{_bindir}
 
 install %{SOURCE21} .
 
+sed /^diff/q %{PATCH24} >README.TLS
+
 gzip -9nf FAQ INSTALL* PIC* REMOVE* SENDMAIL TEST* UPGRADE
 gzip -9nf BLURB* README SECURITY THANKS THOUGHTS TODO VERSION
 gzip -9nf boot/* checkpass-1.1/* qmHandle-0.4.0/* queue-fix-1.3/*
-gzip -9nf rblsmtpd-0.70/* tarpit.README
+gzip -9nf rblsmtpd-0.70/* tarpit.README README.TLS
 
 %pre
 if [ $1 = 1 ]; then
@@ -478,7 +485,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc {FAQ,INSTALL*,PIC*,REMOVE*,SENDMAIL,TEST*,UPGRADE}.gz
 %doc {BLURB*,README,SECURITY,THANKS,THOUGHTS,TODO,VERSION}.gz
 %doc checkpass-1.1/ queue-fix-1.3/ rblsmtpd-0.70/ boot/ 
-%doc tarpit.README.gz
+%doc {README.TLS,tarpit.README}.gz
 
 %attr( 755, root, root) %dir %{_sysconfdir}/mail
 %attr( 755, root, root) %dir %{_sysconfdir}/qmail
