@@ -1,0 +1,79 @@
+#
+# the tai64 files are already rotated ones, we just need them to move away and
+# compress. therefore rotate count is set to 1 and size 1 is added to get
+# logrotate going, i don't know really now why it doesn't do it otherwise.
+#
+# also the ownership and permissions are lost when bzip2 compresses the files,
+# i think it's bug in bzip2/gzip, since it happens with not just this package.
+
+/var/log/qmail/send/@*.s {
+    olddir /var/log/archiv/qmail/send
+    create 640 qmaill qmail
+    missingok
+
+	rotate 1
+	size 1
+	nocreate
+	compresscmd /usr/bin/bzip2
+	compressext .bz2
+}
+
+/var/log/qmail/smtpd/@*.s {
+    olddir /var/log/archiv/qmail/smtpd
+    create 640 qmaill qmail
+    missingok
+
+	rotate 1
+	size 1
+	nocreate
+	compresscmd /usr/bin/bzip2
+	compressext .bz2
+}
+
+/var/log/qmail/rblsmtpd/@*.s {
+    olddir /var/log/archiv/qmail/rblsmtpd
+    create 640 qmaill qmail
+    missingok
+
+	rotate 1
+	size 1
+	nocreate
+	compresscmd /usr/bin/bzip2
+	compressext .bz2
+}
+
+/var/log/qmail/qmqpd/@*.s {
+    olddir /var/log/archiv/qmail/qmqpd
+    create 640 qmaill qmail
+    missingok
+
+	rotate 1
+	size 1
+	nocreate
+	compresscmd /usr/bin/bzip2
+	compressext .bz2
+}
+
+/var/log/qmail/qmtpd/@*.s {
+    olddir /var/log/archiv/qmail/qmtpd
+    create 640 qmaill qmail
+    missingok
+
+	rotate 1
+	size 1
+	nocreate
+	compresscmd /usr/bin/bzip2
+	compressext .bz2
+}
+
+/var/log/qmail/pop3d/@*.s {
+    olddir /var/log/archiv/qmail/pop3d
+    create 640 qmaill qmail
+    missingok
+
+	rotate 1
+	size 1
+	nocreate
+	compresscmd /usr/bin/bzip2
+	compressext .bz2
+}
