@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	30
+Release:	31
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
@@ -422,7 +422,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %attr( 755, root, root) %dir %{_sysconfdir}/mail
 %attr( 755, root, root) %dir %{_sysconfdir}/qmail
-%attr(2754, alias,nofiles) %dir %{_sysconfdir}/qmail/alias
+%attr(2755, alias,nofiles) %dir %{_sysconfdir}/qmail/alias
 %attr( 755, root, qmail) %dir %{_sysconfdir}/qmail/control
 %attr( 755, root, root) %dir %{_sysconfdir}/qmail/users
 %attr( 755,  root, qmail) %dir %{_libdir}/qmail
@@ -440,7 +440,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 600,qmails, qmail)  %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/sendmutex
 %attr( 644,qmailr, qmail)  %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/tcpto
 %attr( 622,qmails, qmail)  %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/trigger
-%attr( 640, root,nofiles) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/alias/.qmail-*
+%attr( 644, root,nofiles) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/alias/.qmail-*
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/dot-qmail
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/defaultdomain
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/locals
@@ -519,7 +519,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 755,  root,  root) %{_bindir}/mailq
 %attr( 755,  root,  root) %{_sbindir}/sendmail
 %attr( 755,  root,  root) %{_libdir}/sendmail
-%attr(2754, alias, qmail) /var/qmail/alias
+%attr(2755, alias, qmail) /var/qmail/alias
 %attr( 755,  root,  root) /var/qmail/bin
 %attr( 755,  root,  root) /var/qmail/control
 %attr( 755,  root,  root) /var/qmail/users
