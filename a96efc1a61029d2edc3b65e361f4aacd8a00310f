@@ -1,0 +1,6 @@
+- changed Conflicts: qmail-client into Prereq: qmail-client
+  Only two files except docs were only in qmail-client:
+  /etc/qmail/control/idhost
+  /etc/qmail/control/qmqpservers
+- commented all common files
+- special treatment of /usr/lib/qmail/qmail-queue
