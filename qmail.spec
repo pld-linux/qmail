@@ -20,7 +20,7 @@ Source8:	%{name}-linux.sh
 Source9:	%{name}-linux.csh
 Source10:	%{name}-aliases
 Source11:	%{name}-default
-Source12:	%{name}-msglog
+%{?!bcond_off_msglog:Source12:	%{name}-msglog}
 Source13:	%{name}-default-delivery
 Source14:	%{name}-lint-0.51.pl
 Source15:	%{name}-qsanity-0.51.pl
@@ -31,7 +31,7 @@ Source19:	%{name}-qpop.inetd
 Source20:	checkpassword.pamd
 Source21:	%{name}-client.html
 Patch0:		%{name}-1.03.install.patch
-Patch1:		%{name}-1.03.msglog.patch
+%{?!bcond_off_msglog:Patch1:		%{name}-1.03.msglog.patch}
 Patch2:		%{name}-1.03.redhat.patch
 Patch3:		%{name}-1.03.fixed-ids.patch
 Patch4:		%{name}-1.03.rbl.conf.patch
@@ -113,7 +113,7 @@ Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
   wyszczególnionych w RBL; sposób na filtrowanie SPAM-u,
 - qmail-fix - program do sprawdzania oraz naprawiania struktury
   kolejki pocztowej qmail-a,
-- qmail-msglog - zaawansowane monitorowanie listów,
+%{!?bcond_off_msglog:- qmail-msglog - zaawansowane monitorowanie listów,}
 - qmail-qsanity - sprawdza kolejkê pocztow± qmail-a,
 - qmail-lint - sprawdza konfiguracjê qmail-a,
 - tarpit - kolejne narzêdzie do walki ze SPAM-em.
@@ -211,7 +211,7 @@ POP3 server for qmail.
 install -d qmHandle-0.4.0
 tar zxf %{SOURCE6} -C qmHandle-0.4.0/
 %patch0 -p1
-%patch1 -p1
+%{!?bcond_off_msglog:%patch1 -p1}
 %patch2 -p1
 %patch3 -p1
 %patch4 -p0
@@ -277,7 +277,7 @@ install %{SOURCE19} $RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/qpop
 install %{SOURCE10} $RPM_BUILD_ROOT%{_sysconfdir}/aliases
 ln -sf ../aliases $RPM_BUILD_ROOT%{_sysconfdir}/mail/aliases
 install %{SOURCE11} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-default
-install %{SOURCE12} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-msglog
+%{!?bcond_off_msglog:install %{SOURCE12} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-msglog}
 
 for i in mailer-daemon postmaster root; do
 touch $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-$i
