@@ -33,7 +33,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.80
+Release:	56.81
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -455,6 +455,8 @@ done
 
 # setup compiler. we use CFLAGS redefine rather using conditional patching.
 echo -n "%{__cc} %{rpmcflags}" > conf-cc
+echo -n "%{__cc} -s" > conf-ld
+
 %if %{with tls}
 echo "Enabling SSL/TLS functionality"
 echo -n ' -DTLS' >> conf-cc
@@ -468,9 +470,8 @@ echo -n ' -DINET6' >> conf-cc
 %if %{with home_etc}
 echo "Enabling HOME_ETC"
 echo -n ' -DUSE_HOME_ETC' >> conf-cc
+echo -n ' -lhome_etc' >> conf-ld
 %endif
-
-# TODO: conf-ld if home-etc
 
 # remove backup files after patching
 rm -f *~
