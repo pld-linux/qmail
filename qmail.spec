@@ -242,7 +242,7 @@ tar zxf %{SOURCE6} -C qmHandle-0.4.0/
 %{__make} -C fastforward-0.51
 %{__make} -C rblsmtpd-0.70
 %{__make} -C queue-fix-1.3
-%{__make} -C checkpass-1.0
+%{__make} -C checkpass-1.1
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -303,7 +303,7 @@ install qmHandle-0.4.0/qmHandle $RPM_BUILD_ROOT/var/qmail/bin/qmHandle
 install queue-fix-1.3/queue-fix $RPM_BUILD_ROOT/var/qmail/bin
 
 # CHECKPASSWORD command
-install checkpass-1.0/checkpass $RPM_BUILD_ROOT/var/qmail/bin
+install checkpass-1.1/checkpass $RPM_BUILD_ROOT/var/qmail/bin
 install %{SOURCE20} $RPM_BUILD_ROOT/etc/pam.d/checkpass
 echo "qmaild" > $RPM_BUILD_ROOT/etc/security/checkpass.allow
 
@@ -330,7 +330,7 @@ install rblsmtpd-0.70/*.8 $RPM_BUILD_ROOT/var/qmail/man/man8
 install -d $RPM_BUILD_ROOT/etc/skel/Mail
 ./maildirmake $RPM_BUILD_ROOT/etc/skel/Mail/Maildir
 
-(set +x; rm -f checkpass-1.0/{[a-z]*,Makefile})
+(set +x; rm -f checkpass-1.1/{[a-z]*,Makefile})
 (set +x; rm -f dot-forward-0.71/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
 (set +x; rm -f fastforward-0.51/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
 (set +x; rm -f rblsmtpd-0.70/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
@@ -354,7 +354,7 @@ install %{SOURCE21} .
 
 gzip -9nf FAQ INSTALL* PIC* REMOVE* SENDMAIL TEST* UPGRADE
 gzip -9nf BLURB* README SECURITY THANKS THOUGHTS TODO VERSION
-gzip -9nf boot/* checkpass-1.0/* qmHandle-0.4.0/* queue-fix-1.3/*
+gzip -9nf boot/* checkpass-1.1/* qmHandle-0.4.0/* queue-fix-1.3/*
 gzip -9nf rblsmtpd-0.70/* tarpit.README
 
 %pre
@@ -475,7 +475,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc {FAQ,INSTALL*,PIC*,REMOVE*,SENDMAIL,TEST*,UPGRADE}.gz
 %doc {BLURB*,README,SECURITY,THANKS,THOUGHTS,TODO,VERSION}.gz
-%doc checkpass-1.0/ queue-fix-1.3/ rblsmtpd-0.70/ boot/ 
+%doc checkpass-1.1/ queue-fix-1.3/ rblsmtpd-0.70/ boot/ 
 %doc tarpit.README.gz
 
 %attr( 755, root, root) %dir %{_sysconfdir}/mail
