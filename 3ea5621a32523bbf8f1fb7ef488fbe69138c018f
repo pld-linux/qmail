@@ -1,0 +1,3 @@
+- remove doc from /var/qmail/doc
+- add fix for mfcheck triplebounce
+- add some man7 entries
