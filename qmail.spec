@@ -1,13 +1,14 @@
 #
 # Conditional build:
-# _without_msglog	- without qmail-msglog (advanced e-mail monitoring)
-# _without_routing	- without mail routing
+%bcond_without msglog		# without qmail-msglog (advanced e-mail monitoring)
+%bcond_without routing		# without mail routing
+%bcond_without home_etc		# don't use home_etc
 #
 Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	55
+Release:	56
 License:	Check with djb@koobera.math.uic.edu
 Group:		Networking/Daemons
 Source0:	ftp://koobera.math.uic.edu/pub/software/%{name}-%{version}.tar.gz
@@ -57,7 +58,6 @@ Patch9:		%{name}-1.03-maxrcpt.patch
 Patch10:	qmHandle.PLD-init.patch
 Patch11:	%{name}-1.03-v6-20000417.diff.gz
 Patch12:	http://www.ckdhr.com/ckd/%{name}-dns.patch
-Patch13:	ftp://dione.ids.pl/people/siewca/patches/%{name}-%{version}-etc.patch
 Patch14:	%{name}-rblsmtpd-IPv6-PLD.patch
 Patch15:	%{name}-rblsmtpd-syslog.patch
 Patch16:	%{name}-smtpauth.patch
@@ -72,10 +72,12 @@ Patch24:	%{name}-tls.patch
 # http://www.qmail.org/qmailqueue-patch
 Patch25:	%{name}-queue.patch
 Patch26:	%{name}-errno.patch
+Patch27:	%{name}-home_etc.patch
 URL:		http://www.qmail.org/
 BuildRequires:	groff
 BuildRequires:	pam-devel
 BuildRequires:	openssl-devel
+%{?with_home_etc:BuildRequires:	home-etc-devel >= 1.0.8}
 PreReq:		rc-scripts >= 0.2.0
 PreReq:		rc-inetd
 PreReq:		sh-utils
@@ -93,6 +95,7 @@ Requires(postun):	/usr/sbin/userdel
 Requires:	%{_sbindir}/tcpd
 Requires:	inetdaemon
 Requires:	pam >= 0.77.3
+%{?with_home_etc:Requires:	home-etc >= 1.0.8}
 Conflicts:	qmail-client
 Provides:	qmail-server
 Provides:	qmailmta
@@ -251,7 +254,6 @@ tar zxf %{SOURCE6} -C qmHandle-0.5.1/
 %patch10 -p0
 %patch11 -p1
 %patch12 -p1
-%patch13 -p1
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
@@ -264,6 +266,7 @@ tar zxf %{SOURCE6} -C qmHandle-0.5.1/
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
+%{?with_home_etc:%patch27 -p1}
 
 %build
 %{__make} CFLAGS="%{rpmcflags}"

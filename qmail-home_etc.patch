@@ -1,0 +1,416 @@
+diff -ur qmail-1.03.orig/INSTALL.maildir qmail-1.03/INSTALL.maildir
+--- qmail-1.03.orig/INSTALL.maildir	Mon Jun 15 12:53:16 1998
++++ qmail-1.03/INSTALL.maildir	Sun Dec  5 16:48:30 1999
+@@ -45,7 +45,9 @@
+ Here's how to set up qmail to use maildir for your incoming mail:
+ 
+    % maildirmake $HOME/Maildir
+-   % echo ./Maildir/ > ~/.qmail
++   % test -d $HOME_ETC || mkdir $HOME_ETC && chmod 0700 $HOME_ETC
++   % test -d $HOME_ETC/.qmail || mkdir $HOME_ETC/.qmail && chmod 0700 $HOME_ETC/.qmail
++   % echo ./Maildir/ > $HOME_ETC/.qmail
+ 
+ Make sure you include the trailing slash on Maildir/.
+ 
+diff -ur qmail-1.03.orig/PIC.local2ext qmail-1.03/PIC.local2ext
+--- qmail-1.03.orig/PIC.local2ext	Mon Jun 15 12:53:16 1998
++++ qmail-1.03/PIC.local2ext	Sun Dec  5 16:48:30 1999
+@@ -36,6 +36,7 @@
+      V          
+                    
+ qmail-local fred ~fred fred-sos - sos heaven.af.mil joe@heaven.af.mil ./Mailbox
+-                   
+-                Does ~fred/.qmail-sos exist? Yes: "./Extramail".
++
++		Does ~fred/$HOME_ETC/.qmail-sos exist? Yes: "./Extramail".                   
++                 else if (Does ~fred/.qmail-sos exist? Yes: "./Extramail".)
+                 Write message to ./Extramail in mbox format.
+diff -ur qmail-1.03.orig/PIC.local2local qmail-1.03/PIC.local2local
+--- qmail-1.03.orig/PIC.local2local	Mon Jun 15 12:53:16 1998
++++ qmail-1.03/PIC.local2local	Sun Dec  5 16:48:30 1999
+@@ -36,5 +36,6 @@
+                    
+ qmail-local fred ~fred fred '' '' heaven.af.mil joe@heaven.af.mil ./Mailbox
+                    
++		Does ~fred/$HOME_ETC/.qmail exist? No.
+                 Does ~fred/.qmail exist? No.
+                 Write message to ./Mailbox in mbox format.
+diff -ur qmail-1.03.orig/PIC.rem2local qmail-1.03/PIC.rem2local
+--- qmail-1.03.orig/PIC.rem2local	Mon Jun 15 12:53:16 1998
++++ qmail-1.03/PIC.rem2local	Sun Dec  5 16:48:30 1999
+@@ -32,5 +32,6 @@
+                    
+ qmail-local joe ~joe joe '' '' heaven.af.mil bill@irs.gov ./Mailbox
+                    
++		Does ~joe/$HOME_ETC/.qmail exist? No.
+                 Does ~joe/.qmail exist? No.
+                 Write message to ./Mailbox in mbox format.
+diff -ur qmail-1.03.orig/UPGRADE qmail-1.03/UPGRADE
+--- qmail-1.03.orig/UPGRADE	Mon Jun 15 12:53:16 1998
++++ qmail-1.03/UPGRADE	Sun Dec  5 16:48:30 1999
+@@ -57,6 +57,10 @@
+ 
+ 10. Read TEST.receive.
+ 
++11. Tell your users that from now they can put their .qmail files to 
++    $HOME_ETC/.qmail/ directory. Don't forget about removing dots from
++    filenames!
++
+ 
+ That's it! To report success:
+        % ( echo 'First M. Last'; cat `cat SYSDEPS` ) | mail djb-qst@cr.yp.to
+diff -ur qmail-1.03.orig/dot-qmail.9 qmail-1.03/dot-qmail.9
+--- qmail-1.03.orig/dot-qmail.9	Mon Jun 15 12:53:16 1998
++++ qmail-1.03/dot-qmail.9	Sun Dec  5 16:48:30 1999
+@@ -22,8 +22,16 @@
+ behavior, set up a
+ .B .qmail
+ file in your home directory.
++You can also set up 
++.B qmail
++file in 
++.B $HOME_ETC/.qmail/
++subdirectory placed in your home directory. See 
++.B ETC SUPPORT 
++note written bellow.
+ 
+ .B .qmail
++(or $HOME_ETC/.qmail/\fBqmail\fP)
+ contains one or more lines.
+ Each line is a delivery instruction.
+ .B qmail-local
+@@ -170,6 +178,7 @@
+ 
+ If
+ .B .qmail
++(or $HOME_ETC/.qmail/\fBqmail\fP)
+ is completely empty (0 bytes long), or does not exist,
+ .B qmail-local
+ follows the
+@@ -188,12 +197,14 @@
+ format.
+ 
+ .B .qmail
++(or $HOME_ETC/.qmail/\fBqmail\fP)
+ may contain extra spaces and tabs at the end of a line.
+ Blank lines are allowed, but not for the first line of
+ .BR .qmail .
+ 
+ If
+ .B .qmail
++(or $HOME_ETC/.qmail/\fBqmail\fP if you're using it)
+ is world-writable or group-writable,
+ .B qmail-local
+ stops and indicates a temporary failure.
+@@ -201,12 +212,22 @@
+ Incoming messages can arrive at any moment.
+ If you want to safely edit your
+ .B .qmail
+-file, first set the sticky bit on your home directory:
++($HOME_ETC/.qmail/\fBqmail\fP)
++file, first set the sticky bit on your home directory
++(or $HOME_ETC/.qmail/\fBqmail\fP subdirectory), to configure
++.B qmail-local
++:
+ 
+ .EX
+      chmod +t $HOME
+ .EE
+ 
++,or
++
++.EX
++     chmod +t $HOME/$HOME_ETC/.qmail
++.EE
++
+ .B qmail-local
+ will temporarily defer delivery of any message to you
+ if your home directory is sticky
+@@ -218,10 +239,15 @@
+      chmod -t $HOME
+ .EE
+ 
++,or
++
++.EX
++     chmod -t $HOME/$HOME_ETC/.qmail
++.EE
++
+ when you are done!
+ It's a good idea to test your new
+-.B .qmail
+-file as follows:
++configuration as follows:
+ 
+ .EX
+      qmail-local -n $USER ~ $USER '' '' '' '' ./Mailbox
+@@ -241,7 +267,9 @@
+ Delivery to
+ .I user\fBBREAK\fIanything
+ is controlled by the file
+-.IR homedir/\fB.qmail\-\fIanything .
++.IR homedir/\fB.qmail\-\fIanything
++(or 
++.IR homedir/$HOME_ETC/.qmail/\fBqmail\-\fIanything ).
+ (These rules may be changed by the system administrator;
+ see
+ .BR qmail-users (5).)
+@@ -252,7 +280,9 @@
+ Delivery to
+ .I local
+ is controlled by the file
+-.IR homedir/\fB.qmail\-\fIlocal ,
++.IR homedir/\fB.qmail\-\fIlocal 
++(or 
++.IR homedir/$HOME_ETC/.qmail/\fBqmail\-\fIlocal ), 
+ where
+ .I homedir
+ is
+@@ -266,11 +296,13 @@
+ where
+ .I local
+ is controlled by
+-.BR .qmail\-\fIext .
++.BR .qmail\-\fIext 
++(or $HOME_ETC/.qmail/\fBqmail\-\fP\fIext\fP)
+ Here is what it does.
+ 
+ If
+ .B .qmail\-\fIext
++($HOME_ETC/.qmail/\fBqmail\-\fP\fIext\fP)
+ is completely empty,
+ .B qmail-local
+ follows the
+@@ -279,10 +311,12 @@
+ 
+ If
+ .B .qmail\-\fIext
++($HOME_ETC/.qmail/\fBqmail\-\fP\fIext\fP)
+ doesn't exist,
+ .B qmail-local
+ will try some default
+ .B .qmail
++($HOME_ETC/.qmail/\fBqmail\fP)
+ files.
+ For example,
+ if
+@@ -291,22 +325,28 @@
+ .BR foo-bar ,
+ .B qmail-local
+ will try first
+-.BR .qmail-foo-bar ,
++.BR .qmail-foo-bar
++($HOME_ETC/.qmail/\fBqmail-foo-bar\fP),
+ then
+-.BR .qmail-foo-default ,
++.BR .qmail-foo-default
++($HOME_ETC/.qmail/\fBqmail-foo-default\fP),
+ and finally
+-.BR .qmail-default .
++.BR .qmail-default
++($HOME_ETC/.qmail/\fBqmail-default\fP).
+ If none of these exist,
+ .B qmail-local
+ will bounce the message.
+-(Exception: for the basic
++
++Exception: for the basic
+ .I user
+ address,
+ .B qmail-local
+ treats a nonexistent
+ .B .qmail
++($HOME_ETC/.qmail/\fBqmail\fP),
+ the same as an empty
+-.BR .qmail .)
++.BR .qmail
++(or $HOME_ETC/.qmail/\fBqmail\fP). 
+ 
+ .B WARNING:
+ For security,
+@@ -314,7 +354,8 @@
+ replaces any dots in
+ .I ext
+ with colons before checking
+-.BR .qmail\-\fIext .
++.BR .qmail\-\fIext
++(or before checking $HOME_ETC/.qmail/\fBqmail\-\fP\fIext\fP)
+ For convenience,
+ .B qmail-local
+ converts any uppercase letters in
+@@ -325,10 +366,13 @@
+ .B qmail-local
+ forwards a message as instructed in
+ .B .qmail\-\fIext
+-(or
+-.BR .qmail-default ),
++($HOME_ETC/.qmail/\fBqmail\-\fP\fIext\fP)
++or in
++.BR .qmail-default
++($HOME_ETC/.qmail/\fBqmail\-default\fP),
+ it checks whether
+ .B .qmail\-\fIext\fB-owner\fP
++($HOME_ETC/.qmail/\fBqmail\-\fP\fIext\fP\fB-owner\fP)
+ exists.
+ If so,
+ it uses
+@@ -348,8 +392,10 @@
+ (VERPs):
+ if
+ .B .qmail\-\fIext\fB-owner\fP
++($HOME_ETC/.qmail/\fBqmail\-\fP\fIext\fP\fB-owner\fP)
+ and
+ .B .qmail\-\fIext\fB-owner-default\fP
++($HOME_ETC/.qmail/\fBqmail\-\fP\fIext\fP\fB-owner-default\fP)
+ both exist, it uses
+ .I local\fB\-owner\-@\fIdomain\fB-@[]
+ as the envelope sender.
+@@ -368,7 +414,8 @@
+ If a program returns exit code 99,
+ .B qmail-local
+ ignores all succeeding lines in
+-.BR .qmail ,
++.BR .qmail
++($HOME_ETC/.qmail/\fBqmail\fP),
+ but it still pays attention to previous forward lines.
+ 
+ To set up independent instructions,
+@@ -376,13 +423,38 @@
+ does not affect the others,
+ move each instruction into a separate
+ .B .qmail\-\fIext
++($HOME_ETC/.qmail/\fBqmail\-\fP\fIext\fP)
+ file, and set up a central
+ .B .qmail
++($HOME_ETC/.qmail/\fBqmail\fP),
+ file that forwards to all of the
+-.BR .qmail\-\fIext s.
++.BR .qmail\-\fIext s
++($HOME_ETC/.qmail/\fBqmail\-\fP\fIext\fPs).
+ Note that
+ .B qmail-local
+ can handle any number of forward lines simultaneously.
++.SH "HOME-ETC SUPPORT"
++If you can see this section, it means that your
++.B qmail-local
++has 
++.I HOME-ETC
++support.
++It gives you possibility to place all your
++\fBqmail\-\fP\fIext\fP
++files in
++.B $HOME_ETC/.qmail
++subdirectory.
++Just after start
++.B qmail-local
++will check if there is
++.B $HOME_ETC/.qmail
++subdirectory in your home directory.
++If it exsists it will be used instead of
++your
++.B homedir .
++Note, that
++.B qmail
++files schould be placed there WITHOUT DOTS!
+ .SH "SEE ALSO"
+ envelopes(5),
+ maildir(5),
+diff -ur qmail-1.03.orig/qmail-local.8 qmail-1.03/qmail-local.8
+--- qmail-1.03.orig/qmail-local.8	Mon Jun 15 12:53:16 1998
++++ qmail-1.03/qmail-local.8	Sun Dec  5 16:48:30 1999
+@@ -55,6 +55,9 @@
+ .I ext
+ identify the
+ .B .qmail\fIdashext
++(or
++.B $HOME_ETC/.qmail\fIdashext
++)
+ file used by
+ .BR qmail-local ;
+ see
+@@ -66,8 +69,14 @@
+ .B qmail-local
+ treats a nonexistent
+ .B .qmail\fIext
++(or
++.B $HOME_ETC/.qmail\fIext
++)
+ the same way as an empty
+ .BR .qmail\fIext :
++(or
++.BR $HOME_ETC/.qmail\fIext :
++)
+ namely, following the delivery instructions in
+ .IR defaultdelivery .
+ 
+diff -Nur qmail-1.03.orig/conf-cc qmail-1.03/conf-cc
+--- qmail-1.03.orig/conf-cc	Tue Dec 16 11:22:37 2003
++++ qmail-1.03/conf-cc	Tue Dec 16 11:45:38 2003
+@@ -1,3 +1,3 @@
+-cc -O2 -DINET6 -DTLS -I/usr/include/openssl
++cc -O2 -DINET6 -DTLS -DUSE_HOME_ETC -I/usr/include/openssl
+ 
+ This will be used to compile .c files.
+diff -Nur qmail-1.03.orig/conf-ld qmail-1.03/conf-ld
+--- qmail-1.03.orig/conf-ld	Mon Jun 15 12:53:16 1998
++++ qmail-1.03/conf-ld	Tue Dec 16 11:46:55 2003
+@@ -1,3 +1,3 @@
+-cc -s
++cc -lhome_etc -s
+ 
+ This will be used to link .o files into an executable.
+diff -Nur qmail-1.03.orig/qmail-local.c qmail-1.03/qmail-local.c
+--- qmail-1.03.orig/qmail-local.c	Mon Jun 15 12:53:16 1998
++++ qmail-1.03/qmail-local.c	Tue Dec 16 11:43:29 2003
+@@ -29,6 +29,15 @@
+ #include "gfrom.h"
+ #include "auto_patrn.h"
+ 
++#ifdef USE_HOME_ETC
++# include <home_etc.h>
++# define __HE(x) _HEn(x)
++# define __HOME _HEndir
++#else
++# define __HE(x) x
++# define __HOME "."
++#endif
++
+ void usage() { strerr_die1x(100,"qmail-local: usage: qmail-local [ -nN ] user homedir local dash ext domain sender aliasempty"); }
+ 
+ void temp_nomem() { strerr_die1x(111,"Out of memory. (#4.3.0)"); }
+@@ -312,7 +321,7 @@
+ {
+  struct stat st;
+ 
+- if (stat(".",&st) == -1)
++ if (stat(__HOME,&st) == -1)
+    strerr_die3x(111,"Unable to stat home directory: ",error_str(errno),". (#4.3.0)");
+  if (st.st_mode & auto_patrn)
+    strerr_die1x(111,"Uh-oh: home directory is writable. (#4.7.0)");
+@@ -328,7 +337,7 @@
+ {
+  struct stat st;
+ 
+- if (!stralloc_copys(&qme,".qmail")) temp_nomem();
++ if (!stralloc_copys(&qme,__HE(".qmail"))) temp_nomem();
+  if (!stralloc_cats(&qme,dash)) temp_nomem();
+  if (!stralloc_cat(&qme,&safeext)) temp_nomem();
+  if (!stralloc_cats(&qme,dashowner)) temp_nomem();
+@@ -382,7 +391,7 @@
+ {
+   int i;
+ 
+-  if (!stralloc_copys(&qme,".qmail")) temp_nomem();
++  if (!stralloc_copys(&qme,__HE(".qmail"))) temp_nomem();
+   if (!stralloc_cats(&qme,dash)) temp_nomem();
+   if (!stralloc_cat(&qme,&safeext)) temp_nomem();
+   if (qmeexists(fd,cutable)) {
+@@ -397,7 +406,7 @@
+ 
+   for (i = safeext.len;i >= 0;--i)
+     if (!i || (safeext.s[i - 1] == '-')) {
+-      if (!stralloc_copys(&qme,".qmail")) temp_nomem();
++      if (!stralloc_copys(&qme,__HE(".qmail"))) temp_nomem();
+       if (!stralloc_cats(&qme,dash)) temp_nomem();
+       if (!stralloc_catb(&qme,safeext.s,i)) temp_nomem();
+       if (!stralloc_cats(&qme,"default")) temp_nomem();
