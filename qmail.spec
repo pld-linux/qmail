@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	44
+Release:	45
 LIcense:	Check with djb@koobera.math.uic.edu
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
@@ -29,6 +29,7 @@ Source18:	%{name}-smtp.inetd
 Source19:	%{name}-qpop.inetd
 Source20:	checkpassword.pamd
 Source21:	%{name}-client.html
+Source22:	%{name}-cert.pem
 Patch0:		%{name}-1.03.install.patch
 %{?!_without_msglog:Patch1: %{name}-1.03.msglog.patch}
 Patch2:		%{name}-1.03.redhat.patch
@@ -358,6 +359,8 @@ mv -f $RPM_BUILD_ROOT/var/qmail/bin/newaliases	$RPM_BUILD_ROOT%{_bindir}
 
 install %{SOURCE21} .
 
+install %{SOURCE22} $RPM_BUILD_ROOT/var/qmail/control/cert.pem
+
 sed /^diff/q %{PATCH24} >README.TLS
 
 gzip -9nf FAQ INSTALL* PIC* REMOVE* SENDMAIL TEST* UPGRADE
@@ -513,6 +516,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/me
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/plusdomain
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/rcpthosts
+%attr(640,qmaild,qmail) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/cert.pem
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/users/*
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/aliases
 %{_sysconfdir}/mail/aliases
