@@ -37,7 +37,7 @@ Patch9:      qmail-1.03-maxrcpt.patch
 Patch10:     qmHandle-0.3.0.PLD-init.patch
 Buildroot:   /tmp/%{name}-%{version}-root/
 Provides:    MTA smtpdaemon qmailmta qmail-server
-Requires:    /usr/sbin/tcpd, setup >= 1.10.0-3
+Requires:    %{_sbindir}/tcpd, setup >= 1.10.0-3
 Prereq:      /sbin/chkconfig, /bin/hostname, /bin/sed
 Conflicts:   qmail-client
 Obsoletes:   sendmail
@@ -161,7 +161,7 @@ ln -sf $RPM_BUILD_DIR/%{name}-%{version}/boot $RPM_BUILD_ROOT/var/qmail/boot
 ./install -s $RPM_BUILD_ROOT
 
 ln -s qmail/qmail-qread $RPM_BUILD_ROOT%{_bindir}/mailq
-ln -sf ../../var/qmail/bin/sendmail $RPM_BUILD_ROOT/usr/sbin/sendmail
+ln -sf ../../var/qmail/bin/sendmail $RPM_BUILD_ROOT%{_sbindir}/sendmail
 ln -sf ../../var/qmail/bin/sendmail $RPM_BUILD_ROOT%{_libdir}/sendmail
 
 # Set up boot procedures
@@ -249,8 +249,8 @@ if [ $1 = 1 ]; then
 		echo "qmqp		628/tcp		qmqp		# QMAIL Queuing Protocol" >> /etc/services
 		echo >> /etc/services
 		cp -f /etc/inetd.conf /etc/inetd.conf.pre-qmail
-		echo "#smtp	stream  tcp 	nowait  qmaild  /usr/sbin/tcpd /var/qmail/bin/tcp-env /var/qmail/bin/qmail-smtpd" >> /etc/inetd.conf
-		echo "#qmqp	stream  tcp 	nowait  qmaild  /usr/sbin/tcpd /var/qmail/bin/tcp-env /var/qmail/bin/qmail-qmqpd" >> /etc/inetd.conf
+		echo "#smtp	stream  tcp 	nowait  qmaild  %{_sbindir}/tcpd /var/qmail/bin/tcp-env /var/qmail/bin/qmail-smtpd" >> /etc/inetd.conf
+		echo "#qmqp	stream  tcp 	nowait  qmaild  %{_sbindir}/tcpd /var/qmail/bin/tcp-env /var/qmail/bin/qmail-qmqpd" >> /etc/inetd.conf
 		echo >> /etc/inetd.conf
 	fi
 fi
@@ -372,7 +372,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 755,   root,  root) %{_bindir}/qmail/antirbl
 %attr( 755,   root,  root) %{_bindir}/qmail/rblsmtpd
 %attr( 777,   root,  root) %{_bindir}/mailq
-%attr( 777,   root,  root) /usr/sbin/sendmail
+%attr( 777,   root,  root) %{_sbindir}/sendmail
 %attr( 777,   root,  root) %{_libdir}/sendmail
 %attr( 777,  alias, qmail) /var/qmail/alias
 %attr( 777,   root, qmail) /var/qmail/bin
