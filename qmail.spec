@@ -665,7 +665,7 @@ bzip2 -dc %{SOURCE23} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 
 bzip2 -dc %{SOURCE24} | tar xf -
 echo "These are pl-translations taken from: \
-   http://iidea.pl/~paweln/tlum/qmail-doki.tar.bz2" > qmail-doki/00-INDEX
+	http://iidea.pl/~paweln/tlum/qmail-doki.tar.bz2" > qmail-doki/00-INDEX
 
 # put manual pages to mandir
 install -d $RPM_BUILD_ROOT%{_mandir}/pl/man{1,3,5,7,8,9}
@@ -827,12 +827,12 @@ echo "Creating a self-signed ssl-certificate:"
 
 %triggerpostun -- %{name} <= 1.03-56.12
 if [ -f /var/lock/subsys/qmail ]; then
-    if [ -f /var/lock/subsys/qmail ]; then
+	if [ -f /var/lock/subsys/qmail ]; then
 		. /etc/rc.d/init.d/functions
-        msg_stopping qmail
-        killproc qmail-send
-        rm -f /var/lock/subsys/qmail
-    fi
+		msg_stopping qmail
+		killproc qmail-send
+		rm -f /var/lock/subsys/qmail
+	fi
 fi
 /sbin/chkconfig --del qmail
 
