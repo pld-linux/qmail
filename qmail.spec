@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	29
+Release:	30
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
@@ -48,6 +48,7 @@ Patch15:	%{name}-rblsmtpd-syslog.patch
 Patch16:	%{name}-smtpauth.patch
 Patch18:	%{name}-wildmat.patch
 Patch19:	%{name}-rblsmtpd-rss.patch
+BuildRequires:	pam-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Provides:	smtpdaemon
 Provides:	qmailmta
@@ -64,11 +65,12 @@ Prereq:		sh-utils
 Conflicts:	qmail-client
 Obsoletes:	smtpdaemon
 Obsoletes:	sendmail
+Obsoletes:	sendmail-cf
+Obsoletes:	sendmail-doc
 Obsoletes:	postfix
 Obsoletes:	zmailer
 Obsoletes:	smail
 Obsoletes:	exim
-BuildRequires:	pam-devel
 
 %description
 qmail is a small, fast, secure replacement for the SENDMAIL package,
