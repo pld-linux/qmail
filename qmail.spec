@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	45
+Release:	46
 LIcense:	Check with djb@koobera.math.uic.edu
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
@@ -169,7 +169,7 @@ Group:		Applications/Mail
 Group(de):	Applikationen/Post
 Group(pl):	Aplikacje/Poczta
 Group(pt):	Aplicações/Correio Eletrônico
-Conflicts:	maildrop
+Conflicts:	courier-imap-maildirmake
 
 %description maildirmake
 Maildirmake is a tool for making mail folders in Maildir format.
