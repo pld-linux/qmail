@@ -92,6 +92,7 @@ Requires(postun):	/usr/sbin/groupdel
 Requires(postun):	/usr/sbin/userdel
 Requires:	%{_sbindir}/tcpd
 Requires:	inetdaemon
+Requires:	pam >= 0.77.3
 Conflicts:	qmail-client
 Provides:	qmail-server
 Provides:	qmailmta
