@@ -57,7 +57,7 @@ Provides:	qmail-server
 Provides:	pop3daemon
 Requires:	%{_sbindir}/tcpd
 Requires:	inetdaemon
-Requires:	rc-scripts >= 0.2.0
+Prereq:		rc-scripts >= 0.2.0
 Prereq:		rc-inetd
 Prereq:		/sbin/chkconfig
 Prereq:		/bin/hostname
