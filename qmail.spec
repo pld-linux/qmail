@@ -261,18 +261,18 @@ install -d boot
 install -d $RPM_BUILD_ROOT{%{_sbindir},%{_mandir},{%{_var},%{_bindir},%{_libdir}}/qmail}
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/{qmail/{alias,control,users},rc.d/init.d,profile.d,mail,sysconfig/rc-inetd,pam.d,security}
 
-ln -sf %{_sysconfdir}/qmail/alias $RPM_BUILD_ROOT/var/qmail/
-ln -sf %{_sysconfdir}/qmail/control $RPM_BUILD_ROOT/var/qmail/
-ln -sf %{_sysconfdir}/qmail/users $RPM_BUILD_ROOT/var/qmail/
-ln -sf %{_libdir}/qmail $RPM_BUILD_ROOT/var/qmail/bin
-ln -sf %{_mandir} $RPM_BUILD_ROOT/var/qmail/man
+ln -sf ../../%{_sysconfdir}/qmail/alias $RPM_BUILD_ROOT/var/qmail/
+ln -sf ../../%{_sysconfdir}/qmail/control $RPM_BUILD_ROOT/var/qmail/
+ln -sf ../../%{_sysconfdir}/qmail/users $RPM_BUILD_ROOT/var/qmail/
+ln -sf ../../%{_libdir}/qmail $RPM_BUILD_ROOT/var/qmail/bin
+ln -sf ../../%{_mandir} $RPM_BUILD_ROOT/var/qmail/man
 ln -sf $RPM_BUILD_DIR/%{name}-%{version}/boot $RPM_BUILD_ROOT/var/qmail/boot
 
 ./install -s $RPM_BUILD_ROOT
 
 ln -sf qmail-qread $RPM_BUILD_ROOT%{_bindir}/mailq
-ln -sf /var/qmail/bin/sendmail $RPM_BUILD_ROOT%{_sbindir}/sendmail
-ln -sf /var/qmail/bin/sendmail $RPM_BUILD_ROOT%{_libdir}/sendmail
+ln -sf ../../var/qmail/bin/sendmail $RPM_BUILD_ROOT%{_sbindir}/sendmail
+ln -sf ../../var/qmail/bin/sendmail $RPM_BUILD_ROOT%{_libdir}/sendmail
 
 # Set up boot procedures
 install %{SOURCE7} $RPM_BUILD_ROOT/etc/rc.d/init.d/qmail
