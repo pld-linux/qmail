@@ -167,13 +167,13 @@ tar zxf %{SOURCE6} -C qmHandle-0.4.0/
 %patch17 -p1
 
 %build
-make CFLAGS="$RPM_OPT_FLAGS"
-make man
-make -C dot-forward-0.71
-make -C fastforward-0.51
-make -C rblsmtpd-0.70
-make -C queue-fix-1.3
-make -C checkpassword-0.76 SHADOWLIBS=-DPW_SHADOW
+%{__make} CFLAGS="$RPM_OPT_FLAGS"
+%{__make} man
+%{__make} -C dot-forward-0.71
+%{__make} -C fastforward-0.51
+%{__make} -C rblsmtpd-0.70
+%{__make} -C queue-fix-1.3
+%{__make} -C checkpassword-0.76 SHADOWLIBS=-DPW_SHADOW
 
 %install
 rm -rf $RPM_BUILD_ROOT
