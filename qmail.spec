@@ -11,7 +11,7 @@ Source0:	ftp://koobera.math.uic.edu/pub/software/%{name}-%{version}.tar.gz
 Source1:	ftp://koobera.math.uic.edu/pub/software/dot-forward-0.71.tar.gz
 Source2:	ftp://koobera.math.uic.edu/pub/software/fastforward-0.51.tar.gz
 Source3:	ftp://koobera.math.uic.edu/pub/software/rblsmtpd-0.70.tar.gz
-Source4:	ftp://ftp.pld.org.pl/people/zagrodzki/checkpass-1.1.tar.gz
+Source4:	checkpass-1.2.tar.gz
 Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
 Source6:	http://www.io.com/~mick/soft/qmHandle-0.5.1.tar.gz
 Source7:	%{name}.init
@@ -257,7 +257,7 @@ tar zxf %{SOURCE6} -C qmHandle-0.5.1/
 %{__make} -C fastforward-0.51
 %{__make} -C rblsmtpd-0.70
 %{__make} -C queue-fix-1.4
-%{__make} -C checkpass-1.1
+%{__make} -C checkpass-1.2
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -318,7 +318,7 @@ install qmHandle-0.5.1/qmHandle $RPM_BUILD_ROOT/var/qmail/bin/qmHandle
 install queue-fix-1.4/queue-fix $RPM_BUILD_ROOT/var/qmail/bin
 
 # CHECKPASSWORD command
-install checkpass-1.1/checkpass $RPM_BUILD_ROOT/var/qmail/bin
+install checkpass-1.2/checkpass $RPM_BUILD_ROOT/var/qmail/bin
 install %{SOURCE20} $RPM_BUILD_ROOT/etc/pam.d/checkpass
 echo "qmaild" > $RPM_BUILD_ROOT/etc/security/checkpass.allow
 
@@ -345,7 +345,7 @@ install rblsmtpd-0.70/*.8 $RPM_BUILD_ROOT/var/qmail/man/man8
 install -d $RPM_BUILD_ROOT/etc/skel/Mail
 ./maildirmake $RPM_BUILD_ROOT/etc/skel/Mail/Maildir
 
-(set +x; rm -f checkpass-1.1/{[a-z]*,Makefile})
+(set +x; rm -f checkpass-1.2/{[a-z]*,Makefile})
 (set +x; rm -f dot-forward-0.71/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
 (set +x; rm -f fastforward-0.51/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
 (set +x; rm -f rblsmtpd-0.70/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
@@ -374,7 +374,7 @@ sed /^diff/q %{PATCH24} >README.TLS
 
 gzip -9nf FAQ INSTALL* PIC* REMOVE* SENDMAIL TEST* UPGRADE
 gzip -9nf BLURB* README SECURITY THANKS THOUGHTS TODO VERSION
-gzip -9nf boot/* checkpass-1.1/* qmHandle-0.5.1/* queue-fix-1.4/*
+gzip -9nf boot/* checkpass-1.2/* qmHandle-0.5.1/* queue-fix-1.4/*
 gzip -9nf rblsmtpd-0.70/* tarpit.README README.TLS
 
 %pre
@@ -495,7 +495,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc {FAQ,INSTALL*,PIC*,REMOVE*,SENDMAIL,TEST*,UPGRADE}.gz
 %doc {BLURB*,README,SECURITY,THANKS,THOUGHTS,TODO,VERSION}.gz
-%doc checkpass-1.1/ queue-fix-1.4/ rblsmtpd-0.70/ boot/ 
+%doc checkpass-1.2/ queue-fix-1.4/ rblsmtpd-0.70/ boot/ 
 %doc {README.TLS,tarpit.README}.gz
 
 %attr( 755, root, root) %dir %{_sysconfdir}/mail
