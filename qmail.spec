@@ -33,7 +33,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.77
+Release:	56.80
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -46,8 +46,8 @@ Source4:	checkpass-1.2.tar.gz
 # Source4-md5:	6818629dc74737f3ca33ca97ab4ffcc4
 Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
 # Source5-md5:	43f915c104024e6f33a5b3ff52dfb75b
-Source6:    http://glen.alkohol.ee/pld/qmail/qmail-conf-20050103.1.tar.bz2
-# Source6-md5:	8614bce23f7d252d12b66c331de2556c
+Source6:    http://glen.alkohol.ee/pld/qmail/qmail-conf-20050125.tar.bz2
+# Source6-md5:	75cc5282a9a8b078f192aac846a5aa86
 Source7:	http://iidea.pl/~paweln/tlum/qmail-doki.tar.bz2
 # Source7-md5:	2d85f0f9f8408cf6caab9f9bc8f68657
 Source8:	%{name}-linux.sh
@@ -791,6 +791,15 @@ fi
 # queue-fix makes life easy!
 %{_bindir}/queue-fix %{varqmail}/queue >/dev/null
 
+# build .cdb if missing
+for i in smtp qmtp qmqp; do
+	if [ ! -e %{tcprules}/tcp.qmail-$i.cdb ]; then
+		tcprules %{tcprules}/tcp.qmail-$i.cdb %{tcprules}/.tcp.qmail-$i.tmp < %{tcprules}/tcp.qmail-$i
+		chown qmaild:root %{tcprules}/tcp.qmail-$i.cdb
+		chmod 640 %{tcprules}/tcp.qmail-$i.cdb
+	fi
+done
+
 echo "The QMTP and QMQP protocols are supported, and can be started as:"
 echo "ln -s %{supervise}/qmtpd /service/qmail-qmtpd"
 echo "ln -s %{supervise}/qmqpd /service/qmail-qmqpd"
@@ -875,6 +884,13 @@ if [ "$1" = "0" ]; then
 fi
 
 %post pop3
+# build .cdb if missing
+if [ ! -e %{tcprules}/tcp.qmail-$i.cdb ]; then
+	tcprules %{tcprules}/tcp.qmail-$i.cdb %{tcprules}/.tcp.qmail-$i.tmp < %{tcprules}/tcp.qmail-$i
+	chown qmaild:root %{tcprules}/tcp.qmail-$i.cdb
+	chmod 640 %{tcprules}/tcp.qmail-$i.cdb
+fi
+
 # add to supervise
 ln -snf %{supervise}/pop3d /service/qmail-pop3d
 
