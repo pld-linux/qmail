@@ -76,7 +76,7 @@ Patch27:	%{name}-home_etc.patch
 URL:		http://www.qmail.org/
 BuildRequires:	groff
 BuildRequires:	pam-devel
-BuildRequires:	openssl-devel
+BuildRequires:	openssl-devel >= 0.9.7d
 %{?with_home_etc:BuildRequires:	home-etc-devel >= 1.0.8}
 PreReq:		rc-scripts >= 0.2.0
 PreReq:		rc-inetd
