@@ -53,12 +53,13 @@ Source14:	%{name}-lint-0.51.pl
 Source15:	%{name}-qsanity-0.51.pl
 Source16:	tarpit.README
 Source20:	checkpassword.pamd
-# Source20-md5:    78c3cb713ec00207f8fa0edcf3fe4fd2
+# Source20-md5:	78c3cb713ec00207f8fa0edcf3fe4fd2
 Source21:	%{name}-client.html
 Source22:	%{name}-cert.pem
 Source23:	%{name}-pl-man-pages.tar.bz2
+# Source23-md5:	e6230e950257cf46b9b243685d682e3f
 Source24:	http://iidea.pl/~paweln/tlum/qmail-doki.tar.bz2
-# Source24-md5: 2d85f0f9f8408cf6caab9f9bc8f68657
+# Source24-md5:	2d85f0f9f8408cf6caab9f9bc8f68657
 
 Source40:	%{name}-rblsmtpd.sh
 Source41:	%{name}-smtp-scanner.sh
