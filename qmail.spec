@@ -130,13 +130,13 @@ Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
 - qmail-qsanity - sprawdza kolejkê pocztow± qmail-a,
 - qmail-lint - sprawdza konfiguracjê qmail-a,
 - tarpit - kolejne narzêdzie do walki ze SPAM-em,
-- Ops³uga TLS/SSL. Je¶li chcesz tego u¿ywaæ musisz mieæ certyfikat w
+- Obs³uga TLS/SSL. Je¶li chcesz tego u¿ywaæ musisz mieæ certyfikat w
   /etc/qmail/control/cert.pem.
 
 ================================================================================
-- *** Uwaga! Przeczytaj uwa¿nie dokumentacjê do tego pakietu, poniewa¿
-  istniej± ma³e, ale znacz±ce róznice pomiêdzy qmail-em oraz sendmail-em
-  i programami, które wspó³pracuj± z nimi.
+*** Uwaga! Przeczytaj uwa¿nie dokumentacjê do tego pakietu, poniewa¿
+istniej± ma³e, ale znacz±ce róznice pomiêdzy qmail-em oraz sendmail-em
+i programami, które wspó³pracuj± z nimi.
 
 %package client
 Summary:	qmail Mail Transport Agent - null client
