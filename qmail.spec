@@ -33,7 +33,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.44
+Release:	56.45
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -42,8 +42,6 @@ Source1:	http://cr.yp.to/software/dot-forward-0.71.tar.gz
 # Source1-md5:	1fefd9760e4706491fb31c7511d69bed
 Source2:	http://cr.yp.to/software/fastforward-0.51.tar.gz
 # Source2-md5:	6dc619180ba9726380dc1047e45a1d8d
-Source3:	http://cr.yp.to/software/rblsmtpd-0.70.tar.gz
-# Source3-md5:	2b9440db40aad2429ecbe8c964f69aa9
 Source4:	checkpass-1.2.tar.gz
 # Source4-md5:	6818629dc74737f3ca33ca97ab4ffcc4
 Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
@@ -73,17 +71,12 @@ Patch0:		%{name}-1.03.install.patch
 Patch1:		%{name}-1.03.msglog.patch
 Patch2:		%{name}-1.03.redhat.patch
 Patch3:		%{name}-1.03.fixed-ids.patch
-Patch4:		%{name}-1.03.rbl.conf.patch
 Patch6:		%{name}-relayclientexternal.patch
 Patch8:		tarpit.patch
 Patch9:		%{name}-1.03-maxrcpt.patch
 Patch11:	%{name}-1.03-v6-20000417.diff.gz
-Patch14:	%{name}-rblsmtpd-IPv6-PLD.patch
-Patch15:	%{name}-rblsmtpd-syslog.patch
-Patch19:	%{name}-rblsmtpd-rss.patch
 Patch20:	%{name}-no_mail_routing.patch
 Patch21:	%{name}-qmqpc-received.patch
-Patch22:	%{name}-rblsmtpd-glibc2.2.patch
 Patch23:	%{name}-extbouncer.patch
 
 # Let the system decide how to define errno
@@ -91,7 +84,6 @@ Patch26:	%{name}-errno.patch
 Patch27:	%{name}-home_etc.patch
 Patch28:	%{name}-1.03.errno.patch
 # #29 local-tab.patch
-Patch30:	%{name}-ac_rblsmtpd.patch
 
 # discards doublebounces without queuing them
 # http://qmail.zoo-gate.fi/doublebounce-trim.patch
@@ -275,8 +267,6 @@ electronic mail. This qmail also support IPv6 protocol.
 
 Following scripts and programs have been added:
 - checkpass - password-checking interface,
-- rblsmtpd - a generic tool to block mail from RBL-listed sites; an
-  optional way to filter SPAM,
 - qmail-fix - a small utility for checking and repairing the qmail
   queue structure,
 %{?with_msglog:- qmail-msglog - advanced e-mail monitoring,}
@@ -300,8 +290,6 @@ elektronicznej. Ten qmail dodatkowo wspiera protokó³ IPv6.
 
 Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
 - checkpass - interfejs do sprawdzania hase³,
-- rblsmtpd - podstawowe narzêdzie do blokowania listów z miejsc
-  wyszczególnionych w RBL; sposób na filtrowanie SPAM-u,
 - qmail-fix - program do sprawdzania oraz naprawiania struktury
   kolejki pocztowej qmail-a,
 %{?with_msglog:- qmail-msglog - zaawansowane monitorowanie listów,}
@@ -392,12 +380,11 @@ POP3 server for qmail.
 Serwer POP3 dla qmaila.
 
 %prep
-%setup -q -a1 -a2 -a3 -a4 -a5 -a6
+%setup -q -a1 -a2 -a4 -a5 -a6
 %patch0 -p1 -b .install
 %{?with_msglog:%patch1 -p1}
 %patch2 -p1 -b .redhat
 %patch3 -p1 -b .fixed.ids
-%patch4 -p0 -b .rbl.conf
 %patch200 -p2 -b .qregex-starttls-2way-auth
 %patch207 -p1 -b .qregex.memleak
 #%patch6 -p1 -b .relayclient-ext .have to rethink logics with tls
@@ -406,19 +393,14 @@ Serwer POP3 dla qmaila.
 
 # ipv6 patches fail
 #%patch11 -p1 -b .qmail-ipv6
-#%patch14 -p1 -b .rbl-ipv6
 
 %patch12 -p1 -b .dns
-%patch15 -p1 -b .rblsmtpd-syslog
-%patch19 -p1 -b .rblsmtpd.replystring
 %{!?with_routing:%patch20 -p1}
 %patch21 -p1 -b .qmqpc-received.patch
-%patch22 -p1 -b .res_init
 %patch23 -p1 -b .extbouncer
 %patch26 -p1 -b .errno
 %{?with_home_etc:%patch27 -p1 -b .home_etc}
 %patch28 -p1 -b .1.03.errno
-%patch30 -p1 -b .ac_rblsmtpd.patch
 
 # Not PLD patches.
 %patch100 -p1 -b .doublebounce-trim
@@ -492,7 +474,6 @@ echo -n ' -DUSE_HOME_ETC' >> conf-cc
 %{__make} man
 %{__make} -C dot-forward-0.71
 %{__make} -C fastforward-0.51
-%{__make} -C rblsmtpd-0.70
 %{__make} -C queue-fix-1.4
 %{__make} -C checkpass-1.2
 
@@ -616,11 +597,6 @@ install fastforward-0.51/setforward $RPM_BUILD_ROOT%{varqmail}/bin
 install fastforward-0.51/setmaillist $RPM_BUILD_ROOT%{varqmail}/bin
 install fastforward-0.51/*.1 $RPM_BUILD_ROOT%{varqmail}/man/man1/
 
-# RBLSMTPD commands and doc
-install rblsmtpd-0.70/antirbl $RPM_BUILD_ROOT%{varqmail}/bin
-install rblsmtpd-0.70/rblsmtpd $RPM_BUILD_ROOT%{varqmail}/bin
-install rblsmtpd-0.70/*.8 $RPM_BUILD_ROOT%{varqmail}/man/man8
-
 # default folder in /etc/skel
 install -d $RPM_BUILD_ROOT/etc/skel/Mail
 ./maildirmake $RPM_BUILD_ROOT/etc/skel/Mail/Maildir
@@ -630,7 +606,6 @@ export LANG=C
 (set +x; rm -f checkpass-1.2/{[a-z]*,Makefile})
 (set +x; rm -f dot-forward-0.71/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
 (set +x; rm -f fastforward-0.51/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
-(set +x; rm -f rblsmtpd-0.70/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
 (set +x; rm -f queue-fix-1.4/{[a-z]*,Makefile,TARGETS})
 
 cp %{SOURCE16} .
@@ -686,7 +661,7 @@ done
 rm -f qmail-doki/*.[135789]
 
 # remove backup files
-rm -f *~ rblsmtpd-0.70/*~
+rm -f *~
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -920,7 +895,7 @@ fi
 %doc FAQ INSTALL* PIC* REMOVE* SENDMAIL TEST* UPGRADE
 %doc BLURB* README SECURITY THANKS THOUGHTS TODO VERSION
 %doc boot checkpass-1.2 queue-fix-1.4
-%doc rblsmtpd-0.70 tarpit.README
+%doc tarpit.README
 %doc qmail-doki
 %if %{with tls}
 %doc README.auth README.remote-auth README.starttls README.qregex
@@ -1021,8 +996,6 @@ fi
 %attr(755,root,root) %{_libdir}/qmail/printmaillist
 %attr(755,root,root) %{_libdir}/qmail/setforward
 %attr(755,root,root) %{_libdir}/qmail/setmaillist
-%attr(755,root,root) %{_libdir}/qmail/antirbl
-%attr(755,root,root) %{_libdir}/qmail/rblsmtpd
 %attr(755,root,root) %{varqmail}/rc
 
 %attr(755,root,root) %{_libdir}/qmail/config-sanity-check
