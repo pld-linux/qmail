@@ -33,7 +33,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.75
+Release:	56.76
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -46,8 +46,8 @@ Source4:	checkpass-1.2.tar.gz
 # Source4-md5:	6818629dc74737f3ca33ca97ab4ffcc4
 Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
 # Source5-md5:	43f915c104024e6f33a5b3ff52dfb75b
-Source6:    http://glen.alkohol.ee/pld/qmail/qmail-conf-20041223.tar.bz2
-# Source6-md5:	1f7a392e474089f04d9e00916db3d161
+Source6:    http://glen.alkohol.ee/pld/qmail/qmail-conf-20050103.1.tar.bz2
+# Source6-md5:	8614bce23f7d252d12b66c331de2556c
 Source7:	http://iidea.pl/~paweln/tlum/qmail-doki.tar.bz2
 # Source7-md5:	2d85f0f9f8408cf6caab9f9bc8f68657
 Source8:	%{name}-linux.sh
@@ -956,6 +956,7 @@ fi
 %config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-qmtpd
 %config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-send
 %config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-smtpd
+%config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-rblsmtpd
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/users/*
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/aliases
 %{_sysconfdir}/mail/aliases
