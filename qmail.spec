@@ -155,7 +155,7 @@ ln -sf ../../etc/qmail/alias $RPM_BUILD_ROOT/var/qmail/
 ln -sf ../../etc/qmail/control $RPM_BUILD_ROOT/var/qmail/
 ln -sf ../../etc/qmail/users $RPM_BUILD_ROOT/var/qmail/
 ln -sf ../../usr/bin/qmail $RPM_BUILD_ROOT/var/qmail/bin
-ln -sf ../../usr/man $RPM_BUILD_ROOT/var/qmail/man
+ln -sf ../..%{_mandir} $RPM_BUILD_ROOT/var/qmail/man
 ln -sf $RPM_BUILD_DIR/%{name}-%{version}/boot $RPM_BUILD_ROOT/var/qmail/boot
 
 ./install -s $RPM_BUILD_ROOT
@@ -235,7 +235,7 @@ gzip -9nf FAQ INSTALL* PIC* REMOVE* SENDMAIL TEST* UPGRADE
 gzip -9nf BLURB* README SECURITY THANKS THOUGHTS TODO VERSION
 gzip -9nf boot/* checkpassword-0.76/* qmHandle-0.3.0/* queue-fix-1.3/*
 gzip -9nf rblsmtpd-0.70/* tarpit.README
-gzip -9nf $RPM_BUILD_ROOT/usr/man/man*/*
+gzip -9nf $RPM_BUILD_ROOT%{_mandir}/man*/*
 
 %pre
 # If package is being installed for the first time
@@ -389,7 +389,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 600, qmails, qmail) %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/sendmutex
 %attr( 644, qmailr, qmail) %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/tcpto
 %attr( 622, qmails, qmail) %config(noreplace) %verify(not mtime md5) /var/qmail/queue/lock/trigger
-/usr/man/man*/*
+%{_mandir}/man*/*
 
 # default folder - Maildir/
 %attr( 700,   root,  root) %dir /etc/skel/Mail
