@@ -11,12 +11,19 @@ Release:	54
 License:	Check with djb@koobera.math.uic.edu
 Group:		Networking/Daemons
 Source0:	ftp://koobera.math.uic.edu/pub/software/%{name}-%{version}.tar.gz
+# Source0-md5:	622f65f982e380dbe86e6574f3abcb7c
 Source1:	ftp://koobera.math.uic.edu/pub/software/dot-forward-0.71.tar.gz
+# Source1-md5:	1fefd9760e4706491fb31c7511d69bed
 Source2:	http://cr.yp.to/software/fastforward-0.51.tar.gz
+# Source2-md5:	6dc619180ba9726380dc1047e45a1d8d
 Source3:	ftp://koobera.math.uic.edu/pub/software/rblsmtpd-0.70.tar.gz
+# Source3-md5:	2b9440db40aad2429ecbe8c964f69aa9
 Source4:	checkpass-1.2.tar.gz
+# Source4-md5:	6818629dc74737f3ca33ca97ab4ffcc4
 Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
+# Source5-md5:	43f915c104024e6f33a5b3ff52dfb75b
 Source6:	http://www.io.com/~mick/soft/qmHandle-0.5.1.tar.gz
+# Source6-md5:	c50bce18aa4e3e6c98cd5da9ed41c5a9
 Source7:	%{name}.init
 Source8:	%{name}-linux.sh
 Source9:	%{name}-linux.csh
@@ -27,13 +34,16 @@ Source13:	%{name}-default-delivery
 Source14:	%{name}-lint-0.51.pl
 Source15:	%{name}-qsanity-0.51.pl
 Source16:	tarpit.README
+# Source16-md5:	2200af710f49fb32c1808345323c6e68
 Source17:	%{name}-qmqp.inetd
 Source18:	%{name}-smtp.inetd
 Source19:	%{name}-qpop.inetd
 Source20:	checkpassword.pamd
+# Source20-md5:	78c3cb713ec00207f8fa0edcf3fe4fd2
 Source21:	%{name}-client.html
 Source22:	%{name}-cert.pem
 Source23:	%{name}-pl-man-pages.tar.bz2
+# Source23-md5:	e6230e950257cf46b9b243685d682e3f
 Patch0:		%{name}-1.03.install.patch
 Patch1:		%{name}-1.03.msglog.patch
 Patch2:		%{name}-1.03.redhat.patch
