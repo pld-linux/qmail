@@ -1,0 +1,3 @@
+- fixed documentation ownership in maildrop and perl subpackages
+  (missing %defattr before use %doc macro)
+- release 34
