@@ -27,11 +27,13 @@
 %bcond_without tls		# disable tls
 %bcond_with ipv6		# enable ipv6
 #
+%define	qhpsi_ver	016
+#
 Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.41
+Release:	56.42
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -59,6 +61,8 @@ Source13:	%{name}-default-delivery
 Source14:	%{name}-lint-0.51.pl
 Source15:	%{name}-qsanity-0.51.pl
 Source16:	tarpit.README
+Source17:	http://www.fehcom.de/qmail/qhpsi/qhpsi-%{qhpsi_ver}_tgz.bin
+# Source17-md5:	6aad3e55b70bf7830f7aa577d28b89c0
 Source20:	checkpassword.pamd
 # Source20-md5:	78c3cb713ec00207f8fa0edcf3fe4fd2
 Source21:	%{name}-client.html
@@ -129,7 +133,7 @@ Patch214:	smtp-auth-close3.patch
 # i.e. - qmail-scanner
 Patch208:	http://www.qmail.org/%{name}queue-patch
 # QMAILQUEUE info to documentation
-Patch209:	%{name}-qmailqueue-docs.patch
+Patch209:	%{name}-qmailqueue-docs-qhpsi.patch
 
 # Support for remote hosts that have QMTP
 Patch215:	http://www.qmail.org/%{name}-1.03-qmtpc.patch
@@ -283,7 +287,8 @@ Following scripts and programs have been added:
 - tarpit - tool to fight with SPAM,
 - TLS/SSL support. If you want to use it you must have certificate in
   /etc/qmail/control/servercert.pem.
-
+- QHPSI v%{qhpsi_ver} - The Qmail High Performance Scanner Interface
+  http://www.fehcom.de/qmail/qmail.html
 
 ================================================================================
 - *** Note: Be sure and read the documentation as there are some small
@@ -458,6 +463,12 @@ zcat %{PATCH210} | sed '123,150d' | patch -p0
 %patch221 -p1 -b .ipalias
 #%patch222 -p1 -b .8bitmime
 %patch223 -p0 -b .liberal-lf
+
+mkdir -p qhpsi
+tar zxvf %{SOURCE17} -C qhpsi
+for a in qhpsi/*.patch; do
+	patch -p2 < $a
+done
 
 # setup compiler. we use CFLAGS redefine rather using conditional patching.
 echo -n "%{__cc} %{rpmcflags}" > conf-cc
@@ -920,6 +931,9 @@ fi
 %if %{with tls}
 %doc README.auth README.remote-auth README.starttls README.qregex
 %endif
+
+# License requires all files to be distributed.
+%doc qhpsi
 
 %attr(755,root,root) %dir %{_sysconfdir}/mail
 %attr(755,root,root) %dir %{_sysconfdir}/qmail
