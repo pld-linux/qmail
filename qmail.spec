@@ -44,7 +44,9 @@ Provides:    smtpdaemon
 Provides:    qmailmta
 Provides:    qmail-server
 Requires:    %{_sbindir}/tcpd
+Requires:    inetdaemon
 Requires:    rc-scripts
+Requires:    rc-inetd
 Prereq:      /sbin/chkconfig
 Prereq:      /bin/hostname
 Prereq:      /bin/sed
