@@ -31,6 +31,9 @@ case "$1" in
 	if [ ! -f /var/lock/subsys/qmail ]; then
 		PATH="/var/qmail/bin:$PATH"; export PATH
 
+		# build aliases database
+		newaliases
+		
 		show Starting qmail
 		busy
 		qmail-start "`cat /etc/qmail/dot-qmail`" splogger qmail &
