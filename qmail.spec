@@ -393,7 +393,7 @@ install %{SOURCE21} .
 install %{SOURCE22} $RPM_BUILD_ROOT%{varqmail}/control/cert.pem
 bzip2 -dc %{SOURCE23} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 
-bzip2 -dc %{SOURCE24} | tar xf - 
+bzip2 -dc %{SOURCE24} | tar xf -
 echo "These are pl-translations taken from: \
    http://iidea.pl/~paweln/tlum/qmail-doki.tar.bz2" > qmail-doki/00-INDEX
 
