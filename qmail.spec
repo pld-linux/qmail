@@ -33,7 +33,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.42
+Release:	56.43
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -48,8 +48,8 @@ Source4:	checkpass-1.2.tar.gz
 # Source4-md5:	6818629dc74737f3ca33ca97ab4ffcc4
 Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
 # Source5-md5:	43f915c104024e6f33a5b3ff52dfb75b
-Source6:	http://glen.alkohol.ee/pld/qmail/qmail-conf-20041128.4.tar.bz2
-# Source6-md5:	2333bd4cf9c5c480656ca4ac08ac8a9f
+Source6:	http://glen.alkohol.ee/pld/qmail/qmail-conf-20041202.tar.bz2
+# Source6-md5:	0d17ce7f14589dbc55a143d6cf20b515
 Source7:	http://iidea.pl/~paweln/tlum/qmail-doki.tar.bz2
 # Source7-md5:	2d85f0f9f8408cf6caab9f9bc8f68657
 Source8:	%{name}-linux.sh
