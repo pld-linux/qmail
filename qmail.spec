@@ -7,7 +7,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	54
+Release:	55
 License:	Check with djb@koobera.math.uic.edu
 Group:		Networking/Daemons
 Source0:	ftp://koobera.math.uic.edu/pub/software/%{name}-%{version}.tar.gz
