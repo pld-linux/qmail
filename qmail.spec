@@ -33,7 +33,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.90
+Release:	56.91
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -46,8 +46,8 @@ Source4:	checkpass-1.2.tar.gz
 # Source4-md5:	6818629dc74737f3ca33ca97ab4ffcc4
 Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
 # Source5-md5:	43f915c104024e6f33a5b3ff52dfb75b
-Source6:    http://glen.alkohol.ee/pld/qmail/qmail-conf-20050131.3.tar.bz2
-# Source6-md5:	8336934dbecd48e9262ceeefc369bc70
+Source6:	http://glen.alkohol.ee/pld/qmail/qmail-conf-20050225.tar.bz2
+# Source6-md5:	1f294eda711f128e63cb1fb943e6dee2
 Source7:	http://iidea.pl/~paweln/tlum/qmail-doki.tar.bz2
 # Source7-md5:	2d85f0f9f8408cf6caab9f9bc8f68657
 Source8:	%{name}-linux.sh
@@ -225,6 +225,7 @@ Requires(postun):	/usr/sbin/userdel
 Requires:	pam >= 0.77.3
 Requires:	ucspi-tcp >= 0.88
 Requires:	daemontools >= 0.76-1.4
+Requires:	mktemp
 %{?with_home_etc:Requires:	home-etc >= 1.0.8}
 Conflicts:	qmail-client
 Provides:	group(nofiles)
@@ -278,7 +279,7 @@ Following scripts and programs have been added:
 - QHPSI v%{qhpsi_ver} - The Qmail High Performance Scanner Interface
   http://www.fehcom.de/qmail/qmail.html
 
-================================================================================
+======================================================================
 - *** Note: Be sure and read the documentation as there are some small
   but very significant differences between SENDMAIL and QMAIL and the
   programs that interact with them.
@@ -300,7 +301,7 @@ Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
   /etc/qmail/control/servercert.pem.
 
 
-================================================================================
+======================================================================
 *** Uwaga! Przeczytaj uwa¿nie dokumentacjê do tego pakietu, poniewa¿
 istniej± ma³e, ale znacz±ce ró¿nice pomiêdzy qmailem oraz sendmailem
 i programami, które wspó³pracuj± z nimi.
