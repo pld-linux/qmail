@@ -2,7 +2,7 @@ Summary:     qmail Mail Transport Agent
 Summary(pl): qmail - serwer pocztowy (MTA)
 Name:        qmail
 Version:     1.03
-Release:     9
+Release:     10
 Group:       Networking/Daemons
 Group(pl):   Sieciowe/Serwery
 Copyright:   Check with djb@koobera.math.uic.edu
@@ -30,7 +30,7 @@ Patch2:      qmail-1.03.redhat.patch
 Patch3:      qmail-1.03.fixed-ids.patch
 Patch4:      qmail-1.03.rbl.conf.patch
 Patch5:      qmail-1.03.mklinux.patch
-Patch6:      qmail-1.03.relay-allow.patch
+Patch6:      qmail-relayclientexternal.patch
 Patch7:      qmail-1.03.checkpassword.patch
 Patch8:      tarpit.patch
 Patch9:      qmail-1.03-maxrcpt.patch
@@ -129,7 +129,7 @@ tar zxf %{SOURCE6} -C qmHandle-0.3.0/
 %ifarch ppc
 %patch5 -p0
 %endif
-%patch6 -p0
+%patch6 -p1
 %patch7 -p1
 %patch8 -p0
 %patch9 -p0
@@ -400,6 +400,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue May 18 1999 Jan Rêkorajski <baggins@hunter.mimuw.edu.pl>
+  [1.03-10]
+- removed relay-allow patch - I realized it was dumb, and added
+  relayclientexternal which is better solution of the problem
+  (relaying besed on MAIL FROM:)
+
 * Sun May 02 1999 Artur Wróblewski <wrobell@posexperts.com.pl>
   [1.03-9]
 - gzipped manpages and documentation
