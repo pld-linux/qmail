@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	41
+Release:	42
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
@@ -233,7 +233,7 @@ tar zxf %{SOURCE6} -C qmHandle-0.4.0/
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
-%patch16 -p0
+%patch16 -p1
 %patch18 -p1
 %patch19 -p1
 %{?no_mail_routing:%patch20 -p1}
