@@ -60,6 +60,7 @@ Patch24:	%{name}-tls.patch
 # http://www.qmail.org/qmailqueue-patch
 Patch25:	%{name}-queue.patch
 URL:		http://www.qmail.org/
+BuildRequires:	groff
 BuildRequires:	pam-devel
 PreReq:		rc-scripts >= 0.2.0
 PreReq:		rc-inetd
