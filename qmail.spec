@@ -51,6 +51,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Provides:	smtpdaemon
 Provides:	qmailmta
 Provides:	qmail-server
+Provides:	pop3daemon
 Requires:	%{_sbindir}/tcpd
 Requires:	inetdaemon
 Requires:	rc-scripts >= 0.2.0
