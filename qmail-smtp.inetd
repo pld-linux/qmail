@@ -5,5 +5,5 @@ PORT=25
 FLAGS=nowait
 USER=qmaild
 SERVER=tcpd
-DAEMON=/var/qmail/bin/rblsmtpd
-DAEMONARGS="/var/qmail/bin/qmail-smtpd /var/qmail/bin/checkpass"
+DAEMON=/var/qmail/bin/tcp-env
+DAEMONARGS="/var/qmail/bin/rblsmtpd -R -b /var/qmail/bin/qmail-smtpd /var/qmail/bin/checkpass"
