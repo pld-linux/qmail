@@ -7,7 +7,7 @@ License:	Check with djb@koobera.math.uic.edu
 Group:		Networking/Daemons
 Source0:	ftp://koobera.math.uic.edu/pub/software/%{name}-%{version}.tar.gz
 Source1:	ftp://koobera.math.uic.edu/pub/software/dot-forward-0.71.tar.gz
-Source2:	ftp://koobera.math.uic.edu/pub/software/fastforward-0.51.tar.gz
+Source2:	http://cr.yp.to/software/fastforward-0.51.tar.gz
 Source3:	ftp://koobera.math.uic.edu/pub/software/rblsmtpd-0.70.tar.gz
 Source4:	checkpass-1.2.tar.gz
 Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
