@@ -1,0 +1,60 @@
+diff -Nur qmail-1.03.orig/dot-forward-0.71/error.h qmail-1.03/dot-forward-0.71/error.h
+--- qmail-1.03.orig/dot-forward-0.71/error.h	Tue May 19 12:15:50 1998
++++ qmail-1.03/dot-forward-0.71/error.h	Wed Mar 19 17:56:28 2003
+@@ -1,6 +1,8 @@
+ #ifndef ERROR_H
+ #define ERROR_H
+ 
++#include <errno.h>
++
+ extern int errno;
+ 
+ extern int error_intr;
+diff -Nur qmail-1.03.orig/error.h qmail-1.03/error.h
+--- qmail-1.03.orig/error.h	Mon Jun 15 12:53:16 1998
++++ qmail-1.03/error.h	Wed Mar 19 17:56:21 2003
+@@ -1,6 +1,8 @@
+ #ifndef ERROR_H
+ #define ERROR_H
+ 
++#include <errno.h>
++
+ extern int errno;
+ 
+ extern int error_intr;
+diff -Nur qmail-1.03.orig/fastforward-0.51/error.h qmail-1.03/fastforward-0.51/error.h
+--- qmail-1.03.orig/fastforward-0.51/error.h	Tue May 19 18:25:42 1998
++++ qmail-1.03/fastforward-0.51/error.h	Wed Mar 19 17:56:25 2003
+@@ -1,6 +1,8 @@
+ #ifndef ERROR_H
+ #define ERROR_H
+ 
++#include <errno.h>
++
+ extern int errno;
+ 
+ extern int error_intr;
+diff -Nur qmail-1.03.orig/queue-fix-1.4/error.h qmail-1.03/queue-fix-1.4/error.h
+--- qmail-1.03.orig/queue-fix-1.4/error.h	Sun Mar 14 20:51:04 1999
++++ qmail-1.03/queue-fix-1.4/error.h	Wed Mar 19 17:56:46 2003
+@@ -1,6 +1,8 @@
+ #ifndef ERROR_H
+ #define ERROR_H
+ 
++#include <errno.h>
++
+ extern int errno;
+ 
+ extern int error_intr;
+diff -Nur qmail-1.03.orig/rblsmtpd-0.70/error.h qmail-1.03/rblsmtpd-0.70/error.h
+--- qmail-1.03.orig/rblsmtpd-0.70/error.h	Tue Aug 25 17:58:22 1998
++++ qmail-1.03/rblsmtpd-0.70/error.h	Wed Mar 19 17:56:23 2003
+@@ -1,6 +1,8 @@
+ #ifndef ERROR_H
+ #define ERROR_H
+ 
++#include <errno.h>
++
+ extern int errno;
+ 
+ extern int error_intr;
