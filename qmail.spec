@@ -375,11 +375,6 @@ bzip2 -dc %{SOURCE23} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 
 sed /^diff/q %{PATCH24} >README.TLS
 
-gzip -9nf FAQ INSTALL* PIC* REMOVE* SENDMAIL TEST* UPGRADE
-gzip -9nf BLURB* README SECURITY THANKS THOUGHTS TODO VERSION
-gzip -9nf boot/* checkpass-1.2/* qmHandle-0.5.1/* queue-fix-1.4/*
-gzip -9nf rblsmtpd-0.70/* tarpit.README README.TLS
-
 %pre
 if [ "$1" = "1" ]; then
 # Add few users and groups
@@ -496,10 +491,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc {FAQ,INSTALL*,PIC*,REMOVE*,SENDMAIL,TEST*,UPGRADE}.gz
-%doc {BLURB*,README,SECURITY,THANKS,THOUGHTS,TODO,VERSION}.gz
-%doc checkpass-1.2/ queue-fix-1.4/ rblsmtpd-0.70/ boot/
-%doc {README.TLS,tarpit.README}.gz
+%doc FAQ INSTALL* PIC* REMOVE* SENDMAIL TEST* UPGRADE
+%doc BLURB* README SECURITY THANKS THOUGHTS TODO VERSION
+%doc boot checkpass-1.2 qmHandle-0.5.1 queue-fix-1.4
+%doc rblsmtpd-0.70 tarpit.README README.TLS
 
 %attr(755,root,root) %dir %{_sysconfdir}/mail
 %attr(755,root,root) %dir %{_sysconfdir}/qmail
@@ -619,8 +614,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files client
 %defattr(644,root,root,755)
-%doc {FAQ,INSTALL*,PIC*,REMOVE*,SENDMAIL,TEST*,UPGRADE}.gz
-%doc {BLURB*,README,SECURITY,THANKS,THOUGHTS,TODO,VERSION}.gz
+%doc {FAQ,INSTALL*,PIC*,REMOVE*,SENDMAIL,TEST*,UPGRADE}
+%doc {BLURB*,README,SECURITY,THANKS,THOUGHTS,TODO,VERSION}
 %doc qmail-client.html
 
 %attr(755,root,root) %dir %{_sysconfdir}/mail
