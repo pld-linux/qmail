@@ -13,8 +13,8 @@ Source1:	ftp://koobera.math.uic.edu/pub/software/dot-forward-0.71.tar.gz
 Source2:	ftp://koobera.math.uic.edu/pub/software/fastforward-0.51.tar.gz
 Source3:	ftp://koobera.math.uic.edu/pub/software/rblsmtpd-0.70.tar.gz
 Source4:	ftp://ftp.pld.org.pl/people/zagrodzki/checkpass-1.1.tar.gz
-Source5:	http://www.netmeridian.com/e-huss/queue-fix.tar.gz
-Source6:	http://www.io.com/~mick/soft/qmHandle-0.4.0.tar.gz
+Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
+Source6:	http://www.io.com/~mick/soft/qmHandle-0.5.1.tar.gz
 Source7:	%{name}.init
 Source8:	%{name}-linux.sh
 Source9:	%{name}-linux.csh
@@ -214,8 +214,8 @@ POP3 server for qmail.
 %setup -D -T -q -a 3
 %setup -D -T -q -a 4
 %setup -D -T -q -a 5
-install -d qmHandle-0.4.0
-tar zxf %{SOURCE6} -C qmHandle-0.4.0/
+install -d qmHandle-0.5.1
+tar zxf %{SOURCE6} -C qmHandle-0.5.1/
 %patch0 -p1
 %{!?_without_msglog:%patch1 -p1}
 %patch2 -p1
@@ -248,7 +248,7 @@ tar zxf %{SOURCE6} -C qmHandle-0.4.0/
 %{__make} -C dot-forward-0.71
 %{__make} -C fastforward-0.51
 %{__make} -C rblsmtpd-0.70
-%{__make} -C queue-fix-1.3
+%{__make} -C queue-fix-1.4
 %{__make} -C checkpass-1.1
 
 %install
@@ -304,10 +304,10 @@ install %{SOURCE14} $RPM_BUILD_ROOT/var/qmail/bin/qmail-lint
 install %{SOURCE15} $RPM_BUILD_ROOT/var/qmail/bin/qmail-qsanity
 
 # qmHandle command
-install qmHandle-0.4.0/qmHandle $RPM_BUILD_ROOT/var/qmail/bin/qmHandle
+install qmHandle-0.5.1/qmHandle $RPM_BUILD_ROOT/var/qmail/bin/qmHandle
 
 # QUEUE FIX command
-install queue-fix-1.3/queue-fix $RPM_BUILD_ROOT/var/qmail/bin
+install queue-fix-1.4/queue-fix $RPM_BUILD_ROOT/var/qmail/bin
 
 # CHECKPASSWORD command
 install checkpass-1.1/checkpass $RPM_BUILD_ROOT/var/qmail/bin
@@ -341,8 +341,8 @@ install -d $RPM_BUILD_ROOT/etc/skel/Mail
 (set +x; rm -f dot-forward-0.71/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
 (set +x; rm -f fastforward-0.51/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
 (set +x; rm -f rblsmtpd-0.70/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
-(set +x; rm -f queue-fix-1.3/{[a-z]*,Makefile,TARGETS})
-(set +x; rm -f qmHandle-0.4.0/q*)
+(set +x; rm -f queue-fix-1.4/{[a-z]*,Makefile,TARGETS})
+(set +x; rm -f qmHandle-0.5.1/q*)
 
 cp $RPM_SOURCE_DIR/tarpit.README .
 
@@ -363,7 +363,7 @@ sed /^diff/q %{PATCH24} >README.TLS
 
 gzip -9nf FAQ INSTALL* PIC* REMOVE* SENDMAIL TEST* UPGRADE
 gzip -9nf BLURB* README SECURITY THANKS THOUGHTS TODO VERSION
-gzip -9nf boot/* checkpass-1.1/* qmHandle-0.4.0/* queue-fix-1.3/*
+gzip -9nf boot/* checkpass-1.1/* qmHandle-0.5.1/* queue-fix-1.4/*
 gzip -9nf rblsmtpd-0.70/* tarpit.README README.TLS
 
 %pre
@@ -484,7 +484,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc {FAQ,INSTALL*,PIC*,REMOVE*,SENDMAIL,TEST*,UPGRADE}.gz
 %doc {BLURB*,README,SECURITY,THANKS,THOUGHTS,TODO,VERSION}.gz
-%doc checkpass-1.1/ queue-fix-1.3/ rblsmtpd-0.70/ boot/ 
+%doc checkpass-1.1/ queue-fix-1.4/ rblsmtpd-0.70/ boot/ 
 %doc {README.TLS,tarpit.README}.gz
 
 %attr( 755, root, root) %dir %{_sysconfdir}/mail
@@ -659,7 +659,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files perl
 %defattr(644,root,root,755)
-%doc qmHandle-0.4.0/
+%doc qmHandle-0.5.1/
 %attr( 755,  root,  root) %{_bindir}/qmHandle
 %attr( 755,  root,  root) %{_bindir}/qmail-qsanity
 %attr( 755,  root,  root) %{_libdir}/qmail/qmail-lint
