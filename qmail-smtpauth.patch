@@ -1,5 +1,39 @@
---- qmail-smtpd.c	Mon Jun 15 12:53:16 1998
-+++ qmail-smtpd.c.auth	Fri Nov 19 02:01:25 1999
+diff -durN qmail-1.03.orig/qmail-smtpd.8 qmail-1.03/qmail-smtpd.8
+--- qmail-1.03.orig/qmail-smtpd.8	Thu Jul 19 12:51:41 2001
++++ qmail-1.03/qmail-smtpd.8	Thu Jul 19 12:52:19 2001
+@@ -3,6 +3,11 @@
+ qmail-smtpd \- receive mail via SMTP
+ .SH SYNOPSIS
+ .B qmail-smtpd
++[
++.I authprogram
++[
++.I authprogram-args
++] ]
+ .SH DESCRIPTION
+ .B qmail-smtpd
+ receives mail messages via the Simple Mail Transfer Protocol (SMTP)
+@@ -24,6 +29,17 @@
+ 
+ .B qmail-smtpd
+ supports ESMTP, including the 8BITMIME and PIPELINING options.
++
++When 
++.I authprogram
++(usually 
++.B /var/qmail/bin/checkpassword
++) is given
++.B qmail-smtpd
++will also support SMTP LOGIN authentication method. The
++.I authprogram
++should return '0' if authentication was successful.
++
+ .SH TRANSPARENCY
+ .B qmail-smtpd
+ converts the SMTP newline convention into the UNIX newline convention
+diff -durN qmail-1.03.orig/qmail-smtpd.c qmail-1.03/qmail-smtpd.c
+--- qmail-1.03.orig/qmail-smtpd.c	Thu Jul 19 12:51:41 2001
++++ qmail-1.03/qmail-smtpd.c	Thu Jul 19 12:53:06 2001
 @@ -1,4 +1,5 @@
  #include "sig.h"
 +#include <stdio.h>
@@ -21,21 +55,31 @@
 +#define USE_SMTPAUTH
  unsigned int databytes = 0;
  int timeout = 1200;
+ int tarpitcount = 0;
+@@ -258,6 +261,9 @@
+ stralloc rcptto = {0};
+ int rcptcount;
  
-@@ -229,7 +232,11 @@
++#ifdef USE_SMTPAUTH
++static char **smtpauth_argv = NULL;
++#endif
+ 
+ void smtp_helo(arg) char *arg;
+ {
+@@ -266,7 +272,11 @@
  }
  void smtp_ehlo(arg) char *arg;
  {
 -  smtp_greet("250-"); out("\r\n250-PIPELINING\r\n250 8BITMIME\r\n");
 +  smtp_greet("250-");
 +#ifdef USE_SMTPAUTH
-+  out("\r\n250-AUTH=LOGIN");
++  if (smtpauth_argv) out("\r\n250-AUTH=LOGIN");
 +#endif
 +  out("\r\n250-PIPELINING\r\n250 8BITMIME\r\n");
    seenmail = 0; dohelo(arg);
  }
  void smtp_rset()
-@@ -394,10 +401,142 @@
+@@ -439,10 +449,144 @@
    out("\r\n");
  }
  
@@ -94,7 +138,6 @@
 +  smtpauth.s[smtpauth.len] = 0;
 +  return smtpauth.len;
 +}
-+static char **smtpauth_argv;
 +void smtp_auth(arg) char *arg; {
 +  int st, pid, fds[2];
 +  /* netscape 4.5 sends AUTH LOGIN <base64encodedusername>
@@ -110,6 +153,9 @@
 +     i think using spaces for tabs is bad.
 +                                                -mrs.brisby@nimh.org
 +  */
++  
++  if (!smtpauth_argv) return;
++	  
 +  while (arg && *arg && *arg != ' ') arg++;
 +
 +  /* pass over the space */
@@ -178,7 +224,7 @@
  , { "quit", smtp_quit, flush }
  , { "helo", smtp_helo, flush }
  , { "ehlo", smtp_ehlo, flush }
-@@ -408,8 +547,13 @@
+@@ -453,8 +597,14 @@
  , { 0, err_unimpl, flush }
  } ;
  
@@ -188,7 +234,8 @@
 +#ifdef USE_SMTPAUTH
 +  char *u;
 +
-+  smtpauth_argv = argv;
++  if (argc>1) smtpauth_argv = argv;
++  else smtpauth_argv=NULL;
 +#endif
    sig_pipeignore();
    if (chdir(auto_qmail) == -1) die_control();
