@@ -341,11 +341,6 @@ if [ $1 = 1 ]; then
 fi
 
 %post
-echo "Remember to setuid %{_libdir}/bin/checkpass if you intend"
-echo "to use it with qmail-smtpd. For more information see:"
-echo "%{_defaultdocdir}/%{name}/checkpass-1.0/*"
-echo "/etc/sysconfig/rc-inetd/smtpd"
-echo
 if [ ! -f /etc/mail/mailname -a -d /etc/mail ]; then
 	(cd /etc/mail && ln -sf ../qmail/control/me mailname && chmod a+r mailname)
 fi
@@ -467,7 +462,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 644,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/security/checkpass.allow
 %attr( 755,  root,  root) %{_libdir}/qmail/bouncesaying
 %attr( 755,  root,  root) %{_libdir}/qmail/condredirect
-%attr( 755,  root,  root) %{_libdir}/qmail/checkpass
+%attr(4755,  root,  root) %{_libdir}/qmail/checkpass
 %attr( 755,  root,  root) %{_libdir}/qmail/datemail
 %attr( 755,  root,  root) %{_libdir}/qmail/elq
 %attr( 755,  root,  root) %{_libdir}/qmail/except
