@@ -33,7 +33,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.63
+Release:	56.71
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -61,6 +61,7 @@ Source15:	%{name}-qsanity-0.51.pl
 Source16:	tarpit.README
 Source17:	http://www.fehcom.de/qmail/qhpsi/qhpsi-%{qhpsi_ver}_tgz.bin
 # Source17-md5:	18afa1762ba0b419deb26416b6a21a65
+Source18:	%{name}.logrotate
 Source20:	checkpassword.pamd
 # Source20-md5:	78c3cb713ec00207f8fa0edcf3fe4fd2
 Source21:	%{name}-client.html
@@ -483,7 +484,7 @@ rm -rf $RPM_BUILD_ROOT
 
 install -d boot
 install -d $RPM_BUILD_ROOT{%{_sbindir},%{_bindir},%{_mandir},%{_libdir}/qmail,%{varqmail}} \
-	$RPM_BUILD_ROOT/etc/{rc.d/init.d,profile.d,mail,pam.d,security} \
+	$RPM_BUILD_ROOT/etc/{rc.d/init.d,profile.d,mail,pam.d,security,logrotate.d} \
 	$RPM_BUILD_ROOT%{_sysconfdir}/qmail/{alias,control,users} \
 
 ln -sf ../..%{_sysconfdir}/qmail/alias $RPM_BUILD_ROOT%{varqmail}
@@ -503,11 +504,13 @@ ln -sf ../..%{varqmail}/bin/sendmail $RPM_BUILD_ROOT%{_libdir}/sendmail
 install %{SOURCE8} $RPM_BUILD_ROOT/etc/profile.d/qmail.sh
 install %{SOURCE9} $RPM_BUILD_ROOT/etc/profile.d/qmail.csh
 
+install %{SOURCE18} $RPM_BUILD_ROOT/etc/logrotate.d/qmail
+
 # tcpserver (supervise)
 PV=`basename %{SOURCE6}`
 cd ${PV%.tar.bz2}
 
-install -d $RPM_BUILD_ROOT/var/log/qmail
+install -d $RPM_BUILD_ROOT/var/log/{,archiv/}qmail
 
 install conf-* $RPM_BUILD_ROOT%{_sysconfdir}/qmail/control
 install config-sanity-check qmail-config-system $RPM_BUILD_ROOT%{_libdir}/qmail
@@ -533,7 +536,7 @@ install -d $RPM_BUILD_ROOT/var/qmail/control/tlshosts
 install -d $RPM_BUILD_ROOT%{supervise}
 for d in '' log; do
 	for i in send smtpd qmtpd qmqpd pop3d; do
-		install -d $RPM_BUILD_ROOT/var/log/qmail/$i/$d
+		install -d $RPM_BUILD_ROOT/var/log/{,archiv/}qmail/$i/$d
 
 		install -d $RPM_BUILD_ROOT%{supervise}/$i/$d
 		install -d $RPM_BUILD_ROOT%{supervise}/$i/$d/supervise
@@ -547,7 +550,7 @@ for d in '' log; do
 	done
 done
 # rblsmtpd log is separate. smtpd/log logs there
-install -d $RPM_BUILD_ROOT/var/log/qmail/rblsmtpd
+install -d $RPM_BUILD_ROOT/var/log/{,archiv/}qmail/rblsmtpd
 
 install -d $RPM_BUILD_ROOT%{tcprules}
 install Makefile $RPM_BUILD_ROOT%{tcprules}/Makefile
@@ -930,9 +933,9 @@ fi
 %attr(700,qmailq,qmail) %{varqmail}/queue/pid
 %attr(700,qmails,qmail) %{varqmail}/queue/remote
 %attr(750,qmailq,qmail) %{varqmail}/queue/todo
-%attr(600,qmails,qmail) %config(noreplace) %verify(not mtime md5) %{varqmail}/queue/lock/sendmutex
-%attr(644,qmailr,qmail) %config(noreplace) %verify(not size mtime md5) %{varqmail}/queue/lock/tcpto
-%attr(622,qmails,qmail) %config(noreplace) %verify(not mtime md5) %{varqmail}/queue/lock/trigger
+%attr(600,qmails,qmail) %config(noreplace) %verify(not md5 mtime size) %ghost %{varqmail}/queue/lock/sendmutex
+%attr(644,qmailr,qmail) %config(noreplace) %verify(not md5 mtime size) %ghost %{varqmail}/queue/lock/tcpto
+%attr(622,qmails,qmail) %config(noreplace) %verify(not md5 mtime size) %ghost %{varqmail}/queue/lock/trigger
 %attr(644,root,nofiles) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/alias/.qmail-*
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/defaultdomain
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/locals
@@ -954,6 +957,7 @@ fi
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/users/*
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/aliases
 %{_sysconfdir}/mail/aliases
+%config(noreplace) %verify(not mtime) /etc/logrotate.d/*
 %attr(755,root,root) %config(noreplace) %verify(not size mtime md5) /etc/profile.d/*
 %attr(754,root,root) /etc/rc.d/init.d/*
 %attr(644,root,root) %config(noreplace) %verify(not size mtime md5) /etc/pam.d/checkpass
@@ -1030,49 +1034,55 @@ fi
 %attr(640,qmaild,root) %config(noreplace) %verify(not size mtime md5) %{tcprules}/tcp.qmail-qmqp.cdb
 
 %attr(755,qmaill,root) %dir /var/log/qmail
+%attr(750,root,root) %dir /var/log/archiv/qmail
 %attr(755,root,root) %dir %{supervise}
 
 %attr(1755,root,root) %dir %{supervise}/smtpd
 %attr(755,root,root) %{supervise}/smtpd/run
 %attr(700,root,root) %dir %{supervise}/smtpd/supervise
 
-%attr(600,root,root) %config(noreplace) %verify(not size mtime md5) %{supervise}/smtpd/supervise/*
+%attr(600,root,root) %config(noreplace) %verify(not md5 mtime size) %ghost %{supervise}/smtpd/supervise/*
 %attr(1755,root,root) %dir %{supervise}/smtpd/log
 %attr(755,root,root) %{supervise}/smtpd/log/run
 %attr(700,root,root) %dir %{supervise}/smtpd/log/supervise
-%attr(600,root,root) %config(noreplace) %verify(not size mtime md5) %{supervise}/smtpd/log/supervise/*
+%attr(600,root,root) %config(noreplace) %verify(not md5 mtime size) %ghost %{supervise}/smtpd/log/supervise/*
 %attr(755,qmaill,root) %dir /var/log/qmail/smtpd
+%attr(750,root,root) %dir /var/log/archiv/qmail/smtpd
 %attr(755,qmaill,root) %dir /var/log/qmail/rblsmtpd
+%attr(750,root,root) %dir /var/log/archiv/qmail/rblsmtpd
 
 %attr(1755,root,root) %dir %{supervise}/send
 %attr(755,root,root) %{supervise}/send/run
 %attr(700,root,root) %dir %{supervise}/send/supervise
-%attr(600,root,root) %config(noreplace) %verify(not size mtime md5) %{supervise}/send/supervise/*
+%attr(600,root,root) %config(noreplace) %verify(not md5 mtime size) %ghost %{supervise}/send/supervise/*
 %attr(1755,root,root) %dir %{supervise}/send/log
 %attr(755,root,root) %{supervise}/send/log/run
 %attr(700,root,root) %dir %{supervise}/send/log/supervise
-%attr(600,root,root) %config(noreplace) %verify(not size mtime md5) %{supervise}/send/log/supervise/*
+%attr(600,root,root) %config(noreplace) %verify(not md5 mtime size) %ghost %{supervise}/send/log/supervise/*
 %attr(755,qmaill,root) %dir /var/log/qmail/send
+%attr(750,root,root) %dir /var/log/archiv/qmail/send
 
 %attr(1755,root,root) %dir %{supervise}/qmtpd
 %attr(755,root,root) %{supervise}/qmtpd/run
 %attr(700,root,root) %dir %{supervise}/qmtpd/supervise
-%attr(600,root,root) %config(noreplace) %verify(not size mtime md5) %{supervise}/qmtpd/supervise/*
+%attr(600,root,root) %config(noreplace) %verify(not md5 mtime size) %ghost %{supervise}/qmtpd/supervise/*
 %attr(1755,root,root) %dir %{supervise}/qmtpd/log
 %attr(755,root,root) %{supervise}/qmtpd/log/run
 %attr(700,root,root) %dir %{supervise}/qmtpd/log/supervise
-%attr(600,root,root) %config(noreplace) %verify(not size mtime md5) %{supervise}/qmtpd/log/supervise/*
+%attr(600,root,root) %config(noreplace) %verify(not md5 mtime size) %ghost %{supervise}/qmtpd/log/supervise/*
 %attr(755,qmaill,root) %dir /var/log/qmail/qmtpd
+%attr(750,root,root) %dir /var/log/archiv/qmail/qmtpd
 
 %attr(1755,root,root) %dir %{supervise}/qmqpd
 %attr(755,root,root) %{supervise}/qmqpd/run
 %attr(700,root,root) %dir %{supervise}/qmqpd/supervise
-%attr(600,root,root) %config(noreplace) %verify(not size mtime md5) %{supervise}/qmqpd/supervise/*
+%attr(600,root,root) %config(noreplace) %verify(not md5 mtime size) %ghost %{supervise}/qmqpd/supervise/*
 %attr(1755,root,root) %dir %{supervise}/qmqpd/log
 %attr(755,root,root) %{supervise}/qmqpd/log/run
 %attr(700,root,root) %dir %{supervise}/qmqpd/log/supervise
-%attr(600,root,root) %config(noreplace) %verify(not size mtime md5) %{supervise}/qmqpd/log/supervise/*
+%attr(600,root,root) %config(noreplace) %verify(not md5 mtime size) %ghost %{supervise}/qmqpd/log/supervise/*
 %attr(755,qmaill,root) %dir /var/log/qmail/qmqpd
+%attr(750,root,root) %dir /var/log/archiv/qmail/qmqpd
 
 %attr(755,root,root) %{_bindir}/mailq
 %attr(755,root,root) %{_sbindir}/sendmail
@@ -1183,12 +1193,13 @@ fi
 %attr(1755,root,root) %dir %{supervise}/pop3d
 %attr(755,root,root) %{supervise}/pop3d/run
 %attr(700,root,root) %dir %{supervise}/pop3d/supervise
-%attr(600,root,root) %config(noreplace) %verify(not size mtime md5) %{supervise}/pop3d/supervise/*
+%attr(600,root,root) %config(noreplace) %verify(not md5 mtime size) %ghost %{supervise}/pop3d/supervise/*
 %attr(1755,root,root) %dir %{supervise}/pop3d/log
 %attr(755,root,root) %{supervise}/pop3d/log/run
 %attr(700,root,root) %dir %{supervise}/pop3d/log/supervise
-%attr(600,root,root) %config(noreplace) %verify(not size mtime md5) %{supervise}/pop3d/log/supervise/*
+%attr(600,root,root) %config(noreplace) %verify(not md5 mtime size) %ghost %{supervise}/pop3d/log/supervise/*
 %attr(755,qmaill,root) %dir /var/log/qmail/pop3d
+%attr(750,root,root) %dir /var/log/archiv/qmail/pop3d
 
 %attr(755,root,root) %{_libdir}/qmail/qmail-pop3d
 %attr(755,root,root) %{_libdir}/qmail/qmail-popup
