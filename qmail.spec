@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	33
+Release:	34
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
@@ -608,10 +608,12 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 700, root, root) %dir /etc/skel/Mail/Maildir/tmp
 
 %files maildirmake
+%defattr(644,root,root,755)
 %attr(755, root, root) %{_bindir}/maildirmake
 %{_mandir}/man1/maildirmake*
 
 %files perl
+%defattr(644,root,root,755)
 %doc qmHandle-0.4.0/
 %attr( 755,  root,  root) %{_bindir}/qmHandle
 %attr( 755,  root,  root) %{_bindir}/qmail-qsanity
