@@ -4,7 +4,6 @@
 # - relayclient-external does not apply
 # - maildir++ quota patch
 # - sort patches
-# - set base package source netqmail?
 #
 # - apply patches from http://www-dt.e-technik.uni-dortmund.de/~ma/qmail-bugs.html
 #  - 3.2. RFC-2821 (SMTP) violation (Mail Routing)
@@ -36,7 +35,7 @@ Release:	56.41
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
-# Source0-md5:	622f65f982e380dbe86e6574f3abcb7c
+# Source0-md5:	4c03848af9d37e281f3b82cc59230d9b
 Source1:	http://cr.yp.to/software/dot-forward-0.71.tar.gz
 # Source1-md5:	1fefd9760e4706491fb31c7511d69bed
 Source2:	http://cr.yp.to/software/fastforward-0.51.tar.gz
@@ -47,6 +46,10 @@ Source4:	checkpass-1.2.tar.gz
 # Source4-md5:	6818629dc74737f3ca33ca97ab4ffcc4
 Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
 # Source5-md5:	43f915c104024e6f33a5b3ff52dfb75b
+Source6:	http://glen.alkohol.ee/pld/qmail/qmail-conf-20041128.4.tar.bz2
+# Source6-md5:	2333bd4cf9c5c480656ca4ac08ac8a9f
+Source7:	http://iidea.pl/~paweln/tlum/qmail-doki.tar.bz2
+# Source7-md5:	2d85f0f9f8408cf6caab9f9bc8f68657
 Source8:	%{name}-linux.sh
 Source9:	%{name}-linux.csh
 Source10:	%{name}-aliases
@@ -62,20 +65,8 @@ Source21:	%{name}-client.html
 Source22:	%{name}-cert.pem
 Source23:	%{name}-pl-man-pages.tar.bz2
 # Source23-md5:	e6230e950257cf46b9b243685d682e3f
-Source24:	http://iidea.pl/~paweln/tlum/qmail-doki.tar.bz2
-# Source24-md5:	2d85f0f9f8408cf6caab9f9bc8f68657
-
 Source40:	%{name}-rblsmtpd.sh
 Source41:	%{name}-smtp-scanner.sh
-
-# Using supervise.
-# without supervise it's impossible to have different access and restrictions
-# based on source IP. As no inetd is capable of passing env vars depending on
-# connection, and besides tcpserver is recommended for qmail.
-# Instead of having here bunch of files I packaged them as tarball.
-Source50:	http://glen.alkohol.ee/pld/qmail/qmail-conf-20041128.4.tar.bz2
-# Source50-md5:	2333bd4cf9c5c480656ca4ac08ac8a9f
-
 Patch0:		%{name}-1.03.install.patch
 Patch1:		%{name}-1.03.msglog.patch
 Patch2:		%{name}-1.03.redhat.patch
@@ -398,8 +389,7 @@ POP3 server for qmail.
 Serwer POP3 dla qmaila.
 
 %prep
-%setup -q -a1 -a2 -a3 -a4 -a5 -a50
-
+%setup -q -a1 -a2 -a3 -a4 -a5 -a6
 %patch0 -p1 -b .install
 %{?with_msglog:%patch1 -p1}
 %patch2 -p1 -b .redhat
@@ -523,7 +513,7 @@ install %{SOURCE8} $RPM_BUILD_ROOT/etc/profile.d/qmail.sh
 install %{SOURCE9} $RPM_BUILD_ROOT/etc/profile.d/qmail.csh
 
 # tcpserver (supervise)
-PV=`basename %{SOURCE50}`
+PV=`basename %{SOURCE6}`
 cd ${PV%.tar.bz2}
 
 install -d $RPM_BUILD_ROOT/var/log/qmail
@@ -663,7 +653,7 @@ install %{SOURCE22} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/control/servercert.pem
 
 bzip2 -dc %{SOURCE23} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 
-bzip2 -dc %{SOURCE24} | tar xf -
+bzip2 -dc %{SOURCE7} | tar xf -
 echo "These are pl-translations taken from: \
 	http://iidea.pl/~paweln/tlum/qmail-doki.tar.bz2" > qmail-doki/00-INDEX
 
