@@ -18,11 +18,10 @@
 [ -f /etc/sysconfig/qmail ] && . /etc/sysconfig/qmail
 
 # Check that networking is up.
-if [ "${NETWORKING}" = "no" ]; then
-	echo "WARNING: Networking is down. Qmail service can't be runed."
+if is_no "${NETWORKING}"; then
+	msg_Network_Down Qmail
 	exit 1
 fi
-
 
 # See how we were called.
 case "$1" in
@@ -34,7 +33,7 @@ case "$1" in
 		# build aliases database
 		newaliases
 		
-		show Starting qmail
+		msg_starting qmail
 		busy
 		qmail-start "`cat /etc/qmail/dot-qmail`" splogger qmail &
 		sleep 1
@@ -48,13 +47,14 @@ case "$1" in
 			fail	  
 		fi
 	else
-		echo "qmail already is running"
+		msg_Already_Running qmail
+		exit 1
 	fi
 	touch /var/lock/subsys/qmail
 	;;
   stop)
 	# Stop daemons.
-	show Shutting down qmail
+	msg_stopping qmail
 	killproc qmail-send
 	rm -f /var/lock/subsys/qmail
 	;;
@@ -66,7 +66,7 @@ case "$1" in
   	status qmail-send
 	;;
   *)
-	echo "Usage: qmail {start|stop|status|restart|reload}"
+	msg_Usage "$0 {start|stop|status|restart|reload}"
 	exit 1
 esac
 
