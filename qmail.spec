@@ -262,7 +262,7 @@ rm -rf $RPM_BUILD_ROOT
 
 install -d boot
 install -d $RPM_BUILD_ROOT{%{_sbindir},%{_bindir},%{_mandir},%{_libdir}/qmail,%{varqmail}} \
-	$RPM_BUILD_ROOT/etc/{rc.d/init.d,profile.d,mail,sysconfig/rc-inetd,pam.d,security}
+	$RPM_BUILD_ROOT/etc/{rc.d/init.d,profile.d,mail,sysconfig/rc-inetd,pam.d,security} \
 	$RPM_BUILD_ROOT%{_sysconfdir}/qmail/{alias,control,users}
 
 ln -sf ../../%{_sysconfdir}/qmail/alias $RPM_BUILD_ROOT%{varqmail}
