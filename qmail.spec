@@ -2,7 +2,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	23
+Release:	24
 Group:		Networking/Daemons
 Group(pl):	Sieciowe/Serwery
 Copyright:	Check with djb@koobera.math.uic.edu
@@ -11,7 +11,7 @@ Source0:	ftp://koobera.math.uic.edu/pub/software/%{name}-%{version}.tar.gz
 Source1:	ftp://koobera.math.uic.edu/pub/software/dot-forward-0.71.tar.gz
 Source2:	ftp://koobera.math.uic.edu/pub/software/fastforward-0.51.tar.gz
 Source3:	ftp://koobera.math.uic.edu/pub/software/rblsmtpd-0.70.tar.gz
-Source4:	ftp://koobera.math.uic.edu/pub/software/checkpassword-0.76.shar.gz
+Source4:	ftp://ftp.pld.org.pl/people/zagrodzki/checkpass-1.0.tar.gz
 Source5:	http://www.netmeridian.com/e-huss/queue-fix.tar.gz
 Source6:	http://www.io.com/~mick/soft/qmHandle-0.4.0.tar.gz
 Source7:	%{name}.init
@@ -36,7 +36,6 @@ Patch3:		%{name}-1.03.fixed-ids.patch
 Patch4:		%{name}-1.03.rbl.conf.patch
 Patch5:		%{name}-1.03.mklinux.patch
 Patch6:		%{name}-relayclientexternal.patch
-Patch7:		%{name}-1.03.checkpassword.patch
 Patch8:		tarpit.patch
 Patch9:		%{name}-1.03-maxrcpt.patch
 Patch10:	qmHandle.PLD-init.patch
@@ -46,7 +45,6 @@ Patch13:	ftp://dione.ids.pl/people/siewca/patches/%{name}-%{version}-etc.patch
 Patch14:	%{name}-rblsmtpd-IPv6-PLD.patch
 Patch15:	%{name}-rblsmtpd-syslog.patch
 Patch16:	%{name}-smtpauth.patch
-Patch17:	%{name}-checkpassword-PAM.patch
 Patch18:	%{name}-wildmat.patch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Provides:	smtpdaemon
@@ -81,7 +79,7 @@ Following scripts and programs have been added:
 ================================================================================
 Name Features
 ================================================================================
-checkpassword	- password-checking interface
+checkpass	- password-checking interface
 qmHandle	- more powerful viewing and managing qmail queue (remote and
 		  local)
 rblsmtpd 	- a generic tool to block mail from RBL-listed sites; an
@@ -110,7 +108,7 @@ Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
 ================================================================================
 Nazwa Opis
 ================================================================================
-checkpassword	- interfejs do sprawdzania hase³
+checkpass	- interfejs do sprawdzania hase³
 qmHandle	- bardziej zaawansowane przegl±danie oraz zarz±dzanie
 		  kolejk± pocztow±
 rblsmtpd	- podstawowe narzêdzie do blokowania listów z miejsc
@@ -162,8 +160,7 @@ elektronicznej. Ten qmail dodatkowo wspiera protokó³ IPv6.
 %setup -D -T -q -a 1
 %setup -D -T -q -a 2
 %setup -D -T -q -a 3
-install -d checkpassword-0.76
-(cd checkpassword-0.76; gzip -dc %{SOURCE4} | /bin/sh)
+%setup -D -T -q -a 4
 %setup -D -T -q -a 5
 install -d qmHandle-0.4.0
 tar zxf %{SOURCE6} -C qmHandle-0.4.0/
@@ -176,7 +173,6 @@ tar zxf %{SOURCE6} -C qmHandle-0.4.0/
 %patch5 -p0
 %endif
 %patch6 -p1
-%patch7 -p1
 %patch8 -p0
 %patch9 -p0
 %patch10 -p0
@@ -186,7 +182,6 @@ tar zxf %{SOURCE6} -C qmHandle-0.4.0/
 %patch14 -p1
 %patch15 -p1
 %patch16 -p0
-%patch17 -p1
 %patch18 -p1
 
 %build
@@ -196,14 +191,14 @@ tar zxf %{SOURCE6} -C qmHandle-0.4.0/
 %{__make} -C fastforward-0.51
 %{__make} -C rblsmtpd-0.70
 %{__make} -C queue-fix-1.3
-%{__make} -C checkpassword-0.76 SHADOWLIBS=-DPW_SHADOW
+%{__make} -C checkpass-1.0
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
 install -d boot
 install -d $RPM_BUILD_ROOT{%{_sbindir},%{_mandir},{%{_var},%{_bindir},%{_libdir}}/qmail}
-install -d $RPM_BUILD_ROOT%{_sysconfdir}/{qmail/{alias,control,users},rc.d/init.d,profile.d,mail,sysconfig/rc-inetd,pam.d}
+install -d $RPM_BUILD_ROOT%{_sysconfdir}/{qmail/{alias,control,users},rc.d/init.d,profile.d,mail,sysconfig/rc-inetd,pam.d,security}
 
 ln -sf ../..%{_sysconfdir}/qmail/alias $RPM_BUILD_ROOT/var/qmail/
 ln -sf ../..%{_sysconfdir}/qmail/control $RPM_BUILD_ROOT/var/qmail/
@@ -257,8 +252,9 @@ install qmHandle-0.4.0/qmHandle $RPM_BUILD_ROOT/var/qmail/bin/qmHandle
 install queue-fix-1.3/queue-fix $RPM_BUILD_ROOT/var/qmail/bin
 
 # CHECKPASSWORD command
-install checkpassword-0.76/checkpassword $RPM_BUILD_ROOT/var/qmail/bin
-install %{SOURCE20} $RPM_BUILD_ROOT/etc/pam.d/checkpassword
+install checkpass-1.0/checkpass $RPM_BUILD_ROOT/var/qmail/bin
+install %{SOURCE20} $RPM_BUILD_ROOT/etc/pam.d/checkpass
+echo "qmaild" > $RPM_BUILD_ROOT/etc/security/checkpass.allow
 
 # DOT FORWARD command and doc
 install dot-forward-0.71/dot-forward $RPM_BUILD_ROOT/var/qmail/bin
@@ -283,7 +279,7 @@ install rblsmtpd-0.70/*.8 $RPM_BUILD_ROOT/var/qmail/man/man8
 install -d $RPM_BUILD_ROOT/etc/skel/C/Mail
 ./maildirmake $RPM_BUILD_ROOT/etc/skel/C/Mail/Maildir
 
-(set +x; rm -f checkpassword-0.76/{[a-z]*,Makefile,FILES})
+(set +x; rm -f checkpass-1.0/{[a-z]*,Makefile})
 (set +x; rm -f dot-forward-0.71/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
 (set +x; rm -f fastforward-0.51/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
 (set +x; rm -f rblsmtpd-0.70/{[a-z]*,Makefile,FILES,SYSDEPS,TARGETS})
@@ -307,7 +303,7 @@ install %{SOURCE21} .
 
 gzip -9nf FAQ INSTALL* PIC* REMOVE* SENDMAIL TEST* UPGRADE
 gzip -9nf BLURB* README SECURITY THANKS THOUGHTS TODO VERSION
-gzip -9nf boot/* checkpassword-0.76/* qmHandle-0.4.0/* queue-fix-1.3/*
+gzip -9nf boot/* checkpass-1.0/* qmHandle-0.4.0/* queue-fix-1.3/*
 gzip -9nf rblsmtpd-0.70/* tarpit.README
 gzip -9nf $RPM_BUILD_ROOT%{_mandir}/man*/*
 
@@ -345,6 +341,11 @@ if [ $1 = 1 ]; then
 fi
 
 %post
+echo "Remember to setuid %{_libdir}/bin/checkpass if you intend"
+echo "to use it with qmail-smtpd. For more information see:"
+echo "%{_defaultdocdir}/%{name}/checkpass-1.0/*"
+echo "/etc/sysconfig/rc-inetd/smtpd"
+echo
 if [ ! -f /etc/mail/mailname -a -d /etc/mail ]; then
 	(cd /etc/mail && ln -sf ../qmail/control/me mailname && chmod a+r mailname)
 fi
@@ -424,7 +425,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc {FAQ,INSTALL*,PIC*,REMOVE*,SENDMAIL,TEST*,UPGRADE}.gz
 %doc {BLURB*,README,SECURITY,THANKS,THOUGHTS,TODO,VERSION}.gz
-%doc checkpassword-0.76/ queue-fix-1.3/ qmHandle-0.4.0/ rblsmtpd-0.70/ boot/ 
+%doc checkpass-1.0/ queue-fix-1.3/ qmHandle-0.4.0/ rblsmtpd-0.70/ boot/ 
 %doc tarpit.README.gz
 
 %attr( 755, root, root) %dir %{_sysconfdir}/mail
@@ -462,10 +463,11 @@ rm -rf $RPM_BUILD_ROOT
 %attr( 640,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/rc-inetd/qmqp
 %attr( 640,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/rc-inetd/smtp
 %attr( 640,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/rc-inetd/qpop
-%attr( 644,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/pam.d/checkpassword
+%attr( 644,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/pam.d/checkpass
+%attr( 644,  root,  root) %config(noreplace) %verify(not mtime md5 size) /etc/security/checkpass.allow
 %attr( 755,  root,  root) %{_libdir}/qmail/bouncesaying
 %attr( 755,  root,  root) %{_libdir}/qmail/condredirect
-%attr( 755,  root,  root) %{_libdir}/qmail/checkpassword
+%attr( 755,  root,  root) %{_libdir}/qmail/checkpass
 %attr( 755,  root,  root) %{_libdir}/qmail/datemail
 %attr( 755,  root,  root) %{_libdir}/qmail/elq
 %attr( 755,  root,  root) %{_libdir}/qmail/except
