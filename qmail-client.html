@@ -1,0 +1,130 @@
+<html>
+<body>
+<a href="../djb.html"><h1>D. J. Bernstein</h1></a>
+<a href="../software.html"><h1>Available software</h1></a>
+<a href="../qmail.html"><h1>qmail</h1></a>
+<h1>Installing mini-qmail</h1>
+A mini-qmail installation doesn't have a mail queue.
+Instead it gives each new message to a central server through
+<a href="../proto/qmqp.html">QMQP</a>.
+<p>
+There are three standard applications of mini-qmail:
+<ul>
+<li>At a large site, mail service is centralized on a few hosts.
+All other hosts are null clients running mini-qmail.
+Setting up the null clients is easy; see below.
+<li>A firewall sends all incoming messages to an internal gateway.
+The firewalls run mini-qmail plus qmail-smtpd.
+There's very little code to audit, and none of it runs as root.
+<li>A computer sends mail to a huge mailing list through a
+better-connected smarthost.
+The computer runs qmail for its own local deliveries,
+but it also has
+<a href="../ezmlm.html">ezmlm</a>
+configured to use a separate mini-qmail installation for the mailing list.
+QMQP is typically 100 times faster than SMTP here;
+for example, you can send a 1000-recipient message through a 28.8 modem
+in about 10 seconds.
+</ul>
+<h2>How do I set up a QMQP server?</h2>
+Here's how to set up a central server
+to offer QMQP service to authorized client hosts.
+<p>
+qmail 1.03 includes a QMQP server, qmail-qmqpd.
+You also need to have
+<a href="../ucspi-tcp.html">tcpserver</a> installed.
+<p>
+First create /etc/qmqp.tcp in tcprules format
+to allow queueing from the authorized hosts.
+Make sure to deny connections from unauthorized hosts.
+For example, if queueing is allowed from 1.2.3.*:
+<pre>
+     1.2.3.:allow
+     :deny
+</pre>
+Then create /etc/qmqp.cdb:
+<pre>
+     tcprules /etc/qmqp.cdb /etc/qmqp.tmp &lt; /etc/qmqp.tcp
+</pre>
+You can change /etc/qmqp.tcp and run tcprules again at any time.
+Finally run qmail-qmqpd from your boot scripts:
+<pre>
+     tcpserver -x /etc/qmqp.cdb -u 7770 -g 2108 0 628 qmail-qmqpd &amp;
+</pre>
+Replace <tt>7770</tt> and <tt>2108</tt>
+with the <tt>qmaild</tt> uid and the <tt>nofiles</tt> gid,
+and make sure that $PATH is set appropriately.
+628 is the TCP port for QMQP.
+<h2>How do I install mini-qmail?</h2>
+A mini-qmail installation is just like a qmail installation,
+except that it's much easier to set up:
+<ul>
+<li>You don't need /var/qmail/alias.
+A mini-qmail installation doesn't do any local delivery.
+<li>You don't need qmail entries in /etc/group or /etc/passwd.
+mini-qmail runs with the same privileges as the user sending mail;
+it doesn't have any of its own files.
+<li>You don't need to start anything from your boot scripts.
+mini-qmail doesn't have a queue,
+so it doesn't need a long-running queue manager.
+<li>You don't need to add anything to inetd.conf.
+A null client doesn't receive incoming mail.
+</ul>
+Here's what you <i>do</i> need:
+<ul>
+<li>qmail-qmqpc, forward, qmail-inject, sendmail, predate, datemail, mailsubj,
+qmail-showctl, maildirmake, maildir2mbox, maildirwatch, qail, elq, and pinq
+in /var/qmail/bin;
+<li>a symbolic link to qmail-qmqpc from /var/qmail/bin/qmail-queue;
+<li>symbolic links to /var/qmail/bin/sendmail from
+/usr/sbin/sendmail and /usr/lib/sendmail;
+<li>all the manual pages in /var/qmail/man;
+<li>a list of IP addresses of QMQP servers, one per line, in
+/var/qmail/control/qmqpservers;
+<li>a copy of
+/var/qmail/control/me, /var/qmail/control/defaultdomain, and
+/var/qmail/control/plusdomain from your central server,
+so that qmail-inject uses appropriate host names in outgoing mail; and
+<li>this host's name in /var/qmail/control/idhost,
+so that qmail-inject generates Message-ID without any risk of collision.
+</ul>
+Everything can be shared across hosts
+except for /var/qmail/control/idhost.
+<p>
+Remember that users won't be able to send mail if all the QMQP servers are down.
+Most sites have two or three independent QMQP servers.
+<p>
+Note that users can still use all the qmail-inject environment variables
+to control the appearance of their outgoing messages.
+<h2>What about firewalls?</h2>
+You won't need most of the mini-qmail programs on a firewall,
+but you will need qmail-smtpd to accept messages through SMTP.
+You can survive with a tiny configuration:
+<ul>
+<li>/var/qmail/bin/qmail-qmqpc;
+<li>/var/qmail/bin/qmail-smtpd;
+<li>a symbolic link to qmail-qmqpc from /var/qmail/bin/qmail-queue;
+<li>the internal gateway's IP address in /var/qmail/control/qmqpservers;
+<li>the firewall host's name in /var/qmail/control/me; and
+<li>the list of acceptable domains in /var/qmail/control/rcpthosts.
+</ul>
+You don't need to worry about setting up redundant QMQP servers here.
+If the internal gateway is down,
+qmail-smtpd will temporarily reject the message,
+and the remote client will automatically try again later.
+<h2>What about mailing lists?</h2>
+Here's how to set up ezmlm to send messages to a smarthost through QMQP:
+<ol>
+<li>Create a /var/mini-qmail directory.
+<li>Create a /var/mini-qmail/bin directory.
+<li>Make a symbolic link to /var/qmail/bin/qmail-qmqpc
+from /var/mini-qmail/bin/qmail-queue.
+<li>Put the smarthost's IP address into
+/var/qmail/control/qmqpservers.
+<li>Compile and install ezmlm with /var/mini-qmail in conf-qmail.
+</ol>
+You don't need to worry about setting up redundant QMQP servers here.
+If the smarthost is down,
+the message will stay in the local qmail queue and will be retried later.
+</body>
+</html>
