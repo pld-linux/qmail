@@ -42,7 +42,7 @@ Patch12:	http://www.ckdhr.com/ckd/qmail-dns.patch
 Patch13:	ftp://dione.ids.pl/people/siewca/patches/%{name}-%{version}-etc.patch
 Patch14:	qmail-rblsmtpd-IPv6-PLD.patch
 Patch15:	qmail-rblsmtpd-syslog.patch
-BuildRoot:	/tmp/%{name}-%{version}-root
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Provides:	smtpdaemon
 Provides:	qmailmta
 Provides:	qmail-server
@@ -128,7 +128,6 @@ tarpit               kolejne narzêdzie do walki ze SPAM-em
 ma³e, ale znacz±ce róznice pomiêdzy qmail-em oraz sendmail-em i programami,
 które wspó³pracuj± z nimi.
 
-
 %prep
 %setup -q
 %setup -D -T -q -a 1
@@ -167,7 +166,6 @@ make -C rblsmtpd-0.70
 make -C queue-fix-1.3
 make -C checkpassword-0.76 SHADOWLIBS=-DPW_SHADOW
 
-
 %install
 rm -rf $RPM_BUILD_ROOT
 
@@ -199,7 +197,6 @@ install %{SOURCE9}				$RPM_BUILD_ROOT/etc/profile.d/qmail.csh
 
 install %{SOURCE17}				$RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/qmqp
 install %{SOURCE18}				$RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/smtp
-
 
 # Set up mailing aliases
 install %{SOURCE10}				$RPM_BUILD_ROOT/etc/aliases
@@ -374,7 +371,6 @@ fi
 
 %clean
 rm -rf $RPM_BUILD_ROOT
-
 
 %files
 %defattr(644,root,root,755)
