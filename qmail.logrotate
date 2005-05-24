@@ -11,9 +11,11 @@
     create 640 qmaill qmail
     missingok
 
+	daily
 	rotate 1
 	size 1
 	nocreate
+	compress
 	compresscmd /usr/bin/bzip2
 	compressext .bz2
 }
@@ -23,9 +25,11 @@
     create 640 qmaill qmail
     missingok
 
+	daily
 	rotate 1
 	size 1
 	nocreate
+	compress
 	compresscmd /usr/bin/bzip2
 	compressext .bz2
 }
@@ -35,9 +39,11 @@
     create 640 qmaill qmail
     missingok
 
+	daily
 	rotate 1
 	size 1
 	nocreate
+	compress
 	compresscmd /usr/bin/bzip2
 	compressext .bz2
 }
@@ -47,9 +53,11 @@
     create 640 qmaill qmail
     missingok
 
+	daily
 	rotate 1
 	size 1
 	nocreate
+	compress
 	compresscmd /usr/bin/bzip2
 	compressext .bz2
 }
@@ -59,9 +67,11 @@
     create 640 qmaill qmail
     missingok
 
+	daily
 	rotate 1
 	size 1
 	nocreate
+	compress
 	compresscmd /usr/bin/bzip2
 	compressext .bz2
 }
