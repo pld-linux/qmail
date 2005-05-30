@@ -1,0 +1,5 @@
+- update to PLD rev 1.116:
+  - added patch to include errno.h when errno is used
+  - BR: groff
+  - umask in scripts, other fixes/cosmetics where needed
+  - fix URL fastforward
