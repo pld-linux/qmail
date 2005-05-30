@@ -1,0 +1,5 @@
+- invert msglog behaviour _without_msglog -> _with_msglog
+- new patches
+  - enforce dot in HELO (for trapping viruses)
+  - remove BIND4 workaround (less dns traffic)
+  - make sendmail emulation -f flag work
