@@ -1,14 +1,14 @@
---- qmail-1.03/qmail-smtpd.c	Tue Jan  9 19:21:52 2001
-+++ qmail-1.03-p/qmail-smtpd.c	Tue Jan  9 20:21:59 2001
-@@ -59,6 +59,7 @@
- void err_nogateway() { out("553 sorry, that domain isn't in my list of allowed rcpthosts (#5.7.1)\r\n"); }
- void err_nogwforyou() { out("553 sorry, YOU are not authorized to relay here (#5.7.1)\r\n"); }
+--- a/qmail-smtpd.c	2004-05-02 19:14:41.000000000 +0300
++++ b/qmail-smtpd.c	2004-05-02 19:14:14.000000000 +0300
+@@ -120,6 +120,7 @@
+ void err_nogwcert() { out("553 no valid cert for gatewaying (#5.7.1)\r\n"); }
+ #endif
  void err_unimpl() { out("502 unimplemented (#5.5.1)\r\n"); }
 +void err_norouting() { out("553 mail routing not allowed\r\n"); }
  void err_syntax() { out("555 syntax error (#5.5.4)\r\n"); }
  void err_wantmail() { out("503 MAIL first (#5.5.1)\r\n"); }
  void err_wantrcpt() { out("503 RCPT first (#5.5.1)\r\n"); }
-@@ -253,6 +254,10 @@
+@@ -351,6 +352,10 @@
    return r;
  }
  
@@ -18,11 +18,11 @@
 +}
  
  int seenmail = 0;
- int flagbarf; /* defined if seenmail */
-@@ -297,6 +302,7 @@
-   if (!seenmail) { err_wantmail(); return; }
-   if (!addrparse(arg)) { err_syntax(); return; }
-   if (flagbarf) { err_bmf(); return; }
+ int flagbarfbmf; /* defined if seenmail */
+@@ -417,6 +422,7 @@
+     err_bmt();
+     return;
+   }
 +  if (wantsrouting()) { err_norouting(); return; }
    if (relayclient) {
      --addr.len;

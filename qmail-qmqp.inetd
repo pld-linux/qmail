@@ -1,9 +1,0 @@
-SERVICE_NAME=qmqp
-SOCK_TYPE=stream
-PROTOCOL=tcp
-PORT=628
-FLAGS=nowait
-USER=qmaild
-SERVER=tcpd
-DAEMON=/var/qmail/bin/tcp-env
-DAEMONARGS="/var/qmail/bin/qmail-qmqpd"

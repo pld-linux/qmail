@@ -46,15 +46,3 @@ diff -Nur qmail-1.03.orig/queue-fix-1.4/error.h qmail-1.03/queue-fix-1.4/error.h
  extern int errno;
  
  extern int error_intr;
-diff -Nur qmail-1.03.orig/rblsmtpd-0.70/error.h qmail-1.03/rblsmtpd-0.70/error.h
---- qmail-1.03.orig/rblsmtpd-0.70/error.h	Tue Aug 25 17:58:22 1998
-+++ qmail-1.03/rblsmtpd-0.70/error.h	Wed Mar 19 17:56:23 2003
-@@ -1,6 +1,8 @@
- #ifndef ERROR_H
- #define ERROR_H
- 
-+#include <errno.h>
-+
- extern int errno;
- 
- extern int error_intr;
