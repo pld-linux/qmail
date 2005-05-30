@@ -1,0 +1,6 @@
+- do not chmod files in control, not all of them should be 644 mask.
+  and umask should ensure new files being created with proper
+  permission
+- move conf-pop3 to pop3 subpackage
+- control/conf-* files are now stored as .rpmnew in case of updates
+- updated qmail-conf to 20041222
