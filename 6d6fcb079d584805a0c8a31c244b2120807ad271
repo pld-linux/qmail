@@ -1,0 +1,3 @@
+- add patches:
+  - discards doublebounces without queuing them
+  - the envelope sender is a valid DNS name
