@@ -1,0 +1,11 @@
+/var/log/qmail/pop3d/@*.s {
+    olddir /var/log/archiv/qmail/pop3d
+    create 640 qmaill qmail
+    missingok
+
+	rotate 1
+	size 1
+	nocreate
+	compresscmd /usr/bin/bzip2
+	compressext .bz2
+}

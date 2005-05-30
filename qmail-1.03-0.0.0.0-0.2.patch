@@ -1,0 +1,25 @@
+diff -u qmail-1.03/ipme.c qmail-1.03-0-devel/ipme.c
+--- qmail-1.03/ipme.c	Mon Jun 15 06:53:16 1998
++++ qmail-1.03-0-devel/ipme.c	Mon Apr 28 09:45:06 2003
+@@ -23,6 +23,9 @@
+ {
+   int i;
+   if (ipme_init() != 1) return -1;
++  /* This is a hack. --sg */
++  if (ip->d[0] == 127)
++    return 1;
+   for (i = 0;i < ipme.len;++i)
+     if (byte_equal(&ipme.ix[i].ip,4,ip))
+       return 1;
+@@ -46,6 +49,11 @@
+   ipme.len = 0;
+   ix.pref = 0;
+  
++  /* 0.0.0.0 is a special address which always refers to 
++   * "this host, this network", according to RFC 1122, Sec. 3.2.1.3a.
++  */
++  byte_copy(&ix.ip,4,"\0\0\0\0");
++  if (!ipalloc_append(&ipme,&ix)) { return 0; }
+   if ((s = socket(AF_INET,SOCK_STREAM,0)) == -1) return -1;
+  
+   len = 256;

@@ -1,0 +1,22 @@
+*** sendmail.c~	Mon Jun 15 12:53:16 1998
+--- sendmail.c	Thu Sep 14 11:45:30 2000
+***************
+*** 64,71 ****
+  
+    flagh = 0;
+    sender = 0;
+!   while ((opt = getopt(argc,argv,"vimte:f:p:o:B:F:EJxb:")) != opteof)
+      switch(opt) {
+        case 'B': break;
+        case 't': flagh = 1; break;
+        case 'f': sender = optarg; break;
+--- 64,72 ----
+  
+    flagh = 0;
+    sender = 0;
+!   while ((opt = getopt(argc,argv,"vimte:f:p:o:B:F:EJxb:N:")) != opteof)
+      switch(opt) {
++       case 'N': break; /* ignore DSN option */
+        case 'B': break;
+        case 't': flagh = 1; break;
+        case 'f': sender = optarg; break;

@@ -1,0 +1,94 @@
+--- a/Makefile	2004-05-02 03:34:55.000000000 +0300
++++ b/Makefile	2004-05-02 03:34:18.000000000 +0300
+@@ -1542,13 +1542,13 @@
+ timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o received.o \
+ date822fmt.o now.o qmail.o cdb.a fd.a wait.a datetime.a getln.a \
+ open.a sig.a case.a env.a stralloc.a alloc.a strerr.a substdio.a error.a str.a \
+-fs.a auto_qmail.o base64.o socket.lib
++fs.a auto_qmail.o base64.o socket.lib dns.o dns.lib
+ 	./load qmail-smtpd qregex.o rcpthosts.o commands.o timeoutread.o \
+ 	timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o \
+ 	received.o date822fmt.o now.o qmail.o cdb.a fd.a wait.a \
+ 	datetime.a getln.a open.a sig.a case.a env.a stralloc.a \
+ 	alloc.a strerr.a substdio.a error.a str.a fs.a auto_qmail.o base64.o  `cat \
+-	socket.lib` -lssl -lcrypto
++	socket.lib` -lssl -lcrypto dns.o `cat dns.lib`
+ 
+ qmail-smtpd.0: \
+ qmail-smtpd.8
+--- a/qmail-smtpd.c	2004-05-02 03:34:55.000000000 +0300
++++ b/qmail-smtpd.c	2004-05-02 03:33:17.000000000 +0300
+@@ -25,6 +25,7 @@
+ #include "timeoutwrite.h"
+ #endif
+ #include "commands.h"
++#include "dns.h"
+ #include "qregex.h"
+ #include "strerr.h"
+ #include "wait.h"
+@@ -43,6 +44,7 @@
+ #define AUTHCRAM
+ #define MAXHOPS 100
+ unsigned int databytes = 0;
++unsigned int mfchk = 0;
+ int timeout = 1200;
+ int tarpitcount = 0;
+ int tarpitdelay = 5;
+@@ -114,6 +116,8 @@
+ void straynewline() { out("451 See http://pobox.com/~djb/docs/smtplf.html.\r\n"); flush(); _exit(1); }
+ 
+ void err_bmf() { out("553 sorry, your envelope sender has been denied (#5.7.1)\r\n"); }
++void err_hmf() { out("553 sorry, your envelope sender domain must exist (#5.7.1)\r\n"); }
++void err_smf() { out("451 DNS temporary failure (#4.3.0)\r\n"); }
+ void err_bmt() { out("533 sorry, your envelope recipient has been denied (#5.7.1)\r\n"); }
+ void err_nogateway() { out("553 sorry, that domain isn't in my list of allowed rcpthosts (#5.7.1)\r\n"); }
+ #ifdef TLS
+@@ -209,6 +213,10 @@
+ 
+   if (rcpthosts_init() == -1) die_control();
+ 
++  if (control_readint(&mfchk,"control/mfcheck") == -1) die_control();
++  x = env_get("MFCHECK");
++  if (x) { scan_ulong(x,&u); mfchk = u; }
++
+   bmfok = control_readfile(&bmf,"control/badmailfrom",0);
+   if (bmfok == -1) die_control();
+   if (!constmap_init(&mapbmf,bmf.s,bmf.len,0)) die_nomem();
+@@ -343,6 +351,25 @@
+   return 0;
+ }
+ 
++int mfcheck()
++{
++  stralloc sa = {0};
++  ipalloc ia = {0};
++  unsigned int random;
++  int j;
++
++  if (!mfchk) return 0;
++  random = now() + (getpid() << 16);
++  j = byte_rchr(addr.s,addr.len,'@') + 1;
++  if (j < addr.len) {
++    stralloc_copys(&sa, addr.s + j);
++    dns_init(0);
++    j = dns_mxip(&ia,&sa,random);
++    if (j < 0) return j;
++  }
++  return 0;
++}
++
+ int addrallowed()
+ {
+   int r;
+@@ -390,6 +417,11 @@
+ {
+   if (!addrparse(arg)) { err_syntax(); return; }
+   if (bmfok) flagbarfbmf = bmcheck(BMCHECK_BMF);
++  switch(mfcheck()) {
++    case DNS_HARD: err_hmf(); return;
++    case DNS_SOFT: err_smf(); return;
++    case DNS_MEM: die_nomem();
++  }
+   seenmail = 1;
+   if (!stralloc_copys(&rcptto,"")) die_nomem();
+   if (!stralloc_copys(&mailfrom,addr.s)) die_nomem();

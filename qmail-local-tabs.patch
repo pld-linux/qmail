@@ -1,0 +1,13 @@
+diff -ru qmail-1.03.orig/qmail-local.c qmail-1.03/qmail-local.c
+--- qmail-1.03.orig/qmail-local.c	1998-06-15 03:53:16.000000000 -0700
++++ qmail-1.03/qmail-local.c	2003-08-05 04:14:58.000000000 -0700
+@@ -645,7 +645,7 @@
+     {
+      cmds.s[j] = 0;
+      k = j;
+-     while ((k > i) && (cmds.s[k - 1] == ' ') || (cmds.s[k - 1] == '\t'))
++     while ((k > i) && ((cmds.s[k - 1] == ' ') || (cmds.s[k - 1] == '\t')))
+        cmds.s[--k] = 0;
+      switch(cmds.s[i])
+       {
+Only in qmail-1.03: qmail-local.c~
