@@ -1,0 +1,3 @@
+- added logrotate of old logs
+- supervise and qmail socket %ghosted, so rpm won't touch the file
+  when upgrading. the inode is really important on the sockets
