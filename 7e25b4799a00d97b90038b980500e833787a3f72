@@ -1,0 +1,3 @@
+- few rh fixes
+  useradd -M, not to create home directories of qmail users
+  getgid() function
