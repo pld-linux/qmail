@@ -17,8 +17,6 @@
 # - http://asg.web.cmu.edu/archive/message.php?mailbox=archive.info-cyrus&msg=23375
 #
 # - http://freshmeat.net/projects/qmail_install/?branch_id=43628&release_id=146487
-# - make smtp incoming session generate missing msgid
-#  - no: http://citadelle.intrinsec.com/mailing/current/HTML/ml_qmail/10152.html
 #
 # Conditional build:
 %bcond_with	msglog		# with qmail-msglog (advanced e-mail monitoring -- qmail-command to *all* local mail)
@@ -33,7 +31,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	56.92
+Release:	57
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
