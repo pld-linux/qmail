@@ -31,7 +31,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	57
+Release:	57.2
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -44,8 +44,8 @@ Source4:	checkpass-1.2.tar.gz
 # Source4-md5:	6818629dc74737f3ca33ca97ab4ffcc4
 Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
 # Source5-md5:	43f915c104024e6f33a5b3ff52dfb75b
-Source6:	http://glen.alkohol.ee/pld/qmail/%{name}-conf-20050225.tar.bz2
-# Source6-md5:	1f294eda711f128e63cb1fb943e6dee2
+Source6:	http://glen.alkohol.ee/pld/qmail/%{name}-conf-20050614.tar.bz2
+# Source6-md5:	f002a1ff88d2160ff0abcc03252430f7
 Source7:	http://iidea.pl/~paweln/tlum/%{name}-doki.tar.bz2
 # Source7-md5:	2d85f0f9f8408cf6caab9f9bc8f68657
 Source8:	%{name}-linux.sh
@@ -62,7 +62,6 @@ Source17:	http://www.fehcom.de/qmail/qhpsi/qhpsi-%(echo %{qhpsi_ver} | tr -d .)_
 Source18:	%{name}.logrotate
 Source19:	%{name}.logrotate-pop3
 Source20:	checkpassword.pamd
-# Source20-md5:	78c3cb713ec00207f8fa0edcf3fe4fd2
 Source21:	%{name}-client.html
 Source22:	%{name}-cert.pem
 Source23:	%{name}-pl-man-pages.tar.bz2
@@ -484,7 +483,7 @@ rm -f *~
 rm -rf $RPM_BUILD_ROOT
 
 install -d boot
-install -d $RPM_BUILD_ROOT{%{_sbindir},%{_bindir},%{_mandir},%{_libdir}/qmail,%{varqmail}} \
+install -d $RPM_BUILD_ROOT{%{_sbindir},%{_bindir},%{_mandir},%{_prefix}/lib,%{_libdir}/qmail,%{varqmail}} \
 	$RPM_BUILD_ROOT/etc/{rc.d/init.d,profile.d,mail,pam.d,security,logrotate.d} \
 	$RPM_BUILD_ROOT%{_sysconfdir}/qmail/{alias,control,users} \
 
@@ -499,7 +498,7 @@ ln -sf $RPM_BUILD_DIR/%{name}-%{version}/boot $RPM_BUILD_ROOT%{varqmail}/boot
 
 ln -sf qmail-qread $RPM_BUILD_ROOT%{_bindir}/mailq
 ln -sf ../..%{varqmail}/bin/sendmail $RPM_BUILD_ROOT%{_sbindir}/sendmail
-ln -sf ../..%{varqmail}/bin/sendmail $RPM_BUILD_ROOT%{_libdir}/sendmail
+ln -sf ../..%{varqmail}/bin/sendmail $RPM_BUILD_ROOT%{_prefix}/lib/sendmail
 
 # Set up boot procedures
 install %{SOURCE8} $RPM_BUILD_ROOT/etc/profile.d/qmail.sh
@@ -1100,7 +1099,7 @@ fi
 
 %attr(755,root,root) %{_bindir}/mailq
 %attr(755,root,root) %{_sbindir}/sendmail
-%attr(755,root,root) %{_libdir}/sendmail
+%attr(755,root,root) %{_prefix}/lib/sendmail
 %attr(2755,alias,qmail) %{varqmail}/alias
 %attr(755,root,root) %{varqmail}/bin
 %attr(755,root,root) %{varqmail}/control
@@ -1163,7 +1162,7 @@ fi
 %attr(755,root,root) %{_bindir}/qmail-showctl
 %attr(755,root,root) %{_libdir}/qmail/sendmail
 %attr(755,root,root) %{_sbindir}/sendmail
-%attr(755,root,root) %{_libdir}/sendmail
+%attr(755,root,root) %{_prefix}/lib/sendmail
 %{_mandir}/man1/maildir2mbox*
 %{_mandir}/man1/maildirwatch*
 %{_mandir}/man1/mailsubj*
