@@ -31,7 +31,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	57.2
+Release:	57.4
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -204,8 +204,11 @@ BuildRequires:	groff
 BuildRequires:	ucspi-tcp >= 0.88
 %{?with_home_etc:BuildRequires: home-etc-devel >= 1.0.8}
 BuildRequires:	pam-devel
-%{?with_tls:BuildRequires:	openssl-devel >= 0.9.7d}
-%{?with_tls:Requires:	openssl-tools >= 0.9.7d}
+%if %{with tls}
+BuildRequires:	openssl-devel >= 0.9.7d
+Requires:	openssl-tools >= 0.9.7d
+Requires:	crondaemon
+%endif
 BuildRequires:	rpmbuild(macros) >= 1.159
 PreReq:		rc-scripts >= 0.2.0
 PreReq:		sh-utils
@@ -219,7 +222,6 @@ Requires(post):	/bin/sed
 Requires(post):	fileutils
 Requires(postun):	/usr/sbin/groupdel
 Requires(postun):	/usr/sbin/userdel
-Requires:	crondaemon
 Requires:	pam >= 0.77.3
 Requires:	ucspi-tcp >= 0.88
 Requires:	daemontools >= 0.76-1.4
@@ -807,12 +809,14 @@ fi
 ln -snf %{supervise}/send /service/qmail-send
 ln -snf %{supervise}/smtpd /service/qmail-smtpd
 
+%if %{with tls}
 # session cert
 %{_sysconfdir}/cron.hourly/qmail-genrsacert.sh
 
 # server cert
 echo "Creating a self-signed ssl-certificate:"
 %{_libdir}/qmail/mkservercert || true
+%endif
 
 %triggerpostun -- %{name} <= 1.03-56.12
 if [ -f /var/lock/subsys/qmail ]; then
