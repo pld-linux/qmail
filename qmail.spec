@@ -32,7 +32,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	57.8
+Release:	57.9
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -262,8 +262,9 @@ Obsoletes:	ssmtp
 Obsoletes:	zmailer
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
+%define		_sysconfdir	/etc/qmail
 %define 	tcprules 	/etc/tcprules.d
-%define		supervise	%{_sysconfdir}/qmail/supervise
+%define		supervise	%{_sysconfdir}/supervise
 
 # not FHS compliant
 %define		varqmail	/var/qmail
@@ -282,9 +283,10 @@ Following scripts and programs have been added:
 - qmail-lint - examine the qmail configuration,
 - tarpit - tool to fight with SPAM,
 - TLS/SSL support. If you want to use it you must have certificate in
-  %{_sysconfdir}/qmail/control/servercert.pem.
+  %{_sysconfdir}/control/servercert.pem.
 - QHPSI v%{qhpsi_ver} - The Qmail High Performance Scanner Interface
   http://www.fehcom.de/qmail/qmail.html
+%{?with_dkeys:- domainkeys - http://antispam.yahoo.com/domainkeys}
 
 ======================================================================
 - *** Note: Be sure and read the documentation as there are some small
@@ -305,7 +307,10 @@ Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
 - qmail-lint - sprawdza konfiguracjê qmail-a,
 - tarpit - kolejne narzêdzie do walki ze SPAM-em,
 - Obs³uga TLS/SSL. Je¶li chcesz tego u¿ywaæ musisz mieæ certyfikat w
-  %{_sysconfdir}/qmail/control/servercert.pem.
+  %{_sysconfdir}/control/servercert.pem.
+- QHPSI v%{qhpsi_ver} - The Qmail High Performance Scanner Interface
+  http://www.fehcom.de/qmail/qmail.html
+%{?with_dkeys:- domainkeys - http://antispam.yahoo.com/domainkeys}
 
 ======================================================================
 - *** Uwaga! Przeczytaj uwa¿nie dokumentacjê do tego pakietu, poniewa¿
@@ -499,11 +504,11 @@ rm -rf $RPM_BUILD_ROOT
 install -d boot
 install -d $RPM_BUILD_ROOT{%{_sbindir},%{_bindir},%{_mandir},%{_prefix}/lib,%{_libdir}/qmail,%{varqmail}} \
 	$RPM_BUILD_ROOT/etc/{rc.d/init.d,profile.d,mail,pam.d,security,logrotate.d} \
-	$RPM_BUILD_ROOT%{_sysconfdir}/qmail/{alias,control,users} \
+	$RPM_BUILD_ROOT%{_sysconfdir}/{alias,control,users} \
 
-ln -sf ../..%{_sysconfdir}/qmail/alias $RPM_BUILD_ROOT%{varqmail}
-ln -sf ../..%{_sysconfdir}/qmail/control $RPM_BUILD_ROOT%{varqmail}
-ln -sf ../..%{_sysconfdir}/qmail/users $RPM_BUILD_ROOT%{varqmail}
+ln -sf ../..%{_sysconfdir}/alias $RPM_BUILD_ROOT%{varqmail}
+ln -sf ../..%{_sysconfdir}/control $RPM_BUILD_ROOT%{varqmail}
+ln -sf ../..%{_sysconfdir}/users $RPM_BUILD_ROOT%{varqmail}
 ln -sf ../..%{_libdir}/qmail $RPM_BUILD_ROOT%{varqmail}/bin
 ln -sf ../..%{_mandir} $RPM_BUILD_ROOT%{varqmail}/man
 ln -sf $RPM_BUILD_DIR/%{name}-%{version}/boot $RPM_BUILD_ROOT%{varqmail}/boot
@@ -527,7 +532,7 @@ cd ${PV%.tar.bz2}
 
 install -d $RPM_BUILD_ROOT/var/log/{,archiv/}qmail
 
-install conf-{common,{pop3,qm{q,t}p,{rbl,}smtp}d,send} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/control
+install conf-{common,{pop3,qm{q,t}p,{rbl,}smtp}d,send} $RPM_BUILD_ROOT%{_sysconfdir}/control
 
 install config-sanity-check qmail-config-system $RPM_BUILD_ROOT%{_libdir}/qmail
 install rc $RPM_BUILD_ROOT%{varqmail}
@@ -535,7 +540,7 @@ install rc $RPM_BUILD_ROOT%{varqmail}
 install qmail-control $RPM_BUILD_ROOT/etc/rc.d/init.d/qmail
 
 %if %{with tls}
-install servercert.cnf $RPM_BUILD_ROOT%{_sysconfdir}/qmail/control
+install servercert.cnf $RPM_BUILD_ROOT%{_sysconfdir}/control
 
 # SSL Certificate creation script
 install mkservercert $RPM_BUILD_ROOT%{_libdir}/qmail
@@ -546,7 +551,7 @@ install qmail-genrsacert.sh $RPM_BUILD_ROOT/etc/cron.hourly
 
 # for some files
 install -d $RPM_BUILD_ROOT/var/qmail/control/tlshosts
-> $RPM_BUILD_ROOT%{_sysconfdir}/qmail/control/clientcert.pem
+> $RPM_BUILD_ROOT%{_sysconfdir}/control/clientcert.pem
 %endif
 
 install -d $RPM_BUILD_ROOT%{supervise}
@@ -581,27 +586,27 @@ cd ..
 # Set up mailing aliases
 install %{SOURCE10} $RPM_BUILD_ROOT/etc/aliases
 ln -sf ../aliases $RPM_BUILD_ROOT/etc/mail/aliases
-install %{SOURCE11} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-default
-%{?with_msglog:install %{SOURCE12} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-msglog}
+install %{SOURCE11} $RPM_BUILD_ROOT%{_sysconfdir}/alias/.qmail-default
+%{?with_msglog:install %{SOURCE12} $RPM_BUILD_ROOT%{_sysconfdir}/alias/.qmail-msglog}
 
 for i in mailer-daemon postmaster; do
-	echo "root" > $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-$i
+	echo "root" > $RPM_BUILD_ROOT%{_sysconfdir}/alias/.qmail-$i
 done
-> $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-root
+> $RPM_BUILD_ROOT%{_sysconfdir}/alias/.qmail-root
 
 # Set up control files.
 for i in defaultdomain locals me plusdomain rcpthosts qmqpservers idhost; do
-	> $RPM_BUILD_ROOT%{_sysconfdir}/qmail/control/$i
+	> $RPM_BUILD_ROOT%{_sysconfdir}/control/$i
 done
 
 # Set up blank qmail/users
 for i in assign include exclude mailnames subusers append; do
-	> $RPM_BUILD_ROOT%{_sysconfdir}/qmail/users/$i
+	> $RPM_BUILD_ROOT%{_sysconfdir}/users/$i
 done
-echo -n "." > $RPM_BUILD_ROOT%{_sysconfdir}/qmail/users/assign
+echo -n "." > $RPM_BUILD_ROOT%{_sysconfdir}/users/assign
 
 # Set up default delivery
-install %{SOURCE13} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/control/defaultdelivery
+install %{SOURCE13} $RPM_BUILD_ROOT%{_sysconfdir}/control/defaultdelivery
 
 install %{SOURCE14} $RPM_BUILD_ROOT%{varqmail}/bin/qmail-lint
 install %{SOURCE15} $RPM_BUILD_ROOT%{varqmail}/bin/qmail-qsanity
@@ -631,7 +636,7 @@ install fastforward-0.51/*.1 $RPM_BUILD_ROOT%{varqmail}/man/man1/
 %if %{with dkeys}
 install qmail-dk $RPM_BUILD_ROOT%{varqmail}/bin
 install qmail-dk.8 $RPM_BUILD_ROOT%{_mandir}/man8
-install -d $RPM_BUILD_ROOT%{_sysconfdir}/qmail/control/domainkeys
+install -d $RPM_BUILD_ROOT%{_sysconfdir}/control/domainkeys
 %endif
 
 # default folder in /etc/skel
@@ -665,8 +670,8 @@ rm -rf $RPM_BUILD_ROOT%{varqmail}/doc
 install %{SOURCE21} .
 
 %if %{with tls}
-install %{SOURCE22} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/control/servercert.pem
-> $RPM_BUILD_ROOT/%{_sysconfdir}/qmail/control/rsa512.pem
+install %{SOURCE22} $RPM_BUILD_ROOT%{_sysconfdir}/control/servercert.pem
+> $RPM_BUILD_ROOT/%{_sysconfdir}/control/rsa512.pem
 %endif
 
 bzip2 -dc %{SOURCE23} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
@@ -952,10 +957,10 @@ fi
 %doc qhpsi
 
 %attr(755,root,root) %dir /etc/mail
-%attr(755,root,root) %dir %{_sysconfdir}/qmail
-%attr(2755,alias,nofiles) %dir %{_sysconfdir}/qmail/alias
-%attr(755,root,qmail) %dir %{_sysconfdir}/qmail/control
-%attr(755,root,root) %dir %{_sysconfdir}/qmail/users
+%attr(755,root,root) %dir %{_sysconfdir}
+%attr(2755,alias,nofiles) %dir %{_sysconfdir}/alias
+%attr(755,root,qmail) %dir %{_sysconfdir}/control
+%attr(755,root,root) %dir %{_sysconfdir}/users
 %attr(755,root,qmail) %dir %{_libdir}/qmail
 %attr(755,root,qmail) %dir %{varqmail}
 %attr(750,qmailq,qmail) %dir %{varqmail}/queue
@@ -971,26 +976,26 @@ fi
 %attr(600,qmails,qmail) %config(noreplace) %verify(not md5 mtime size) %ghost %{varqmail}/queue/lock/sendmutex
 %attr(644,qmailr,qmail) %config(noreplace) %verify(not md5 mtime size) %ghost %{varqmail}/queue/lock/tcpto
 %attr(622,qmails,qmail) %config(noreplace) %verify(not md5 mtime size) %ghost %{varqmail}/queue/lock/trigger
-%attr(644,root,nofiles) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/qmail/alias/.qmail-*
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/defaultdomain
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/locals
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/me
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/plusdomain
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/rcpthosts
+%attr(644,root,nofiles) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/alias/.qmail-*
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/control/defaultdomain
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/control/locals
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/control/me
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/control/plusdomain
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/control/rcpthosts
 %if %{with tls}
-%ghost %{_sysconfdir}/qmail/control/rsa512.pem
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/servercert.cnf
-%attr(640,qmaild,qmail) %ghost %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/servercert.pem
-%ghost %{_sysconfdir}/qmail/control/clientcert.pem
+%ghost %{_sysconfdir}/control/rsa512.pem
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/control/servercert.cnf
+%attr(640,qmaild,qmail) %ghost %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/control/servercert.pem
+%ghost %{_sysconfdir}/control/clientcert.pem
 %endif
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/control/defaultdelivery
-%config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-common
-%config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-qmqpd
-%config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-qmtpd
-%config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-send
-%config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-smtpd
-%config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-rblsmtpd
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/users/*
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/control/defaultdelivery
+%config(noreplace) %verify(not mtime) %{_sysconfdir}/control/conf-common
+%config(noreplace) %verify(not mtime) %{_sysconfdir}/control/conf-qmqpd
+%config(noreplace) %verify(not mtime) %{_sysconfdir}/control/conf-qmtpd
+%config(noreplace) %verify(not mtime) %{_sysconfdir}/control/conf-send
+%config(noreplace) %verify(not mtime) %{_sysconfdir}/control/conf-smtpd
+%config(noreplace) %verify(not mtime) %{_sysconfdir}/control/conf-rblsmtpd
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/users/*
 %config(noreplace) %verify(not size mtime md5) /etc/aliases
 /etc/mail/aliases
 %config(noreplace) %verify(not mtime) /etc/logrotate.d/qmail
@@ -1051,7 +1056,7 @@ fi
 %attr(755,root,root) %{_libdir}/qmail/setmaillist
 %if %{with dkeys}
 %attr(755,root,root) %{_libdir}/qmail/qmail-dk
-%dir %attr(751,qmaild,root) %{_sysconfdir}/qmail/control/domainkeys
+%dir %attr(751,qmaild,root) %{_sysconfdir}/control/domainkeys
 %endif
 %attr(755,root,root) %{varqmail}/rc
 
@@ -1061,7 +1066,7 @@ fi
 %if %{with tls}
 %attr(755,root,root) %{_libdir}/qmail/mkservercert
 %attr(755,root,root) /etc/cron.hourly/qmail-genrsacert.sh
-%dir %{_sysconfdir}/qmail/control/tlshosts
+%dir %{_sysconfdir}/control/tlshosts
 %endif
 
 %{tcprules}/Makefile.qmail
@@ -1161,17 +1166,17 @@ fi
 %doc qmail-client.html
 
 %attr(755,root,root) %dir /etc/mail
-%attr(755,root,root) %dir %{_sysconfdir}/qmail
-%attr(755,root,root) %dir %{_sysconfdir}/qmail/control
+%attr(755,root,root) %dir %{_sysconfdir}
+%attr(755,root,root) %dir %{_sysconfdir}/control
 %attr(755,root,root) %dir %{_libdir}/qmail
 %attr(755,root,root) %dir %{varqmail}
 %attr(755,root,root) %{varqmail}/bin
 %attr(755,root,root) %{varqmail}/control
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/qmail/control/defaultdomain
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/qmail/control/me
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/qmail/control/plusdomain
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/qmail/control/idhost
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/qmail/control/qmqpservers
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/control/defaultdomain
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/control/me
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/control/plusdomain
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/control/idhost
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/control/qmqpservers
 %attr(755,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/profile.d/*
 %attr(755,root,root) %{_libdir}/qmail/datemail
 %attr(755,root,root) %{_libdir}/qmail/elq
@@ -1228,7 +1233,7 @@ fi
 %{tcprules}/Makefile.qmail-pop3
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{tcprules}/tcp.qmail-pop3
 %attr(640,qmaild,root) %config(noreplace) %verify(not md5 mtime size) %ghost %{tcprules}/tcp.qmail-pop3.cdb
-%config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-pop3d
+%config(noreplace) %verify(not mtime) %{_sysconfdir}/control/conf-pop3d
 %config(noreplace) %verify(not mtime) /etc/logrotate.d/qmail-pop3
 
 %attr(1755,root,root) %dir %{supervise}/pop3d
