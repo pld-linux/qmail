@@ -32,7 +32,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	57.7
+Release:	57.8
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -450,8 +450,8 @@ zcat %{PATCH210} | sed '123,150d' | patch -p0
 #%patch222 -p1 -b .8bitmime
 %patch223 -p0 -b .liberal-lf
 %if %{with dkeys}
-%patch224 -p0 -b .dk
-%patch225 -p0 -b .dk-shared
+%patch224 -p1 -b .dk
+%patch225 -p1 -b .dk-shared
 %endif
 
 mkdir -p qhpsi
