@@ -1,0 +1,492 @@
+This patch can be used to create qmail-dk.
+
+
+#fetch libdomainkeys from http://sourceforge.net/projects/domainkeys/
+tar xfz libdomainkeys-0.62.tar.gz
+cd libdomainkeys-0.62
+make
+tar xfz /path/to/qmail-1.03.tar.gz
+cd qmail-1.03
+patch <this-patch-file
+make qmail-dk
+cp qmail-dk /var/qmail/bin/
+
+Then to use it you have to set some environment variables in the
+programs that (ultimately) invoke qmail-queue.  If you are running
+netqmail-1.05, or otherwise have the qmailqueue patch installed, you
+can invoke it like this:
+
+65.172.240.33-62:allow,RELAYCLIENT="",DKSIGN="/etc/domainkeys/dog",QMAILQUEUE="b
+in/qmail-dk"
+192.203.178.:allow,DKVERIFY="DEGIJKfh",QMAILQUEUE="bin/qmail-dk"
+
+Or, if you don't, then you have a little bit of extra work to do:
+  ln /var/qmail/bin/qmail-queue /var/qmail/bin/qmail-queue.orig
+  ln /var/qmail/bin/qmail-dk /var/qmail/bin/qmail-queue.new
+  mv /var/qmail/bin/qmail-queue.new /var/qmail/bin/qmail-queue
+
+Then, when you invoke the qmail-dk program as qmail-queue, it invokes
+qmail-queue.orig instead.
+
+diff -u orig/Makefile ./Makefile
+--- orig/Makefile	1998-06-15 06:53:16.000000000 -0400
++++ ./Makefile	2004-08-22 23:40:19.000000000 -0400
+@@ -808,6 +808,7 @@
+ forward preline condredirect bouncesaying except maildirmake \
+ maildir2mbox maildirwatch qail elq pinq idedit install-big install \
+ instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
++qmail-dk \
+ binm3 binm3+df
+ 
+ load: \
+@@ -1107,6 +1108,30 @@
+ 	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
+ 	> qmail-control.5
+ 
++qmail-dk: \
++load qmail-dk.o triggerpull.o fmtqfn.o now.o date822fmt.o \
++datetime.a seek.a ndelay.a open.a sig.a alloc.a substdio.a error.a \
++str.a fs.a auto_qmail.o auto_split.o auto_uids.o fd.a wait.a \
++../libdomainkeys.a env.a getln.a control.o stralloc.a dns.lib
++	./load qmail-dk triggerpull.o fmtqfn.o now.o \
++	date822fmt.o datetime.a seek.a ndelay.a open.a sig.a \
++	substdio.a error.a fs.a auto_qmail.o \
++	auto_split.o auto_uids.o \
++	fd.a wait.a \
++        ../libdomainkeys.a -lcrypto env.a control.o open.a getln.a \
++	stralloc.a alloc.a  scan_ulong.o str.a `cat dns.lib`
++
++qmail-dk.0: \
++qmail-dk.8
++	nroff -man qmail-dk.8 > qmail-dk.0
++
++qmail-dk.o: \
++compile qmail-dk.c readwrite.h sig.h exit.h open.h seek.h fmt.h \
++alloc.h substdio.h datetime.h now.h datetime.h triggerpull.h extra.h \
++env.h wait.h fd.h fork.h str.h \
++auto_qmail.h auto_uids.h date822fmt.h fmtqfn.h
++	./compile qmail-dk.c
++
+ qmail-getpw: \
+ load qmail-getpw.o case.a substdio.a error.a str.a fs.a auto_break.o \
+ auto_usera.o
+diff -u orig/qmail-dk.8 ./qmail-dk.8
+--- orig/qmail-dk.8	2004-08-22 21:15:13.000000000 -0400
++++ ./qmail-dk.8	2004-10-05 20:25:01.000000000 -0400
+@@ -0,0 +1,115 @@
++.TH qmail-dk 8
++.SH NAME
++qmail-dk \- sign/verify and queue a mail message for delivery
++.SH SYNOPSIS
++.B qmail-dk
++.SH DESCRIPTION
++.B qmail-dk
++has the same interface as
++.B qmail-queue
++except that it inserts an appropriate DomainKeys header before it
++queues the message.  There are two separate ways to invoke
++.BR qmail-dk .
++For one way, you can patch qmail with the http://qmail.org/qmailqueue
++patch and set QMAILQUEUE to point to qmail-dk in the environment when
++you send or receive email.
++For another way, you can rename qmail-queue to qmail-queue.orig, and set DKQUEUE=bin/qmail-queue.orig.
++
++.B qmail-dk
++supports DomainKey signing and verification.  It uses the libdomainkey
++and OpenSSL libraries.  To sign a message, set the
++.B DKSIGN
++environment variable to the pathname to the private key that will be
++used to sign the message.  If there is a % character in the environment
++variable, it is removed and replaced by the domain name in the From: header.
++If, after substituting the %, that file does not exist, the message will not be signed.
++If there is no % and the file does not exist, the message will be rejected with error 32.
++The selector will be taken from the
++basename of the file.  The private key should be created by 
++.BR dknewkey ,
++which comes with libdomainkey.
++
++To verify a message, set the
++.B DKVERIFY
++environment variable to a desired set of letters.  Precisely, if you
++want a libdomainkey return status to generate an error, include that
++letter, where A is the first return status (DK_STAT_OK), B is the
++second (DK_STAT_BADSIG), etc.  The letter should be uppercase if you
++want a permanent error to be returned (exit code 13), and lowercase if
++you want a temporary error to be returned (exit code 82).
++
++For example, if you want to permanently reject messages that have a
++signature that has been revoked, include the letter 'K' in the
++.B DKVERIFY
++environment variable.  A conservative set of letters is
++.BR DEGIJKfh .
++Reject permanently BADSIG, NOKEY, BADKEY, SYNTAX, ARGS, REVOKED, and
++INTERNAL errors, and temporarily CANTVRFY and NORESOURCE.  Add in
++.B B
++if you want to reject messages that have a signature that doesn't
++verify (presumably because the message is a forgery or has been
++damaged in transit.  Note that
++.B qmail-dk
++always inserts the 
++.B DomainKey-Status
++header, so that messages can be
++rejected at delivery time, or in the mail reader.
++
++Typically, you would sign messages generated on-host by setting
++.B DKSIGN
++in the environment before running an email program.  DKSIGN will be carried
++through qmail's sendmail emulation through 
++.B qmail-inject
++to
++.BR qmail-dk .
++You would also set it for
++.B qmail-smtpd
++at the same time
++.B RELAYCLIENT
++is set, most often in the tcpserver cdb file.  If a host is authorized
++to relay, you probably want to sign messages sent by that host.
++.B DKVERIFY
++should be set for all other hosts.
++
++If neither
++.B DKSIGN
++nor
++.B DKVERIFY
++are set, then
++.B DKSIGN
++will be set to /etc/domainkeys/%/default.  If such a private key exists, it will be used to sign the domain.
++
++.B qmail-dk
++will ordinarily spawn qmail-queue, but if DKQUEUE is set in the environment,
++the program that it points to will be executed instead.  If DKQUEUE is not set, and
++.B qmail-dk
++has been invoked as
++.B qmail-queue
++then
++.B qmail-queue.orig
++is spawned instead.
++
++.SH "EXIT CODES"
++.B qmail-dk
++returns the same exit codes as qmail-queue with these additions:
++.TP 5
++.B 32
++The private key file does not exist.
++.TP 5
++.B 57
++Trouble waiting for qmail-queue to exit.
++.TP 5
++.B 58
++Unable to vfork.
++.TP 5
++.B 59
++Unable to create a pipe to qmail-queue.
++.SH "SEE ALSO"
++addresses(5),
++envelopes(5),
++qmail-header(5),
++qmail-inject(8),
++qmail-qmqpc(8),
++qmail-queue(8),
++qmail-send(8),
++qmail-smtpd(8)
+diff -u orig/qmail-dk.c ./qmail-dk.c
+--- orig/qmail-dk.c	2004-08-22 21:15:17.000000000 -0400
++++ ./qmail-dk.c	2004-10-19 18:08:49.000000000 -0400
+@@ -0,0 +1,297 @@
++#include <sys/types.h>
++#include "readwrite.h"
++#include "sig.h"
++#include "exit.h"
++#include "open.h"
++#include "seek.h"
++#include "fmt.h"
++#include "alloc.h"
++#include "str.h"
++#include "stralloc.h"
++#include "substdio.h"
++#include "datetime.h"
++#include "now.h"
++#include "fork.h"
++#include "wait.h"
++#include "extra.h"
++#include "auto_qmail.h"
++#include "auto_uids.h"
++#include "date822fmt.h"
++#include "fmtqfn.h"
++#include "env.h"
++#include "control.h"
++#include "../domainkeys.h"
++
++#define DEATH 86400 /* 24 hours; _must_ be below q-s's OSSIFIED (36 hours) */
++#define ADDR 1003
++
++char inbuf[2048];
++struct substdio ssin;
++char outbuf[256];
++struct substdio ssout;
++
++datetime_sec starttime;
++struct datetime dt;
++unsigned long mypid;
++unsigned long uid;
++char *pidfn;
++int messfd;
++int readfd;
++
++void die(e) int e; { _exit(e); }
++void die_write() { die(53); }
++void die_read() { die(54); }
++void sigalrm() { /* thou shalt not clean up here */ die(52); }
++void sigbug() { die(81); }
++void maybe_die_dk(e) DK_STAT e; {
++  switch(e) {
++  case DK_STAT_BADKEY: _exit(55);
++  case DK_STAT_CANTVRFY: _exit(74);
++  case DK_STAT_NORESOURCE: _exit(51);
++  case DK_STAT_ARGS: _exit(12);
++  case DK_STAT_INTERNAL: _exit(81);
++  }
++}
++
++unsigned int pidfmt(s,seq)
++char *s;
++unsigned long seq;
++{
++ unsigned int i;
++ unsigned int len;
++
++ len = 0;
++ i = fmt_str(s,"/tmp/qmail-dk."); len += i; if (s) s += i;
++ i = fmt_ulong(s,mypid); len += i; if (s) s += i;
++ i = fmt_str(s,"."); len += i; if (s) s += i;
++ i = fmt_ulong(s,starttime); len += i; if (s) s += i;
++ i = fmt_str(s,"."); len += i; if (s) s += i;
++ i = fmt_ulong(s,seq); len += i; if (s) s += i;
++ ++len; if (s) *s++ = 0;
++
++ return len;
++}
++
++void pidopen()
++{
++ unsigned int len;
++ unsigned long seq;
++
++ seq = 1;
++ len = pidfmt((char *) 0,seq);
++ pidfn = alloc(len);
++ if (!pidfn) die(51);
++
++ for (seq = 1;seq < 10;++seq)
++  {
++   if (pidfmt((char *) 0,seq) > len) die(81); /* paranoia */
++   pidfmt(pidfn,seq);
++   messfd = open_excl(pidfn);
++   if (messfd != -1) return;
++  }
++
++ die(63);
++}
++
++char tmp[FMT_ULONG];
++
++char *dksign = 0;
++stralloc dksignature = {0};
++stralloc dkoutput = {0};
++char *dkverify = 0;
++char *dkqueue = 0;
++DK_LIB *dklib;
++DK *dk;
++DK_STAT st;
++
++static void write_signature(DK *dk, char *keyfn)
++{
++ char advice[2048];
++ char *selector;
++ char *from;
++ static stralloc keyfnfrom = {0};
++ int i;
++
++ from = dk_from(dk);
++ i = str_chr(keyfn, '%');
++ if (keyfn[i]) {
++   if (!stralloc_copyb(&keyfnfrom,keyfn,i)) die(51);
++   if (!stralloc_cats(&keyfnfrom,from)) die(51);
++   if (!stralloc_cats(&keyfnfrom,keyfn + i + 1)) die(51);
++ } else {
++   if (!stralloc_copys(&keyfnfrom,keyfn)) die(51);
++ }
++ if (!stralloc_0(&keyfnfrom)) die(51);
++
++ switch(control_readfile(&dksignature,keyfnfrom.s,0)) {
++ case 0:
++   if (keyfn[i]) return;
++   die(32);
++ case 1: break;
++ default: die(31);
++ }
++ for(i=0; i < dksignature.len; i++)
++   if (dksignature.s[i] == '\0') dksignature.s[i] = '\n';
++ if (!stralloc_0(&dksignature)) die(51);
++
++ st = dk_getsig(dk, dksignature.s, advice, sizeof(advice));
++ maybe_die_dk(st);
++
++ if (!stralloc_cats(&dkoutput,
++   "Comment: DomainKeys? See http://antispam.yahoo.com/domainkeys\n"
++	   "DomainKey-Signature: a=rsa-sha1; q=dns; c=nofws;\n"
++	   "  s=")) die(51);
++ selector = keyfn;
++ while (*keyfn) {
++   if (*keyfn == '/') selector = keyfn+1;
++    keyfn++;
++ }
++ if (!stralloc_cats(&dkoutput,selector)) die(51);
++ if (!stralloc_cats(&dkoutput,"; d=")) die(51);
++ if (from) {
++   if (!stralloc_cats(&dkoutput,from)) die(51);
++ } else if (!stralloc_cats(&dkoutput,"unknown")) die(51);
++ if (!stralloc_cats(&dkoutput,";\n  b=")) die(51);
++ if (!stralloc_cats(&dkoutput,advice)) die(51);
++ if (!stralloc_cats(&dkoutput,"  ;\n")) die(51);
++}
++
++static char *binqqargs[2] = { "bin/qmail-queue", 0 } ;
++
++void main(int argc, char *argv[])
++{
++ unsigned int len;
++ char ch;
++ int pim[2];
++ int wstat;
++ unsigned long pid;
++
++ sig_blocknone();
++ umask(033);
++
++ dksign = env_get("DKSIGN");
++ dkverify = env_get("DKVERIFY");
++ if (!dksign && !dkverify)
++   dksign = "/etc/domainkeys/%/default";
++
++ dkqueue = env_get("DKQUEUE");
++ if (dkqueue && *dkqueue) binqqargs[0] = dkqueue;
++ else if (str_equal(argv[0]+str_rchr(argv[0], '/'), "/qmail-queue"))
++   binqqargs[0] = "bin/qmail-queue.orig";
++
++ if (dksign || dkverify) {
++   dklib = dk_init(0);
++   if (!dklib) die(51);
++ }
++ if (dksign) {
++    dk = dk_sign(dklib, &st, DK_CANON_NOFWS);
++    if (!dk) die(31);
++ } else if (dkverify) {
++    dk = dk_verify(dklib, &st);
++    if (!dk) die(31);
++ }
++
++ mypid = getpid();
++ uid = getuid();
++ starttime = now();
++ datetime_tai(&dt,starttime);
++
++ sig_pipeignore();
++ sig_miscignore();
++ sig_alarmcatch(sigalrm);
++ sig_bugcatch(sigbug);
++
++ alarm(DEATH);
++
++ pidopen();
++ readfd = open_read(pidfn);
++ if (unlink(pidfn) == -1) die(63);
++
++ substdio_fdbuf(&ssout,write,messfd,outbuf,sizeof(outbuf));
++ substdio_fdbuf(&ssin,read,0,inbuf,sizeof(inbuf));
++
++ for (;;) {
++   register int n;
++   register char *x;
++   int i;
++
++   n = substdio_feed(&ssin);
++   if (n < 0) die_read();
++   if (!n) break;
++   x = substdio_PEEK(&ssin);
++   if (dksign || dkverify)
++     for(i=0; i < n; i++) {
++       if (x[i] == '\n') st = dk_message(dk, "\r\n", 2);
++       else st = dk_message(dk, x+i, 1);
++       maybe_die_dk(st);
++      }
++   if (substdio_put(&ssout,x,n) == -1) die_write();
++   substdio_SEEK(&ssin,n);
++ }
++
++ if (substdio_flush(&ssout) == -1) die_write();
++
++ if (dksign || dkverify) {
++   st = dk_eom(dk, (void *)0);
++   maybe_die_dk(st);
++   if (dksign) {
++     write_signature(dk, dksign);
++   } else if (dkverify) {
++     char *status;
++     if (!stralloc_copys(&dkoutput,"DomainKey-Status: ")) die(51);
++     switch(st) {
++     case DK_STAT_OK:         status = "good        "; break;
++     case DK_STAT_BADSIG:     status = "bad         "; break;
++     case DK_STAT_NOSIG:      status = "no signature"; break;
++     case DK_STAT_NOKEY:
++     case DK_STAT_CANTVRFY:   status = "no key      "; break;
++     case DK_STAT_BADKEY:     status = "bad key     "; break;
++     case DK_STAT_INTERNAL:
++     case DK_STAT_ARGS:
++     case DK_STAT_SYNTAX:     status = "bad format  "; break;
++     case DK_STAT_NORESOURCE: status = "no resources"; break;
++     case DK_STAT_REVOKED:    status = "revoked     "; break;
++     }
++     if (!stralloc_cats(&dkoutput,status)) die(51);
++     if (!stralloc_cats(&dkoutput,"\n")) die(51);
++     if (dkverify[str_chr(dkverify, 'A'+st)]) die(13);
++     if (dkverify[str_chr(dkverify, 'a'+st)]) die(82);
++   }
++ }
++
++ if (pipe(pim) == -1) die(59);
++ 
++ switch(pid = vfork()) {
++ case -1:
++   close(pim[0]); close(pim[1]);
++   die(58);
++ case 0:
++   close(pim[1]);
++   if (fd_move(0,pim[0]) == -1) die(120);
++   if (chdir(auto_qmail) == -1) die(61);
++   execv(*binqqargs,binqqargs);
++   die(120);
++ }
++
++ close(pim[0]);
++
++ substdio_fdbuf(&ssin,read,readfd,inbuf,sizeof(inbuf));
++ substdio_fdbuf(&ssout,write,pim[1],outbuf,sizeof(outbuf));
++
++ if (substdio_bput(&ssout,dkoutput.s,dkoutput.len) == -1) die_write();
++ switch(substdio_copy(&ssout,&ssin))
++  {
++   case -2: die_read();
++   case -3: die_write();
++  }
++
++ if (substdio_flush(&ssout) == -1) die_write();
++ close(pim[1]);
++
++ if (wait_pid(&wstat,pid) != pid)
++   die(57);
++ if (wait_crashed(wstat))
++   die(57);
++ die(wait_exitcode(wstat));
++
++}

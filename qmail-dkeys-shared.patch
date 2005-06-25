@@ -1,0 +1,29 @@
+--- qmail-1.03/Makefile~	2005-06-25 18:29:31.000000000 +0300
++++ qmail-1.03/Makefile	2005-06-25 18:29:33.000000000 +0300
+@@ -1116,13 +1116,13 @@
+ load qmail-dk.o triggerpull.o fmtqfn.o now.o date822fmt.o \
+ datetime.a seek.a ndelay.a open.a sig.a alloc.a substdio.a error.a \
+ str.a fs.a auto_qmail.o auto_split.o auto_uids.o fd.a wait.a \
+-../libdomainkeys.a env.a getln.a control.o stralloc.a dns.lib
++env.a getln.a control.o stralloc.a dns.lib
+ 	./load qmail-dk triggerpull.o fmtqfn.o now.o \
+ 	date822fmt.o datetime.a seek.a ndelay.a open.a sig.a \
+ 	substdio.a error.a fs.a auto_qmail.o \
+ 	auto_split.o auto_uids.o \
+ 	fd.a wait.a \
+-        ../libdomainkeys.a -lcrypto env.a control.o open.a getln.a \
++        -ldomainkeys -lcrypto env.a control.o open.a getln.a \
+ 	stralloc.a alloc.a  scan_ulong.o str.a `cat dns.lib`
+ 
+ qmail-dk.0: \
+--- qmail-1.03/qmail-dk.c~	2005-06-25 18:20:14.000000000 +0300
++++ qmail-1.03/qmail-dk.c	2005-06-25 18:30:45.000000000 +0300
+@@ -20,7 +20,7 @@
+ #include "fmtqfn.h"
+ #include "env.h"
+ #include "control.h"
+-#include "../domainkeys.h"
++#include <domainkeys.h>
+ 
+ #define DEATH 86400 /* 24 hours; _must_ be below q-s's OSSIFIED (36 hours) */
+ #define ADDR 1003

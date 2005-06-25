@@ -24,6 +24,7 @@
 %bcond_with	home_etc	# with home_etc
 %bcond_without tls		# disable tls
 %bcond_with ipv6		# enable ipv6
+%bcond_without dkeys	# without domainkeys support
 #
 %define	qhpsi_ver	0.1.7
 #
@@ -31,7 +32,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	57.4
+Release:	57.6
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -199,11 +200,16 @@ Patch222:	http://www-dt.e-technik.uni-dortmund.de/~ma/qmail/patch-%{name}-1.03-r
 # Let qmail accept bare LF in the mail body
 Patch223:	%{name}-0.95-liberal-lf-rediff.patch
 
+# qmail-queue replacement that signs and verifies DomainKeys signatures.
+Patch224:	http://www.qmail.org/qmail-1.03-dk-0.53.patch
+Patch225:	qmail-dkeys-shared.patch
+
 URL:		http://www.qmail.org/
 BuildRequires:	groff
 BuildRequires:	ucspi-tcp >= 0.88
 %{?with_home_etc:BuildRequires: home-etc-devel >= 1.0.8}
 BuildRequires:	pam-devel
+BuildRequires:	libdomainkeys-devel >= 0.66
 %if %{with tls}
 BuildRequires:	openssl-devel >= 0.9.7d
 Requires:	openssl-tools >= 0.9.7d
@@ -443,6 +449,10 @@ zcat %{PATCH210} | sed '123,150d' | patch -p0
 %patch221 -p1 -b .ipalias
 #%patch222 -p1 -b .8bitmime
 %patch223 -p0 -b .liberal-lf
+%if %{with dkeys}
+%patch224 -p0 -b .dk
+%patch225 -p0 -b .dk-shared
+%endif
 
 mkdir -p qhpsi
 tar zxvf %{SOURCE17} -C qhpsi
@@ -615,6 +625,10 @@ install fastforward-0.51/printmaillist $RPM_BUILD_ROOT%{varqmail}/bin
 install fastforward-0.51/setforward $RPM_BUILD_ROOT%{varqmail}/bin
 install fastforward-0.51/setmaillist $RPM_BUILD_ROOT%{varqmail}/bin
 install fastforward-0.51/*.1 $RPM_BUILD_ROOT%{varqmail}/man/man1/
+
+%if %{with dkeys}
+install qmail-dk $RPM_BUILD_ROOT%{varqmail}/bin
+%endif
 
 # default folder in /etc/skel
 install -d $RPM_BUILD_ROOT/etc/skel/Mail
@@ -1031,6 +1045,9 @@ fi
 %attr(755,root,root) %{_libdir}/qmail/printmaillist
 %attr(755,root,root) %{_libdir}/qmail/setforward
 %attr(755,root,root) %{_libdir}/qmail/setmaillist
+%if %{with dkeys}
+%attr(755,root,root) %{_libdir}/qmail/qmail-dk
+%endif
 %attr(755,root,root) %{varqmail}/rc
 
 %attr(755,root,root) %{_libdir}/qmail/config-sanity-check
