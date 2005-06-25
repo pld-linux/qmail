@@ -1,0 +1,22 @@
+--- ./qmail-dk.c~	2005-06-25 18:30:45.000000000 +0300
++++ ./qmail-dk.c	2005-06-25 20:48:36.000000000 +0300
+@@ -172,7 +172,7 @@
+  dksign = env_get("DKSIGN");
+  dkverify = env_get("DKVERIFY");
+  if (!dksign && !dkverify)
+-   dksign = "/etc/domainkeys/%/default";
++   dksign = "/etc/qmail/control/domainkeys/%/default";
+ 
+  dkqueue = env_get("DKQUEUE");
+  if (dkqueue && *dkqueue) binqqargs[0] = dkqueue;
+--- ./qmail-dk.8~	2005-06-25 18:20:14.000000000 +0300
++++ ./qmail-dk.8	2005-06-25 20:48:48.000000000 +0300
+@@ -77,7 +77,7 @@
+ .B DKVERIFY
+ are set, then
+ .B DKSIGN
+-will be set to /etc/domainkeys/%/default.  If such a private key exists, it will be used to sign the domain.
++will be set to /etc/qmail/control/domainkeys/%/default.  If such a private key exists, it will be used to sign the domain.
+ 
+ .B qmail-dk
+ will ordinarily spawn qmail-queue, but if DKQUEUE is set in the environment,
