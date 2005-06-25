@@ -32,7 +32,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	57.6
+Release:	57.7
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -628,6 +628,7 @@ install fastforward-0.51/*.1 $RPM_BUILD_ROOT%{varqmail}/man/man1/
 
 %if %{with dkeys}
 install qmail-dk $RPM_BUILD_ROOT%{varqmail}/bin
+install qmail-dk.8 $RPM_BUILD_ROOT%{_mandir}/man8
 %endif
 
 # default folder in /etc/skel
