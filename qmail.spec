@@ -203,6 +203,7 @@ Patch223:	%{name}-0.95-liberal-lf-rediff.patch
 # qmail-queue replacement that signs and verifies DomainKeys signatures.
 Patch224:	http://www.qmail.org/qmail-1.03-dk-0.53.patch
 Patch225:	qmail-dkeys-shared.patch
+Patch226:	qmail-dkeys-config.patch
 
 URL:		http://www.qmail.org/
 BuildRequires:	groff
@@ -281,7 +282,7 @@ Following scripts and programs have been added:
 - qmail-lint - examine the qmail configuration,
 - tarpit - tool to fight with SPAM,
 - TLS/SSL support. If you want to use it you must have certificate in
-  /etc/qmail/control/servercert.pem.
+  %{_sysconfdir}/qmail/control/servercert.pem.
 - QHPSI v%{qhpsi_ver} - The Qmail High Performance Scanner Interface
   http://www.fehcom.de/qmail/qmail.html
 
@@ -304,7 +305,7 @@ Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
 - qmail-lint - sprawdza konfiguracjê qmail-a,
 - tarpit - kolejne narzêdzie do walki ze SPAM-em,
 - Obs³uga TLS/SSL. Je¶li chcesz tego u¿ywaæ musisz mieæ certyfikat w
-  /etc/qmail/control/servercert.pem.
+  %{_sysconfdir}/qmail/control/servercert.pem.
 
 ======================================================================
 - *** Uwaga! Przeczytaj uwa¿nie dokumentacjê do tego pakietu, poniewa¿
@@ -452,6 +453,7 @@ zcat %{PATCH210} | sed '123,150d' | patch -p0
 %if %{with dkeys}
 %patch224 -p1 -b .dk
 %patch225 -p1 -b .dk-shared
+%patch226 -p1 -b .dk-conf
 %endif
 
 mkdir -p qhpsi
@@ -540,7 +542,7 @@ install mkservercert $RPM_BUILD_ROOT%{_libdir}/qmail
 
 # RSA key generation cronjob
 install -d $RPM_BUILD_ROOT/etc/cron.hourly
-install qmail-genrsacert.sh $RPM_BUILD_ROOT%{_sysconfdir}/cron.hourly
+install qmail-genrsacert.sh $RPM_BUILD_ROOT/etc/cron.hourly
 
 # for some files
 install -d $RPM_BUILD_ROOT/var/qmail/control/tlshosts
@@ -577,8 +579,8 @@ done
 cd ..
 
 # Set up mailing aliases
-install %{SOURCE10} $RPM_BUILD_ROOT%{_sysconfdir}/aliases
-ln -sf ../aliases $RPM_BUILD_ROOT%{_sysconfdir}/mail/aliases
+install %{SOURCE10} $RPM_BUILD_ROOT/etc/aliases
+ln -sf ../aliases $RPM_BUILD_ROOT/etc/mail/aliases
 install %{SOURCE11} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-default
 %{?with_msglog:install %{SOURCE12} $RPM_BUILD_ROOT%{_sysconfdir}/qmail/alias/.qmail-msglog}
 
@@ -629,6 +631,7 @@ install fastforward-0.51/*.1 $RPM_BUILD_ROOT%{varqmail}/man/man1/
 %if %{with dkeys}
 install qmail-dk $RPM_BUILD_ROOT%{varqmail}/bin
 install qmail-dk.8 $RPM_BUILD_ROOT%{_mandir}/man8
+install -d $RPM_BUILD_ROOT%{_sysconfdir}/qmail/control/domainkeys
 %endif
 
 # default folder in /etc/skel
@@ -826,7 +829,7 @@ ln -snf %{supervise}/smtpd /service/qmail-smtpd
 
 %if %{with tls}
 # session cert
-%{_sysconfdir}/cron.hourly/qmail-genrsacert.sh
+/etc/cron.hourly/qmail-genrsacert.sh
 
 # server cert
 echo "Creating a self-signed ssl-certificate:"
@@ -948,7 +951,7 @@ fi
 # QHPSI License requires all files to be distributed.
 %doc qhpsi
 
-%attr(755,root,root) %dir %{_sysconfdir}/mail
+%attr(755,root,root) %dir /etc/mail
 %attr(755,root,root) %dir %{_sysconfdir}/qmail
 %attr(2755,alias,nofiles) %dir %{_sysconfdir}/qmail/alias
 %attr(755,root,qmail) %dir %{_sysconfdir}/qmail/control
@@ -988,8 +991,8 @@ fi
 %config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-smtpd
 %config(noreplace) %verify(not mtime) %{_sysconfdir}/qmail/control/conf-rblsmtpd
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/qmail/users/*
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/aliases
-%{_sysconfdir}/mail/aliases
+%config(noreplace) %verify(not size mtime md5) /etc/aliases
+/etc/mail/aliases
 %config(noreplace) %verify(not mtime) /etc/logrotate.d/qmail
 %attr(755,root,root) %config(noreplace) %verify(not size mtime md5) /etc/profile.d/*
 %attr(754,root,root) /etc/rc.d/init.d/*
@@ -1048,6 +1051,7 @@ fi
 %attr(755,root,root) %{_libdir}/qmail/setmaillist
 %if %{with dkeys}
 %attr(755,root,root) %{_libdir}/qmail/qmail-dk
+%dir %attr(751,qmaild,root) %{_sysconfdir}/qmail/control/domainkeys
 %endif
 %attr(755,root,root) %{varqmail}/rc
 
@@ -1056,7 +1060,7 @@ fi
 
 %if %{with tls}
 %attr(755,root,root) %{_libdir}/qmail/mkservercert
-%attr(755,root,root) %{_sysconfdir}/cron.hourly/qmail-genrsacert.sh
+%attr(755,root,root) /etc/cron.hourly/qmail-genrsacert.sh
 %dir %{_sysconfdir}/qmail/control/tlshosts
 %endif
 
@@ -1156,7 +1160,7 @@ fi
 %doc {BLURB*,README,SECURITY,THANKS,THOUGHTS,TODO,VERSION}
 %doc qmail-client.html
 
-%attr(755,root,root) %dir %{_sysconfdir}/mail
+%attr(755,root,root) %dir /etc/mail
 %attr(755,root,root) %dir %{_sysconfdir}/qmail
 %attr(755,root,root) %dir %{_sysconfdir}/qmail/control
 %attr(755,root,root) %dir %{_libdir}/qmail
