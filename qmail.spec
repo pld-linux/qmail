@@ -229,6 +229,8 @@ Requires(post):	/bin/sed
 Requires(post):	fileutils
 Requires(postun):	/usr/sbin/groupdel
 Requires(postun):	/usr/sbin/userdel
+Requires:	bzip2
+Requires:	logrotate
 Requires:	pam >= 0.77.3
 Requires:	ucspi-tcp >= 0.88
 Requires:	daemontools >= 0.76-1.4
@@ -378,6 +380,8 @@ Summary:	POP3 server for qmail
 Summary(pl):	Serwer POP3 dla qmaila
 Group:		Networking/Daemons
 Requires:	%{name} = %{version}
+Requires:	bzip2
+Requires:	logrotate
 Provides:	pop3daemon
 Obsoletes:	qpopper
 Obsoletes:	qpopper6
