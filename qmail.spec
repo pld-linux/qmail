@@ -842,6 +842,20 @@ echo "Creating a self-signed ssl-certificate:"
 %endif
 
 %triggerpostun -- %{name} <= 1.03-56.12
+# move dot-qmail to new location
+if [ -f /etc/qmail/dot-qmail.rpmsave ]; then
+	echo "Moving /etc/qmail/dot-qmail.rpmsave to /etc/qmail/control/defaultdelivery"
+	mv -f /etc/qmail/control/defaultdelivery /etc/qmail/control/defaultdelivery.rpmnew
+	mv -f /etc/qmail/dot-qmail.rpmsave /etc/qmail/control/defaultdelivery
+fi
+
+# move server cert to new location
+if [ -f /etc/qmail/control/cert.pem.rpmsave ]; then
+	echo "Moving /etc/qmail/control/cert.pem to /etc/qmail/control/servercert.pem"
+	mv -f /etc/qmail/control/servercert.pem /etc/qmail/control/servercert.pem.rpmnew
+	mv -f /etc/qmail/control/cert.pem.rpmsave /etc/qmail/control/servercert.pem
+fi
+
 if [ -f /var/lock/subsys/qmail ]; then
 	if [ -f /var/lock/subsys/qmail ]; then
 		. /etc/rc.d/init.d/functions
@@ -860,21 +874,6 @@ fi
 %triggerpostun -- %{name}-pop3 <= 1.03-56.12
 if [ -f /var/lock/subsys/rc-inetd ]; then
 	/etc/rc.d/init.d/rc-inetd reload
-fi
-
-# move dot-qmail to new location
-%triggerpostun -- %{name} <= 1.03-56.5
-if [ -f /etc/qmail/dot-qmail.rpmsave ]; then
-	echo "Moving /etc/qmail/dot-qmail.rpmsave to /etc/qmail/control/defaultdelivery"
-	mv -f /etc/qmail/control/defaultdelivery /etc/qmail/control/defaultdelivery.rpmnew
-	mv -f /etc/qmail/dot-qmail.rpmsave /etc/qmail/control/defaultdelivery
-fi
-
-# move server cert to new location
-if [ -f /etc/qmail/control/cert.pem.rpmsave ]; then
-	echo "Moving /etc/qmail/control/cert.pem to /etc/qmail/control/servercert.pem"
-	mv -f /etc/qmail/control/servercert.pem /etc/qmail/control/servercert.pem.rpmnew
-	mv -f /etc/qmail/control/cert.pem.rpmsave /etc/qmail/control/servercert.pem
 fi
 
 %postun
