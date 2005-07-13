@@ -1,0 +1,7 @@
+- this spec contains large different patches
+- most important of them is probably updated tls patch which won't crash under
+  glibc 2.3 when smtproutes contained literal ip address ([a.b.c.d])
+- also the inetd agent is daemontools, as it's recommended by qmail author and
+  second it's the only one known to me that can set env vars depending on
+  source connection, as qmail utilizes this a lot, it is needed for me.
+- really it's too much to describe, see yourself the diffs ;)
