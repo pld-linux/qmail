@@ -702,6 +702,7 @@ for a in 1 3 5 7 8 9; do
 	install qmail-doki/*.$a $RPM_BUILD_ROOT%{_mandir}/pl/man$i
 done
 rm -f qmail-doki/*.[135789]
+rm -f INSTALL.redhat.redhat # size 0
 
 %clean
 rm -rf $RPM_BUILD_ROOT
