@@ -22,9 +22,9 @@
 %bcond_with	msglog		# with qmail-msglog (advanced e-mail monitoring -- qmail-command to *all* local mail)
 %bcond_with	routing		# with no-mail-routing patch (%)
 %bcond_with	home_etc	# with home_etc
-%bcond_without tls		# disable tls
-%bcond_with ipv6		# enable ipv6
-%bcond_without dkeys	# without domainkeys support
+%bcond_without	tls		# disable tls
+%bcond_with	ipv6		# enable ipv6
+%bcond_without	dkeys	# without domainkeys support
 #
 %define	qhpsi_ver	0.1.7
 #
