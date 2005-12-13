@@ -201,41 +201,41 @@ Patch222:	http://www-dt.e-technik.uni-dortmund.de/~ma/qmail/patch-%{name}-1.03-r
 Patch223:	%{name}-0.95-liberal-lf-rediff.patch
 
 # qmail-queue replacement that signs and verifies DomainKeys signatures.
-Patch224:	http://www.qmail.org/qmail-1.03-dk-0.53.patch
-Patch225:	qmail-dkeys-shared.patch
-Patch226:	qmail-dkeys-config.patch
+Patch224:	http://www.qmail.org/%{name}-1.03-dk-0.53.patch
+Patch225:	%{name}-dkeys-shared.patch
+Patch226:	%{name}-dkeys-config.patch
 
 URL:		http://www.qmail.org/
 BuildRequires:	groff
-BuildRequires:	ucspi-tcp >= 0.88
 %{?with_home_etc:BuildRequires: home-etc-devel >= 1.0.8}
-BuildRequires:	pam-devel
 BuildRequires:	libdomainkeys-devel >= 0.66
+BuildRequires:	pam-devel
+BuildRequires:	ucspi-tcp >= 0.88
 %if %{with tls}
 BuildRequires:	openssl-devel >= 0.9.7d
-Requires:	openssl-tools >= 0.9.7d
 Requires:	crondaemon
+Requires:	openssl-tools >= 0.9.7d
 %endif
 BuildRequires:	rpmbuild(macros) >= 1.159
-PreReq:		rc-scripts >= 0.2.0
-PreReq:		sh-utils
-Requires(pre):	/bin/id
-Requires(pre):	/usr/bin/getgid
-Requires(pre):	/usr/sbin/groupadd
-Requires(pre):	/usr/sbin/useradd
 Requires(post):	/bin/hostname
 Requires(post):	/bin/id
 Requires(post):	/bin/sed
 Requires(post):	fileutils
 Requires(postun):	/usr/sbin/groupdel
 Requires(postun):	/usr/sbin/userdel
+Requires(pre):	/bin/id
+Requires(pre):	/usr/bin/getgid
+Requires(pre):	/usr/sbin/groupadd
+Requires(pre):	/usr/sbin/useradd
 Requires:	bzip2
-Requires:	logrotate
-Requires:	pam >= 0.77.3
-Requires:	ucspi-tcp >= 0.88
 Requires:	daemontools >= 0.76-1.4
-Requires:	mktemp
 %{?with_home_etc:Requires:	home-etc >= 1.0.8}
+Requires:	logrotate
+Requires:	mktemp
+Requires:	pam >= 0.77.3
+Requires:	rc-scripts >= 0.2.0
+Requires:	sh-utils
+Requires:	ucspi-tcp >= 0.88
 Conflicts:	qmail-client
 Provides:	group(nofiles)
 Provides:	group(qmail)
