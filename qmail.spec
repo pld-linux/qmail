@@ -136,9 +136,6 @@ Patch12:	http://www.ckdhr.com/ckd/%{name}-dns.patch
 # gentoo bug #24293
 Patch216:	ftp://ftp.linux.ee/pub/gentoo/distfiles/distfiles/%{name}-local-tabs.patch
 
-# Account for Linux filesystems lack of a synchronus link()
-Patch201:	http://www.jedi.claranet.fr/%{name}-link-sync.patch
-
 # Increase limits for large mail systems
 Patch217:	http://www.qmail.org/big-concurrency.patch
 
@@ -429,7 +426,6 @@ Serwer POP3 dla qmaila.
 #%patch104 -p1 -b .any-to-cname
 %patch105 -p1 -b .sendmail-flagf
 
-%patch201 -p2 -b .qmail-link-sync
 %patch202 -p1 -b .qmail-0.0.0.0
 %patch203 -p1 -b .qmail-date-localtime
 %patch204 -p1 -b .qmail-limit-bounce-size
