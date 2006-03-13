@@ -32,7 +32,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	59
+Release:	59.1
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -45,8 +45,8 @@ Source4:	checkpass-1.2.tar.gz
 # Source4-md5:	6818629dc74737f3ca33ca97ab4ffcc4
 Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
 # Source5-md5:	43f915c104024e6f33a5b3ff52dfb75b
-Source6:	http://glen.alkohol.ee/pld/qmail/%{name}-conf-20060127.tar.bz2
-# Source6-md5:	aa657bf41b9349abefdd84e3364f9ae8
+Source6:	http://glen.alkohol.ee/pld/qmail/%{name}-conf-20060313.tar.bz2
+# Source6-md5:	0c3dca9f50e2226e634f41ef4be12a65
 Source7:	http://iidea.pl/~paweln/tlum/%{name}-doki.tar.bz2
 # Source7-md5:	2d85f0f9f8408cf6caab9f9bc8f68657
 Source8:	%{name}-linux.sh
@@ -233,7 +233,6 @@ Requires:	pam >= 0.77.3
 Requires:	rc-scripts >= 0.2.0
 Requires:	sh-utils
 Requires:	ucspi-tcp >= 0.88
-Conflicts:	qmail-client
 Provides:	group(nofiles)
 Provides:	group(qmail)
 Provides:	qmail-server
@@ -259,6 +258,7 @@ Obsoletes:	smail
 Obsoletes:	smtpdaemon
 Obsoletes:	ssmtp
 Obsoletes:	zmailer
+Conflicts:	qmail-client
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_sysconfdir	/etc/qmail
@@ -324,10 +324,8 @@ URL:		http://www.qmail.org/
 Requires(post):	/bin/hostname
 Requires(post):	/bin/sed
 Requires(post):	fileutils
-Conflicts:	qmail
 Provides:	qmailmta
 Provides:	smtpdaemon
-Obsoletes:	smtpdaemon
 Obsoletes:	exim
 Obsoletes:	masqmail
 Obsoletes:	omta
@@ -336,7 +334,9 @@ Obsoletes:	sendmail
 Obsoletes:	sendmail-cf
 Obsoletes:	sendmail-doc
 Obsoletes:	smail
+Obsoletes:	smtpdaemon
 Obsoletes:	zmailer
+Conflicts:	qmail
 
 %description client
 qmail is a small, fast, secure replacement for the SENDMAIL package,
@@ -380,11 +380,11 @@ Requires:	%{name} = %{version}
 Requires:	bzip2
 Requires:	logrotate
 Provides:	pop3daemon
+Obsoletes:	imap-pop
 Obsoletes:	qpopper
 Obsoletes:	qpopper6
-Obsoletes:	imap-pop
-Obsoletes:	solid-pop3d-ssl
 Obsoletes:	solid-pop3d
+Obsoletes:	solid-pop3d-ssl
 
 %description pop3
 POP3 server for qmail.
