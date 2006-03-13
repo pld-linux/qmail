@@ -16,8 +16,7 @@ programs that (ultimately) invoke qmail-queue.  If you are running
 netqmail-1.05, or otherwise have the qmailqueue patch installed, you
 can invoke it like this:
 
-65.172.240.33-62:allow,RELAYCLIENT="",DKSIGN="/etc/domainkeys/dog",QMAILQUEUE="b
-in/qmail-dk"
+65.172.240.33-62:allow,RELAYCLIENT="",DKSIGN="/etc/domainkeys/dog",QMAILQUEUE="bin/qmail-dk"
 192.203.178.:allow,DKVERIFY="DEGIJKfh",QMAILQUEUE="bin/qmail-dk"
 
 Or, if you don't, then you have a little bit of extra work to do:

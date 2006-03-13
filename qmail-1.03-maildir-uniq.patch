@@ -20,7 +20,7 @@ In Maildir/tmp:
 In Maildir/new:
   time.IinodeVdeviceMmicrosecondsPpid.host
 
-Additionally, this patch further comforms to the revised 
+Additionally, this patch further conforms to the revised 
 Maildir protocol by looking through the hostname for 
 instances of '/' and ':', replacing them with "057" and 
 "072", respectively, when writing it to disk.
