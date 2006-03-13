@@ -820,7 +820,7 @@ for i in smtp qmtp qmqp; do
 	fi
 done
 
-echo "The QMTP and QMQP protocols are supported, and can be started as:"
+echo "The QMTP and QMQP protocols are available, and can be started as:"
 echo "ln -s %{supervise}/qmtpd /service/qmail-qmtpd"
 echo "ln -s %{supervise}/qmqpd /service/qmail-qmqpd"
 echo
