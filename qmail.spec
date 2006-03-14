@@ -204,7 +204,7 @@ Patch226:	%{name}-dkeys-config.patch
 
 URL:		http://www.qmail.org/
 BuildRequires:	groff
-%{?with_home_etc:BuildRequires: home-etc-devel >= 1.0.8}
+%{?with_home_etc:BuildRequires:	home-etc-devel >= 1.0.8}
 BuildRequires:	libdomainkeys-devel >= 0.66
 BuildRequires:	pam-devel
 BuildRequires:	ucspi-tcp >= 0.88
@@ -213,7 +213,7 @@ BuildRequires:	openssl-devel >= 0.9.7d
 Requires:	crondaemon
 Requires:	openssl-tools >= 0.9.7d
 %endif
-BuildRequires:	rpmbuild(macros) >= 1.159
+BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post):	/bin/hostname
 Requires(post):	/bin/id
 Requires(post):	/bin/sed
@@ -868,14 +868,10 @@ fi
 /sbin/chkconfig --del qmail
 
 # this should kill the old instance running on inetd
-if [ -f /var/lock/subsys/rc-inetd ]; then
-	/etc/rc.d/init.d/rc-inetd reload
-fi
+%service -q rc-inetd reload
 
 %triggerpostun -- %{name}-pop3 <= 1.03-56.12
-if [ -f /var/lock/subsys/rc-inetd ]; then
-	/etc/rc.d/init.d/rc-inetd reload
-fi
+%service -q rc-inetd reload
 
 %postun
 # If package is being erased for the last time.
@@ -977,32 +973,32 @@ fi
 %attr(644,qmailr,qmail) %config(noreplace) %verify(not md5 mtime size) %ghost %{varqmail}/queue/lock/tcpto
 %attr(622,qmails,qmail) %config(noreplace) %verify(not md5 mtime size) %ghost %{varqmail}/queue/lock/trigger
 %attr(644,root,nofiles) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/alias/.qmail-*
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/control/defaultdomain
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/control/locals
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/control/me
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/control/plusdomain
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/control/rcpthosts
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/control/defaultdomain
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/control/locals
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/control/me
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/control/plusdomain
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/control/rcpthosts
 %if %{with tls}
 %ghost %{_sysconfdir}/control/rsa512.pem
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/control/servercert.cnf
-%attr(640,qmaild,qmail) %ghost %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/control/servercert.pem
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/control/servercert.cnf
+%attr(640,qmaild,qmail) %ghost %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/control/servercert.pem
 %ghost %{_sysconfdir}/control/clientcert.pem
 %endif
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/control/defaultdelivery
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/control/defaultdelivery
 %config(noreplace) %verify(not mtime) %{_sysconfdir}/control/conf-common
 %config(noreplace) %verify(not mtime) %{_sysconfdir}/control/conf-qmqpd
 %config(noreplace) %verify(not mtime) %{_sysconfdir}/control/conf-qmtpd
 %config(noreplace) %verify(not mtime) %{_sysconfdir}/control/conf-send
 %config(noreplace) %verify(not mtime) %{_sysconfdir}/control/conf-smtpd
 %config(noreplace) %verify(not mtime) %{_sysconfdir}/control/conf-rblsmtpd
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/users/*
-%config(noreplace) %verify(not size mtime md5) /etc/aliases
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/users/*
+%config(noreplace) %verify(not md5 mtime size) /etc/aliases
 /etc/mail/aliases
 %config(noreplace) %verify(not mtime) /etc/logrotate.d/qmail
-%attr(755,root,root) %config(noreplace) %verify(not size mtime md5) /etc/profile.d/*
+%attr(755,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/profile.d/*
 %attr(754,root,root) /etc/rc.d/init.d/*
-%attr(644,root,root) %config(noreplace) %verify(not size mtime md5) /etc/pam.d/checkpass
-%attr(644,root,root) %config(noreplace) %verify(not size mtime md5) /etc/security/checkpass.allow
+%attr(644,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/checkpass
+%attr(644,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/security/checkpass.allow
 %attr(755,root,root) %{_libdir}/qmail/bouncesaying
 %attr(755,root,root) %{_libdir}/qmail/condredirect
 %attr(4755,root,root) %{_libdir}/qmail/checkpass
@@ -1070,12 +1066,12 @@ fi
 %endif
 
 %{tcprules}/Makefile.qmail
-%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{tcprules}/tcp.qmail-smtp
-%attr(640,qmaild,root) %config(noreplace) %verify(not size mtime md5) %ghost %{tcprules}/tcp.qmail-smtp.cdb
-%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{tcprules}/tcp.qmail-qmtp
-%attr(640,qmaild,root) %config(noreplace) %verify(not size mtime md5) %ghost %{tcprules}/tcp.qmail-qmtp.cdb
-%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{tcprules}/tcp.qmail-qmqp
-%attr(640,qmaild,root) %config(noreplace) %verify(not size mtime md5) %ghost %{tcprules}/tcp.qmail-qmqp.cdb
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{tcprules}/tcp.qmail-smtp
+%attr(640,qmaild,root) %config(noreplace) %verify(not md5 mtime size) %ghost %{tcprules}/tcp.qmail-smtp.cdb
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{tcprules}/tcp.qmail-qmtp
+%attr(640,qmaild,root) %config(noreplace) %verify(not md5 mtime size) %ghost %{tcprules}/tcp.qmail-qmtp.cdb
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{tcprules}/tcp.qmail-qmqp
+%attr(640,qmaild,root) %config(noreplace) %verify(not md5 mtime size) %ghost %{tcprules}/tcp.qmail-qmqp.cdb
 
 %attr(755,qmaill,root) %dir /var/log/qmail
 %attr(750,root,root) %dir /var/log/archiv/qmail
