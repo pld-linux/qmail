@@ -1,0 +1,88 @@
+--- qmail-1.03-clean/Makefile	Mon Jun 15 11:53:16 1998
++++ qmail-1.03/Makefile	Fri Mar 28 13:44:38 2003
+@@ -1535,13 +1535,13 @@
+ load qmail-smtpd.o rcpthosts.o commands.o timeoutread.o \
+ timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o received.o \
+ date822fmt.o now.o qmail.o cdb.a fd.a wait.a datetime.a getln.a \
+-open.a sig.a case.a env.a stralloc.a alloc.a substdio.a error.a str.a \
++open.a sig.a case.a env.a stralloc.a alloc.a strerr.a substdio.a error.a str.a \
+ fs.a auto_qmail.o socket.lib
+ 	./load qmail-smtpd rcpthosts.o commands.o timeoutread.o \
+ 	timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o \
+ 	received.o date822fmt.o now.o qmail.o cdb.a fd.a wait.a \
+ 	datetime.a getln.a open.a sig.a case.a env.a stralloc.a \
+-	alloc.a substdio.a error.a str.a fs.a auto_qmail.o  `cat \
++	alloc.a strerr.a substdio.a error.a str.a fs.a auto_qmail.o  `cat \
+ 	socket.lib`
+ 
+ qmail-smtpd.0: \
+--- qmail-1.03-clean/qmail-smtpd.c	Mon Jun 15 11:53:16 1998
++++ qmail-1.03/qmail-smtpd.c	Fri Mar 28 13:46:05 2003
+@@ -23,6 +23,7 @@
+ #include "timeoutread.h"
+ #include "timeoutwrite.h"
+ #include "commands.h"
++#include "strerr.h"
+ 
+ #define MAXHOPS 100
+ unsigned int databytes = 0;
+@@ -50,6 +51,7 @@
+ void straynewline() { out("451 See http://pobox.com/~djb/docs/smtplf.html.\r\n"); flush(); _exit(1); }
+ 
+ void err_bmf() { out("553 sorry, your envelope sender is in my badmailfrom list (#5.7.1)\r\n"); }
++void err_brt() { out("553 sorry, this recipient is in my badrecipientto list (#5.7.1)\r\n"); }
+ void err_nogateway() { out("553 sorry, that domain isn't in my list of allowed rcpthosts (#5.7.1)\r\n"); }
+ void err_unimpl() { out("502 unimplemented (#5.5.1)\r\n"); }
+ void err_syntax() { out("555 syntax error (#5.5.4)\r\n"); }
+@@ -96,6 +98,9 @@
+ int bmfok = 0;
+ stralloc bmf = {0};
+ struct constmap mapbmf;
++int brtok = 0;
++stralloc brt = {0};
++struct constmap mapbrt;
+ 
+ void setup()
+ {
+@@ -116,6 +121,11 @@
+   if (bmfok == -1) die_control();
+   if (bmfok)
+     if (!constmap_init(&mapbmf,bmf.s,bmf.len,0)) die_nomem();
++
++  brtok = control_readfile(&brt,"control/badrcptto",0);
++  if (brtok == -1) die_control();
++  if (brtok)
++    if (!constmap_init(&mapbrt,brt.s,brt.len,0)) die_nomem();
+  
+   if (control_readint(&databytes,"control/databytes") == -1) die_control();
+   x = env_get("DATABYTES");
+@@ -208,6 +218,17 @@
+   return 0;
+ }
+ 
++int brtcheck()
++{
++  int j;
++  if (!brtok) return 0;
++  if (constmap(&mapbrt,addr.s,addr.len - 1)) return 1;
++  j = byte_rchr(addr.s,addr.len,'@');
++  if (j < addr.len)
++    if (constmap(&mapbrt,addr.s + j,addr.len - j - 1)) return 1;
++  return 0;
++}
++
+ int addrallowed()
+ {
+   int r;
+@@ -258,6 +279,11 @@
+   }
+   else
+     if (!addrallowed()) { err_nogateway(); return; }
++  if (!env_get("RELAYCLIENT") && brtcheck()) {
++    strerr_warn4("qmail-smtpd: badrcptto: ",addr.s," at ",remoteip,0);
++    err_brt();
++    return;
++  }
+   if (!stralloc_cats(&rcptto,"T")) die_nomem();
+   if (!stralloc_cats(&rcptto,addr.s)) die_nomem();
+   if (!stralloc_0(&rcptto)) die_nomem();
