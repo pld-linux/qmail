@@ -32,7 +32,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	59.4
+Release:	59.6
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -86,7 +86,7 @@ Patch28:	%{name}-1.03.errno.patch
 # #29 local-tab.patch
 
 # discards doublebounces without queuing them
-# http://qmail.zoo-gate.fi/doublebounce-trim.patch
+# http://www.qmail.org/doublebounce-trim.patch
 Patch100:	%{name}-doublebounce-trim.patch
 
 # the envelope sender is a valid DNS name :
@@ -201,6 +201,9 @@ Patch223:	%{name}-0.95-liberal-lf-rediff.patch
 Patch224:	http://www.qmail.org/%{name}-1.03-dk-0.53.patch
 Patch225:	%{name}-dkeys-shared.patch
 Patch226:	%{name}-dkeys-config.patch
+
+# badrcptto v1.02 http://patch.be/qmail/
+Patch227:	%{name}-badrcptto.patch
 
 URL:		http://www.qmail.org/
 BuildRequires:	groff
@@ -460,6 +463,7 @@ zcat %{PATCH210} | sed '123,150d' | patch -p0
 %patch225 -p1 -b .dk-shared
 %patch226 -p1 -b .dk-conf
 %endif
+%patch227 -p1 -b .badrcptto
 
 mkdir -p qhpsi
 tar zxvf %{SOURCE17} -C qhpsi
