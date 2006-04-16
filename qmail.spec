@@ -203,6 +203,7 @@ Patch225:	%{name}-dkeys-shared.patch
 Patch226:	%{name}-dkeys-config.patch
 
 # badrcptto v1.02 http://patch.be/qmail/
+# TODO: use this instead: http://www.iecc.com/bad-rcpt-noisy-patch.txt
 Patch227:	%{name}-badrcptto.patch
 
 URL:		http://www.qmail.org/
@@ -709,85 +710,15 @@ rm -rf $RPM_BUILD_ROOT
 
 %pre
 # Add few users and groups
-if [ -n "`/usr/bin/getgid nofiles`" ]; then
-	if [ "`/usr/bin/getgid nofiles`" != "81" ]; then
-		echo "Error: group nofiles doesn't have gid=81. Correct this before installing qmail." 1>&2
-		exit 1
-	fi
-else
-	/usr/sbin/groupadd -g 81 nofiles 1>&2
-fi
-if [ -n "`/usr/bin/getgid qmail`" ]; then
-	if [ "`/usr/bin/getgid qmail`" != "82" ]; then
-		echo "Error: group qmail doesn't have gid=82. Correct this before installing qmail." 1>&2
-		exit 1
-	fi
-else
-	/usr/sbin/groupadd -g 82 qmail 1>&2
-fi
-if [ -n "`/bin/id -u qmaild 2>/dev/null`" ]; then
-	if [ "`/bin/id -u qmaild`" != "81" ]; then
-		echo "Error: user qmaild doesn't have uid=81. Correct this before installing qmail." 1>&2
-		exit 1
-	fi
-else
-	/usr/sbin/useradd -g nofiles -d %{varqmail} -u 81 -s /bin/false \
-		qmaild 1>&2
-fi
-if [ -n "`/bin/id -u alias 2>/dev/null`" ]; then
-	if [ "`/bin/id -u alias`" != "82" ]; then
-		echo "Error: user alias doesn't have uid=82. Correct this before installing qmail." 1>&2
-		exit 1
-	fi
-else
-	/usr/sbin/useradd -g nofiles -d %{varqmail}/alias -u 82 \
-		-s /bin/false alias 1>&2
-fi
-if [ -n "`/bin/id -u qmailq 2>/dev/null`" ]; then
-	if [ "`/bin/id -u qmailq`" != "83" ]; then
-		echo "Error: user qmailq doesn't have uid=83. Correct this before installing qmail." 1>&2
-		exit 1
-	fi
-else
-	/usr/sbin/useradd -g qmail -d %{varqmail} -u 83 -s /bin/false \
-		qmailq 1>&2
-fi
-if [ -n "`/bin/id -u qmailr 2>/dev/null`" ]; then
-	if [ "`/bin/id -u qmailr`" != "84" ]; then
-		echo "Error: user qmailr doesn't have uid=84. Correct this before installing qmail." 1>&2
-		exit 1
-	fi
-else
-	/usr/sbin/useradd -g qmail -d %{varqmail} -u 84 -s /bin/false \
-		qmailr 1>&2
-fi
-if [ -n "`/bin/id -u qmails 2>/dev/null`" ]; then
-	if [ "`/bin/id -u qmails`" != "85" ]; then
-		echo "Error: user qmails doesn't have uid=85. Correct this before installing qmail." 1>&2
-		exit 1
-	fi
-else
-	/usr/sbin/useradd -g qmail -d %{varqmail} -u 85 -s /bin/false \
-		qmails 1>&2
-fi
-if [ -n "`/bin/id -u qmaill 2>/dev/null`" ]; then
-	if [ "`/bin/id -u qmaill`" != "86" ]; then
-		echo "Error: user qmaill doesn't have uid=86. Correct this before installing qmail." 1>&2
-		exit 1
-	fi
-else
-	/usr/sbin/useradd -g nofiles -d %{varqmail} -u 86 -s /bin/false \
-		qmaill 1>&2
-fi
-if [ -n "`/bin/id -u qmailp 2>/dev/null`" ]; then
-	if [ "`/bin/id -u qmailp`" != "87" ]; then
-		echo "Error: user qmailp doesn't have uid=87. Correct this before installing qmail." 1>&2
-		exit 1
-	fi
-else
-	/usr/sbin/useradd -g nofiles -d %{varqmail} -u 87 -s /bin/false \
-		qmailp 1>&2
-fi
+%groupadd -g 81 nofiles
+%groupadd -g 82 qmail
+%useradd -g nofiles -d %{varqmail} -u 81 -s /bin/false qmaild
+%useradd -g nofiles -d %{varqmail}/alias -u 82 -s /bin/false alias
+%useradd -g qmail -d %{varqmail} -u 83 -s /bin/false qmailq
+%useradd -g qmail -d %{varqmail} -u 84 -s /bin/false qmailr
+%useradd -g qmail -d %{varqmail} -u 85 -s /bin/false qmails
+%useradd -g nofiles -d %{varqmail} -u 86 -s /bin/false qmaill
+%useradd -g nofiles -d %{varqmail} -u 87 -s /bin/false qmailp
 
 %post
 if [ ! -f /etc/mail/mailname -a -d /etc/mail ]; then
