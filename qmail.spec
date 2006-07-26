@@ -676,7 +676,7 @@ install %{SOURCE21} .
 
 %if %{with tls}
 install %{SOURCE22} $RPM_BUILD_ROOT%{_sysconfdir}/control/servercert.pem
-> $RPM_BUILD_ROOT/%{_sysconfdir}/control/rsa512.pem
+> $RPM_BUILD_ROOT%{_sysconfdir}/control/rsa512.pem
 %endif
 
 bzip2 -dc %{SOURCE23} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
