@@ -89,7 +89,7 @@ Patch28:	%{name}-1.03.errno.patch
 # http://www.qmail.org/doublebounce-trim.patch
 Patch100:	%{name}-doublebounce-trim.patch
 
-# the envelope sender is a valid DNS name :
+# the envelope sender is a valid DNS name:
 # http://lsc.kva.hu/dl/qmail-1.03-mfcheck.3.patch
 # rediff because of tarpit/tls and other patches
 Patch101:	%{name}-1.03-mfcheck.glen.patch
@@ -932,8 +932,8 @@ fi
 %config(noreplace) %verify(not mtime) /etc/logrotate.d/qmail
 %attr(755,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/profile.d/*
 %attr(754,root,root) /etc/rc.d/init.d/*
-%attr(644,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/checkpass
-%attr(644,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/security/checkpass.allow
+%config(noreplace) %verify(not md5 mtime size) /etc/pam.d/checkpass
+%config(noreplace) %verify(not md5 mtime size) /etc/security/checkpass.allow
 %attr(755,root,root) %{_libdir}/qmail/bouncesaying
 %attr(755,root,root) %{_libdir}/qmail/condredirect
 %attr(4755,root,root) %{_libdir}/qmail/checkpass
