@@ -129,7 +129,7 @@ Patch209:	%{name}-qmailqueue-docs-qhpsi.patch
 Patch215:	http://www.qmail.org/%{name}-1.03-qmtpc.patch
 
 # Large TCP DNS replies confuse it sometimes
-Patch12:	http://www.ckdhr.com/ckd/%{name}-dns.patch
+Patch12:	%{name}-dns.patch
 
 # Fix for tabs in .qmail bug noted at
 # http://www.ornl.gov/its/archives/mailing-lists/qmail/2000/10/msg00696.html
@@ -156,11 +156,11 @@ Patch105:	%{name}-sendmail-flagf.patch
 
 # Apply patch for local timestamps.
 # This will make the emails headers be written in localtime rather than GMT
-Patch203:	ftp://ftp.pipeline.com.au/pipeint/sources/linux/WebMail/%{name}-date-localtime.patch.txt
+Patch203:	%{name}-date-localtime.patch.txt
 
 # Apply patch to trim large bouncing messages down greatly reduces traffic
 # when multiple bounces occur (As in with spam)
-Patch204:	ftp://ftp.pipeline.com.au/pipeint/sources/linux/WebMail/%{name}-limit-bounce-size.patch.txt
+Patch204:	%{name}-limit-bounce-size.patch.txt
 
 # Apply patch to add ESMTP SIZE support to qmail-smtpd
 # This helps your server to be able to reject excessively large messages
