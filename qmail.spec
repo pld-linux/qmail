@@ -368,7 +368,7 @@ Maildirmake jest narzêdziem do zak³adania folderów w formacie Maildir.
 Summary:	perl scripts for qmail
 Summary(pl):	Skrypty perlowe dla qmaila
 Group:		Applications/Mail
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description perl
 Perl scripts for qmail.
@@ -380,7 +380,7 @@ Skrypty perlowe dla qmaila.
 Summary:	POP3 server for qmail
 Summary(pl):	Serwer POP3 dla qmaila
 Group:		Networking/Daemons
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 Requires:	bzip2
 Requires:	logrotate
 Provides:	pop3daemon
