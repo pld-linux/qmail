@@ -1,0 +1,131 @@
+--- qmail-send-1.03.c	Mon Jun 15 11:53:16 1998
++++ qmail-send.c	Sat Jul 25 21:45:54 1998
+@@ -1,3 +1,11 @@
++/* 
++ * qmail-send.c v1.03 1998/06/15
++ *
++ * Amended Nick Leverton <leveret@warren.demon.co.uk> 1998/05/03 to
++ * provide dynamic hold/release for local and remote message queues
++ * (revision mark "NJL")
++ */
++
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include "readwrite.h"
+@@ -62,6 +70,14 @@
+ #define CHANNELS 2
+ char *chanaddr[CHANNELS] = { "local/", "remote/" };
+ char *chanstatusmsg[CHANNELS] = { " local ", " remote " };
++char *chanjobsheldmsg[CHANNELS] = {	/* NJL 1998/05/03 */
++  "local deliveries temporarily held\n"
++, "remote deliveries temporarily held\n"
++};
++char *chanjobsunheldmsg[CHANNELS] = {	/* NJL 1998/05/03 */
++  "local deliveries resumed\n"
++, "remote deliveries resumed\n"
++};
+ char *tochan[CHANNELS] = { " to local ", " to remote " };
+ int chanfdout[CHANNELS] = { 1, 3 };
+ int chanfdin[CHANNELS] = { 2, 4 };
+@@ -782,6 +798,7 @@
+ unsigned long masterdelid = 1;
+ unsigned int concurrency[CHANNELS] = { 10, 20 };
+ unsigned int concurrencyused[CHANNELS] = { 0, 0 };
++unsigned int holdjobs[CHANNELS] = { 0, 0 }; /* Booleans: hold deliveries NJL 1998/05/03 */
+ struct del *d[CHANNELS];
+ stralloc dline[CHANNELS];
+ char delbuf[2048];
+@@ -796,6 +813,8 @@
+     strnum3[fmt_ulong(strnum3,(unsigned long) concurrency[c])] = 0;
+     log2(chanstatusmsg[c],strnum2);
+     log2("/",strnum3);
++    if (holdjobs[c])	/*NJL*/
++     log1(" (held)");	/*NJL*/
+   }
+   if (flagexitasap) log1(" exitasap");
+   log1("\n");
+@@ -822,7 +841,7 @@
+ {
+  int c;
+  for (c = 0;c < CHANNELS;++c)
+-   if (flagspawnalive[c]) /* if dead, nothing we can do about its jobs */
++   if (flagspawnalive[c] && !holdjobs[c]) /* if dead or held /NJL/, nothing we can do about its jobs */
+      if (concurrencyused[c]) return 0;
+  return 1;
+ }
+@@ -830,7 +849,7 @@
+ int del_avail(c)
+ int c;
+ {
+-  return flagspawnalive[c] && comm_canwrite(c) && (concurrencyused[c] < concurrency[c]);
++  return flagspawnalive[c] && comm_canwrite(c) && !holdjobs[c] && (concurrencyused[c] < concurrency[c]);	/* NJL 1998/07/24 */
+ }
+ 
+ void del_start(j,mpos,recip)
+@@ -843,6 +862,7 @@
+ 
+  c = jo[j].channel;
+  if (!flagspawnalive[c]) return;
++ if (holdjobs[c]) return;	/* NJL 1998/05/03 */
+  if (!comm_canwrite(c)) return;
+ 
+  for (i = 0;i < concurrency[c];++i) if (!d[c][i].used) break;
+@@ -1445,6 +1465,8 @@
+  if (control_readint(&lifetime,"control/queuelifetime") == -1) return 0;
+  if (control_readint(&concurrency[0],"control/concurrencylocal") == -1) return 0;
+  if (control_readint(&concurrency[1],"control/concurrencyremote") == -1) return 0;
++ if (control_readint(&holdjobs[0],"control/holdlocal") == -1) return 0; /*NJL*/
++ if (control_readint(&holdjobs[1],"control/holdremote") == -1) return 0;/*NJL*/
+  if (control_rldef(&envnoathost,"control/envnoathost",1,"envnoathost") != 1) return 0;
+  if (control_rldef(&bouncefrom,"control/bouncefrom",0,"MAILER-DAEMON") != 1) return 0;
+  if (control_rldef(&bouncehost,"control/bouncehost",1,"bouncehost") != 1) return 0;
+@@ -1475,6 +1497,9 @@
+ void regetcontrols()
+ {
+  int r;
++ int c;	/*NJL*/
++ int newholdjobs[CHANNELS] = { 0, 0 };	/*NJL*/
++ int runasap = 0;	/*Flag: do a mail kick - NJL 1998-05-05 */
+ 
+  if (control_readfile(&newlocals,"control/locals",1) != 1)
+   { log1("alert: unable to reread control/locals\n"); return; }
+@@ -1482,6 +1507,30 @@
+  if (r == -1)
+   { log1("alert: unable to reread control/virtualdomains\n"); return; }
+ 
++/* Add "holdlocal/holdremote" flags - NJL 1998/05/03 */
++ if (control_readint(&newholdjobs[0],"control/holdlocal") == -1)
++  { log1("alert: unable to reread control/holdlocal\n"); return; }
++ if (control_readint(&newholdjobs[1],"control/holdremote") == -1)
++  { log1("alert: unable to reread control/holdremote\n"); return; }
++
++ for (c=0; c<CHANNELS; c++)
++  {
++   if (holdjobs[c] != newholdjobs[c])
++    {
++     holdjobs[c] = newholdjobs[c];
++     if (holdjobs[c])
++       log1(chanjobsheldmsg[c]);
++     else
++      {
++       log1(chanjobsunheldmsg[c]);
++       runasap = 1;
++      }
++    }
++  }
++  if (runasap)
++    flagrunasap = 1;
++  /* End NJL patch */
++
+  constmap_free(&maplocals);
+  constmap_free(&mapvdoms);
+ 
+@@ -1556,6 +1605,8 @@
+    if (concurrency[c] > u) concurrency[c] = u;
+    numjobs += concurrency[c];
+   }
++
++ log1("qmail-send v1.03-NJL/19980725 starting\n");	/* Tag startup msg - NJL */
+ 
+  fnmake_init();
+ 
