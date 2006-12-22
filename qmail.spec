@@ -143,7 +143,8 @@ Patch217:	http://www.qmail.org/big-concurrency.patch
 Patch202:	http://www.suspectclass.com/~sgifford/qmail/%{name}-1.03-0.0.0.0-0.2.patch
 
 # holdremote support
-Patch210:	http://www.leverton.org/%{name}-hold-1.03.pat.gz
+# http://www.leverton.org/qmail-hold-1.03.pat.gz
+Patch210:	%{name}-hold.patch
 
 # sendmail's -f option sets a default From: header, and so should qmail's emulation.
 # http://david.acz.org/software/sendmail-flagf.patch
@@ -442,7 +443,7 @@ Serwer POP3 dla qmaila.
 
 # holdremote
 # pre-process to remove the header added upstream
-zcat %{PATCH210} | sed '123,150d' | patch -p0
+cat %{PATCH210} | sed '123,150d' | patch -p0
 
 %patch211 -p0 -b .netscape-progress
 %patch212 -p0 -b .sendmail-ignore-N
