@@ -1,4 +1,5 @@
 # TODO
+# - CC in checkpass
 # - ipv6 patches do not apply (i don't need)
 # - relayclient-external does not apply
 # - maildir++ quota patch
@@ -32,7 +33,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	60
+Release:	61
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -45,8 +46,8 @@ Source4:	checkpass-1.2.tar.gz
 # Source4-md5:	6818629dc74737f3ca33ca97ab4ffcc4
 Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
 # Source5-md5:	43f915c104024e6f33a5b3ff52dfb75b
-Source6:	http://glen.alkohol.ee/pld/qmail/%{name}-conf-20061031.tar.bz2
-# Source6-md5:	3d48be8347fc3b4dec030171742eea70
+Source6:	http://glen.alkohol.ee/pld/qmail/%{name}-conf-20061222.tar.bz2
+# Source6-md5:	b844f22a9134ee16ee7a9f81c223ac80
 Source7:	http://iidea.pl/~paweln/tlum/%{name}-doki.tar.bz2
 # Source7-md5:	2d85f0f9f8408cf6caab9f9bc8f68657
 Source8:	%{name}-linux.sh
@@ -888,11 +889,11 @@ fi
 # QHPSI License requires all files to be distributed.
 %doc qhpsi
 
-%attr(755,root,root) %dir /etc/mail
-%attr(755,root,root) %dir %{_sysconfdir}
+%dir /etc/mail
+%dir %{_sysconfdir}
 %attr(2755,alias,nofiles) %dir %{_sysconfdir}/alias
 %attr(755,root,qmail) %dir %{_sysconfdir}/control
-%attr(755,root,root) %dir %{_sysconfdir}/users
+%dir %{_sysconfdir}/users
 %attr(755,root,qmail) %dir %{_libdir}/qmail
 %attr(755,root,qmail) %dir %{varqmail}
 %attr(750,qmailq,qmail) %dir %{varqmail}/queue
@@ -1011,7 +1012,7 @@ fi
 
 %attr(755,qmaill,root) %dir /var/log/qmail
 %attr(750,root,root) %dir /var/log/archiv/qmail
-%attr(755,root,root) %dir %{supervise}
+%dir %{supervise}
 
 %attr(1755,root,root) %dir %{supervise}/smtpd
 %attr(755,root,root) %{supervise}/smtpd/run
@@ -1097,11 +1098,11 @@ fi
 %doc {BLURB*,README,SECURITY,THANKS,THOUGHTS,TODO,VERSION}
 %doc qmail-client.html
 
-%attr(755,root,root) %dir /etc/mail
-%attr(755,root,root) %dir %{_sysconfdir}
-%attr(755,root,root) %dir %{_sysconfdir}/control
-%attr(755,root,root) %dir %{_libdir}/qmail
-%attr(755,root,root) %dir %{varqmail}
+%dir /etc/mail
+%dir %{_sysconfdir}
+%dir %{_sysconfdir}/control
+%dir %{_libdir}/qmail
+%dir %{varqmail}
 %attr(755,root,root) %{varqmail}/bin
 %attr(755,root,root) %{varqmail}/control
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/control/defaultdomain
