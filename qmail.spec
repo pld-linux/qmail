@@ -30,7 +30,7 @@
 %define	qhpsi_ver	0.1.7
 #
 Summary:	qmail Mail Transport Agent
-Summary(pl):	qmail - serwer pocztowy (MTA)
+Summary(pl.UTF-8):   qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
 Release:	61
@@ -298,33 +298,33 @@ Following scripts and programs have been added:
   but very significant differences between SENDMAIL and QMAIL and the
   programs that interact with them.
 
-%description -l pl
-qmail jest ma³±, szybk± oraz bezpieczn± alternatyw± do sendmaila,
-która umo¿liwia otrzymywanie, przesy³anie oraz wysy³anie poczty
-elektronicznej. Ten qmail dodatkowo wspiera protokó³ IPv6.
+%description -l pl.UTF-8
+qmail jest maÅ‚Ä…, szybkÄ… oraz bezpiecznÄ… alternatywÄ… do sendmaila,
+ktÃ³ra umoÅ¼liwia otrzymywanie, przesyÅ‚anie oraz wysyÅ‚anie poczty
+elektronicznej. Ten qmail dodatkowo wspiera protokÃ³Å‚ IPv6.
 
-Zosta³y dodane do tego pakietu nastêpuj±ce skrypty i programy:
-- checkpass - interfejs do sprawdzania hase³,
+ZostaÅ‚y dodane do tego pakietu nastÄ™pujÄ…ce skrypty i programy:
+- checkpass - interfejs do sprawdzania haseÅ‚,
 - qmail-fix - program do sprawdzania oraz naprawiania struktury
   kolejki pocztowej qmail-a,
-%{?with_msglog:- qmail-msglog - zaawansowane monitorowanie listów,}
-- qmail-qsanity - sprawdza kolejkê pocztow± qmail-a,
-- qmail-lint - sprawdza konfiguracjê qmail-a,
-- tarpit - kolejne narzêdzie do walki ze SPAM-em,
-- Obs³uga TLS/SSL. Je¶li chcesz tego u¿ywaæ musisz mieæ certyfikat w
+%{?with_msglog:- qmail-msglog - zaawansowane monitorowanie listÃ³w,}
+- qmail-qsanity - sprawdza kolejkÄ™ pocztowÄ… qmail-a,
+- qmail-lint - sprawdza konfiguracjÄ™ qmail-a,
+- tarpit - kolejne narzÄ™dzie do walki ze SPAM-em,
+- ObsÅ‚uga TLS/SSL. JeÅ›li chcesz tego uÅ¼ywaÄ‡ musisz mieÄ‡ certyfikat w
   %{_sysconfdir}/control/servercert.pem.
 - QHPSI v%{qhpsi_ver} - The Qmail High Performance Scanner Interface
   http://www.fehcom.de/qmail/qmail.html
 %{?with_dkeys:- domainkeys - http://antispam.yahoo.com/domainkeys}
 
 ======================================================================
-- *** Uwaga! Przeczytaj uwa¿nie dokumentacjê do tego pakietu, poniewa¿
-  istniej± ma³e, ale znacz±ce ró¿nice pomiêdzy qmailem oraz sendmailem i
-  programami, które wspó³pracuj± z nimi.
+- *** Uwaga! Przeczytaj uwaÅ¼nie dokumentacjÄ™ do tego pakietu, poniewaÅ¼
+  istniejÄ… maÅ‚e, ale znaczÄ…ce rÃ³Å¼nice pomiÄ™dzy qmailem oraz sendmailem i
+  programami, ktÃ³re wspÃ³Å‚pracujÄ… z nimi.
 
 %package client
 Summary:	qmail Mail Transport Agent - null client
-Summary(pl):	qmail - serwer pocztowy (MTA) - cienki klient
+Summary(pl.UTF-8):   qmail - serwer pocztowy (MTA) - cienki klient
 Group:		Networking/Daemons
 URL:		http://www.qmail.org/
 Requires(post):	/bin/hostname
@@ -349,38 +349,38 @@ qmail is a small, fast, secure replacement for the SENDMAIL package,
 which is the program that actually receives, routes, and delivers
 electronic mail. This qmail also support IPv6 protocol.
 
-%description client -l pl
-qmail jest ma³±, szybk± oraz bezpieczn± alternatyw± do sendmaila,
-która umo¿liwia otrzymywanie, przesy³anie oraz wysy³anie poczty
-elektronicznej. Ten qmail dodatkowo wspiera protokó³ IPv6.
+%description client -l pl.UTF-8
+qmail jest maÅ‚Ä…, szybkÄ… oraz bezpiecznÄ… alternatywÄ… do sendmaila,
+ktÃ³ra umoÅ¼liwia otrzymywanie, przesyÅ‚anie oraz wysyÅ‚anie poczty
+elektronicznej. Ten qmail dodatkowo wspiera protokÃ³Å‚ IPv6.
 
 %package maildirmake
 Summary:	maildirmake - tool for making qmails' Maildirs
-Summary(pl):	maildirmake - narzêdzie do zak³adania folerow Maildir
+Summary(pl.UTF-8):   maildirmake - narzÄ™dzie do zakÅ‚adania folerow Maildir
 Group:		Applications/Mail
 Conflicts:	courier-imap-maildirmake
 
 %description maildirmake
 Maildirmake is a tool for making mail folders in Maildir format.
 
-%description maildirmake -l pl
-Maildirmake jest narzêdziem do zak³adania folderów w formacie Maildir.
+%description maildirmake -l pl.UTF-8
+Maildirmake jest narzÄ™dziem do zakÅ‚adania folderÃ³w w formacie Maildir.
 
 %package perl
 Summary:	perl scripts for qmail
-Summary(pl):	Skrypty perlowe dla qmaila
+Summary(pl.UTF-8):   Skrypty perlowe dla qmaila
 Group:		Applications/Mail
 Requires:	%{name} = %{version}-%{release}
 
 %description perl
 Perl scripts for qmail.
 
-%description perl -l pl
+%description perl -l pl.UTF-8
 Skrypty perlowe dla qmaila.
 
 %package pop3
 Summary:	POP3 server for qmail
-Summary(pl):	Serwer POP3 dla qmaila
+Summary(pl.UTF-8):   Serwer POP3 dla qmaila
 Group:		Networking/Daemons
 Requires:	%{name} = %{version}-%{release}
 Requires:	bzip2
@@ -395,7 +395,7 @@ Obsoletes:	solid-pop3d-ssl
 %description pop3
 POP3 server for qmail.
 
-%description pop3 -l pl
+%description pop3 -l pl.UTF-8
 Serwer POP3 dla qmaila.
 
 %prep
