@@ -30,7 +30,7 @@
 %define	qhpsi_ver	0.1.7
 #
 Summary:	qmail Mail Transport Agent
-Summary(pl.UTF-8):   qmail - serwer pocztowy (MTA)
+Summary(pl.UTF-8):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
 Release:	61
@@ -324,7 +324,7 @@ Zostały dodane do tego pakietu następujące skrypty i programy:
 
 %package client
 Summary:	qmail Mail Transport Agent - null client
-Summary(pl.UTF-8):   qmail - serwer pocztowy (MTA) - cienki klient
+Summary(pl.UTF-8):	qmail - serwer pocztowy (MTA) - cienki klient
 Group:		Networking/Daemons
 URL:		http://www.qmail.org/
 Requires(post):	/bin/hostname
@@ -356,7 +356,7 @@ elektronicznej. Ten qmail dodatkowo wspiera protokół IPv6.
 
 %package maildirmake
 Summary:	maildirmake - tool for making qmails' Maildirs
-Summary(pl.UTF-8):   maildirmake - narzędzie do zakładania folerow Maildir
+Summary(pl.UTF-8):	maildirmake - narzędzie do zakładania folerow Maildir
 Group:		Applications/Mail
 Conflicts:	courier-imap-maildirmake
 
@@ -368,7 +368,7 @@ Maildirmake jest narzędziem do zakładania folderów w formacie Maildir.
 
 %package perl
 Summary:	perl scripts for qmail
-Summary(pl.UTF-8):   Skrypty perlowe dla qmaila
+Summary(pl.UTF-8):	Skrypty perlowe dla qmaila
 Group:		Applications/Mail
 Requires:	%{name} = %{version}-%{release}
 
@@ -380,7 +380,7 @@ Skrypty perlowe dla qmaila.
 
 %package pop3
 Summary:	POP3 server for qmail
-Summary(pl.UTF-8):   Serwer POP3 dla qmaila
+Summary(pl.UTF-8):	Serwer POP3 dla qmaila
 Group:		Networking/Daemons
 Requires:	%{name} = %{version}-%{release}
 Requires:	bzip2
