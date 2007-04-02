@@ -537,7 +537,7 @@ install %{SOURCE19} $RPM_BUILD_ROOT/etc/logrotate.d/qmail-pop3
 PV=`basename %{SOURCE6}`
 cd ${PV%.tar.bz2}
 
-install -d $RPM_BUILD_ROOT/var/log/{,archiv/}qmail
+install -d $RPM_BUILD_ROOT/var/log/{,archive/}qmail
 
 install conf-{common,{pop3,qm{q,t}p,{rbl,}smtp}d,send} $RPM_BUILD_ROOT%{_sysconfdir}/control
 
@@ -564,7 +564,7 @@ install -d $RPM_BUILD_ROOT/var/qmail/control/tlshosts
 install -d $RPM_BUILD_ROOT%{supervise}
 for d in '' log; do
 	for i in send smtpd qmtpd qmqpd pop3d; do
-		install -d $RPM_BUILD_ROOT/var/log/{,archiv/}qmail/$i/$d
+		install -d $RPM_BUILD_ROOT/var/log/{,archive/}qmail/$i/$d
 
 		install -d $RPM_BUILD_ROOT%{supervise}/$i/$d
 		install -d $RPM_BUILD_ROOT%{supervise}/$i/$d/supervise
@@ -578,7 +578,7 @@ for d in '' log; do
 	done
 done
 # rblsmtpd log is separate. smtpd/log logs there
-install -d $RPM_BUILD_ROOT/var/log/{,archiv/}qmail/rblsmtpd
+install -d $RPM_BUILD_ROOT/var/log/{,archive/}qmail/rblsmtpd
 
 install -d $RPM_BUILD_ROOT%{tcprules}
 install Makefile.qmail{,-pop3} $RPM_BUILD_ROOT%{tcprules}
