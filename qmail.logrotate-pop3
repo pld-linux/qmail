@@ -1,5 +1,5 @@
 /var/log/qmail/pop3d/@*.s {
-    olddir /var/log/archiv/qmail/pop3d
+    olddir /var/log/archive/qmail/pop3d
     create 640 qmaill qmail
     missingok
 
