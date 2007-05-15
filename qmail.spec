@@ -277,7 +277,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %description
 qmail is a small, fast, secure replacement for the SENDMAIL package,
 which is the program that actually receives, routes, and delivers
-electronic mail. This qmail also support IPv6 protocol.
+electronic mail. This qmail also supports IPv6 protocol.
 
 Following scripts and programs have been added:
 - checkpass - password-checking interface,
@@ -347,7 +347,7 @@ Conflicts:	qmail
 %description client
 qmail is a small, fast, secure replacement for the SENDMAIL package,
 which is the program that actually receives, routes, and delivers
-electronic mail. This qmail also support IPv6 protocol.
+electronic mail. This qmail also supports IPv6 protocol.
 
 %description client -l pl.UTF-8
 qmail jest małą, szybką oraz bezpieczną alternatywą do sendmaila,
