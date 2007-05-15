@@ -277,7 +277,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %description
 qmail is a small, fast, secure replacement for the SENDMAIL package,
 which is the program that actually receives, routes, and delivers
-electronic mail. This qmail also supports IPv6 protocol.
+electronic mail.%{?with_ipv6: This qmail also supports IPv6 protocol.}
 
 Following scripts and programs have been added:
 - checkpass - password-checking interface,
@@ -301,7 +301,7 @@ Following scripts and programs have been added:
 %description -l pl.UTF-8
 qmail jest małą, szybką oraz bezpieczną alternatywą do sendmaila,
 która umożliwia otrzymywanie, przesyłanie oraz wysyłanie poczty
-elektronicznej. Ten qmail dodatkowo wspiera protokół IPv6.
+elektronicznej.%{?with_ipv6: Ten qmail dodatkowo wspiera protokół IPv6.}
 
 Zostały dodane do tego pakietu następujące skrypty i programy:
 - checkpass - interfejs do sprawdzania haseł,
@@ -347,12 +347,12 @@ Conflicts:	qmail
 %description client
 qmail is a small, fast, secure replacement for the SENDMAIL package,
 which is the program that actually receives, routes, and delivers
-electronic mail. This qmail also supports IPv6 protocol.
+electronic mail.%{?with_ipv6: This qmail also supports IPv6 protocol.}
 
 %description client -l pl.UTF-8
 qmail jest małą, szybką oraz bezpieczną alternatywą do sendmaila,
 która umożliwia otrzymywanie, przesyłanie oraz wysyłanie poczty
-elektronicznej. Ten qmail dodatkowo wspiera protokół IPv6.
+elektronicznej.%{?with_ipv6: Ten qmail dodatkowo wspiera protokół IPv6.}
 
 %package maildirmake
 Summary:	maildirmake - tool for making qmails' Maildirs
