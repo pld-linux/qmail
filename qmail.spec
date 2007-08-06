@@ -33,7 +33,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl.UTF-8):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	61
+Release:	62
 License:	DJB (http://cr.yp.to/qmail/dist.html)
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -251,19 +251,7 @@ Provides:	user(qmailp)
 Provides:	user(qmailq)
 Provides:	user(qmailr)
 Provides:	user(qmails)
-Obsoletes:	courier
-Obsoletes:	exim
-Obsoletes:	masqmail
-Obsoletes:	nullmailer
-Obsoletes:	omta
-Obsoletes:	postfix
-Obsoletes:	sendmail
-Obsoletes:	sendmail-cf
-Obsoletes:	sendmail-doc
-Obsoletes:	smail
 Obsoletes:	smtpdaemon
-Obsoletes:	ssmtp
-Obsoletes:	zmailer
 Conflicts:	qmail-client
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
