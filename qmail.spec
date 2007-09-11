@@ -233,7 +233,7 @@ Requires(pre):	/usr/sbin/useradd
 Requires:	bzip2
 Requires:	daemontools >= 0.76-1.4
 %{?with_home_etc:Requires:	home-etc >= 1.0.8}
-Requires:	logrotate >= 3.7.4
+Requires:	logrotate >= 3.7-4
 Requires:	mktemp
 Requires:	pam >= 0.77.3
 Requires:	rc-scripts >= 0.2.0
