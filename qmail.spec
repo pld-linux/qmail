@@ -34,7 +34,7 @@ Summary(pl.UTF-8):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
 Release:	62
-License:	DJB (http://cr.yp.to/qmail/dist.html)
+License:	Public Domain
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
 # Source0-md5:	622f65f982e380dbe86e6574f3abcb7c
