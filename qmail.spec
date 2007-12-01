@@ -259,8 +259,9 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define 	tcprules 	/etc/tcprules.d
 %define		supervise	%{_sysconfdir}/supervise
 
-# not FHS compliant
-%define		varqmail	/var/qmail
+%define		varqmail	/var/lib/qmail
+# not FHS compliant - use freedt with sane path?
+%define		servicedir	/service
 
 %description
 qmail is a small, fast, secure replacement for the SENDMAIL package,
@@ -746,17 +747,17 @@ for i in smtp qmtp qmqp; do
 done
 
 echo "The QMTP and QMQP protocols are available, and can be started as:"
-echo "ln -s %{supervise}/qmtpd /service/qmail-qmtpd"
-echo "ln -s %{supervise}/qmqpd /service/qmail-qmqpd"
+echo "ln -s %{supervise}/qmtpd %{servicedir}/qmail-qmtpd"
+echo "ln -s %{supervise}/qmqpd %{servicedir}/qmail-qmqpd"
 echo
 
 # reload qmail-send on upgrade, the others are invoked anyway per connection
-if [ -d /service/qmail-send/supervise ]; then
-	svc -t /service/qmail-send /service/qmail-send/log
+if [ -d %{servicedir}/qmail-send/supervise ]; then
+	svc -t %{servicedir}/qmail-send %{servicedir}/qmail-send/log
 fi
 
-ln -snf %{supervise}/send /service/qmail-send
-ln -snf %{supervise}/smtpd /service/qmail-smtpd
+ln -snf %{supervise}/send %{servicedir}/qmail-send
+ln -snf %{supervise}/smtpd %{servicedir}/qmail-smtpd
 
 %if %{with tls}
 # session cert
@@ -818,9 +819,9 @@ if [ "$1" = "0" ]; then
 	# remove form supervise
 	# http://cr.yp.to/daemontools/faq/create.html#remove
 	for i in send smtpd qmtpd qmqpd; do
-		[ -d /service/qmail-$i/supervise ] || continue
-		cd /service/qmail-$i
-		rm /service/qmail-$i
+		[ -d %{servicedir}/qmail-$i/supervise ] || continue
+		cd %{servicedir}/qmail-$i
+		rm %{servicedir}/qmail-$i
 		svc -dx . log
 	done
 fi
@@ -834,15 +835,15 @@ if [ ! -e %{tcprules}/tcp.qmail-pop3.cdb ]; then
 fi
 
 # add to supervise
-ln -snf %{supervise}/pop3d /service/qmail-pop3d
+ln -snf %{supervise}/pop3d %{servicedir}/qmail-pop3d
 
 %preun pop3
 # If package is being erased for the last time.
 if [ "$1" = "0" ]; then
 	# remove form supervise
-	if [ -d /service/qmail-pop3d/supervise ]; then
-		cd /service/qmail-pop3d
-		rm /service/qmail-pop3d
+	if [ -d %{servicedir}/qmail-pop3d/supervise ]; then
+		cd %{servicedir}/qmail-pop3d
+		rm %{servicedir}/qmail-pop3d
 		svc -dx . log
 	fi
 fi
