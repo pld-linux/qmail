@@ -33,7 +33,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl.UTF-8):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	62
+Release:	63
 License:	Public Domain
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -768,7 +768,7 @@ echo "Creating a self-signed ssl-certificate:"
 %{_libdir}/qmail/mkservercert || true
 %endif
 
-%triggerpostun -- %{name} <= 1.03-56.12
+%triggerpostun -- %{name} < 1.03-56.12
 # move dot-qmail to new location
 if [ -f /etc/qmail/dot-qmail.rpmsave ]; then
 	echo "Moving /etc/qmail/dot-qmail.rpmsave to /etc/qmail/control/defaultdelivery"
@@ -796,7 +796,7 @@ fi
 # this should kill the old instance running on inetd
 %service -q rc-inetd reload
 
-%triggerpostun -- %{name}-pop3 <= 1.03-56.12
+%triggerpostun -- %{name}-pop3 < 1.03-56.12
 %service -q rc-inetd reload
 
 %postun
