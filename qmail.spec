@@ -33,7 +33,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl.UTF-8):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	63.2
+Release:	63.3
 License:	Public Domain
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -472,6 +472,8 @@ PV=$(basename %{SOURCE6})
 %endif
 
 echo %{varqmail} > conf-qmail
+echo %{varqmail} > dot-forward-0.71/conf-qmail
+echo %{varqmail} > fastforward-0.51/conf-qmail
 
 # setup compiler. we use CFLAGS redefine rather using conditional patching.
 echo -n "%{__cc} %{rpmcflags}" > conf-cc
