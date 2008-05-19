@@ -219,6 +219,7 @@ Requires:	crondaemon
 Requires:	openssl-tools >= 0.9.7d
 %endif
 BuildRequires:	rpmbuild(macros) >= 1.268
+BuildRequires:	sed >= 4.0
 Requires(post):	/bin/hostname
 Requires(post):	/bin/id
 Requires(post):	/bin/sed
@@ -463,6 +464,12 @@ tar zxvf %{SOURCE17} -C qhpsi
 for a in qhpsi/*.patch; do
 	patch -p2 < $a
 done
+
+# tcpserver (ucspi-tcp)
+%if "%{_lib}" != "lib"
+PV=$(basename %{SOURCE6})
+%{__sed} -i -e 's,/usr/lib/qmail,%{_libdir}/qmail,g' ${PV%.tar.bz2}/*
+%endif
 
 echo %{varqmail} > conf-qmail
 
