@@ -33,7 +33,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl.UTF-8):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	63
+Release:	63.2
 License:	Public Domain
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -46,8 +46,8 @@ Source4:	checkpass-1.2.tar.gz
 # Source4-md5:	6818629dc74737f3ca33ca97ab4ffcc4
 Source5:	http://www.netmeridian.com/e-huss/queue-fix-1.4.tar.gz
 # Source5-md5:	43f915c104024e6f33a5b3ff52dfb75b
-Source6:	http://glen.alkohol.ee/pld/qmail/%{name}-conf-20061222.tar.bz2
-# Source6-md5:	b844f22a9134ee16ee7a9f81c223ac80
+Source6:	http://glen.alkohol.ee/pld/qmail/%{name}-conf-20080519.tar.bz2
+# Source6-md5:	95a9af47c4a7b92fb6a07014bb89987e
 Source7:	http://iidea.pl/~paweln/tlum/%{name}-doki.tar.bz2
 # Source7-md5:	2d85f0f9f8408cf6caab9f9bc8f68657
 Source8:	%{name}-linux.sh
@@ -170,7 +170,6 @@ Patch204:	%{name}-limit-bounce-size.patch.txt
 # bouncing it because it exceeded your databytes setting
 Patch219:	%{name}-smtpd-esmtp-size-gentoo.patch
 
-
 # Reject some bad relaying attempts
 # gentoo bug #18064
 Patch220:	%{name}-smtpd-relay-reject.gentoo.patch
@@ -253,6 +252,7 @@ Provides:	user(qmailr)
 Provides:	user(qmails)
 Obsoletes:	smtpdaemon
 Conflicts:	qmail-client
+Conflicts:	qmhandle < 1.2.0-5.4
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_sysconfdir	/etc/qmail
@@ -260,6 +260,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		supervise	%{_sysconfdir}/supervise
 
 %define		varqmail	/var/lib/qmail
+%define		queuedir	/var/spool/qmail
 # not FHS compliant - use freedt with sane path?
 %define		servicedir	/service
 
@@ -463,6 +464,8 @@ for a in qhpsi/*.patch; do
 	patch -p2 < $a
 done
 
+echo %{varqmail} > conf-qmail
+
 # setup compiler. we use CFLAGS redefine rather using conditional patching.
 echo -n "%{__cc} %{rpmcflags}" > conf-cc
 echo -n "%{__cc} -s" > conf-ld
@@ -483,8 +486,8 @@ echo -n ' -DUSE_HOME_ETC' >> conf-cc
 echo -n ' -lhome_etc' >> conf-ld
 %endif
 
-# remove backup files after patching
-rm -f *~
+# cleanup backups after patching
+find '(' -name '*~' -o -name '*.orig' ')' -print0 | xargs -0 -r -l512 rm -f
 
 %build
 %{__make} CFLAGS="%{rpmcflags}"
@@ -496,17 +499,22 @@ rm -f *~
 
 %install
 rm -rf $RPM_BUILD_ROOT
-
-install -d boot
-install -d $RPM_BUILD_ROOT{%{_sbindir},%{_bindir},%{_mandir},%{_prefix}/lib,%{_libdir}/qmail,%{varqmail}} \
+install -d $RPM_BUILD_ROOT{%{_sbindir},%{_bindir},%{_mandir}/man{1,8},%{_prefix}/lib,%{_libdir}/qmail,%{varqmail}} \
 	$RPM_BUILD_ROOT/etc/{rc.d/init.d,profile.d,mail,pam.d,security,logrotate.d} \
 	$RPM_BUILD_ROOT%{_sysconfdir}/{alias,control,users} \
+	$RPM_BUILD_ROOT%{queuedir}
 
-ln -sf ../..%{_sysconfdir}/alias $RPM_BUILD_ROOT%{varqmail}
-ln -sf ../..%{_sysconfdir}/control $RPM_BUILD_ROOT%{varqmail}
-ln -sf ../..%{_sysconfdir}/users $RPM_BUILD_ROOT%{varqmail}
-ln -sf ../..%{_libdir}/qmail $RPM_BUILD_ROOT%{varqmail}/bin
-ln -sf ../..%{_mandir} $RPM_BUILD_ROOT%{varqmail}/man
+# docs for qmail setup are installed here
+install -d boot
+
+# symlinks so ./install would install to wanted directories
+install -d $RPM_BUILD_ROOT%{varqmail}
+ln -sf ../../..%{_sysconfdir}/alias $RPM_BUILD_ROOT%{varqmail}
+ln -sf ../../..%{_sysconfdir}/control $RPM_BUILD_ROOT%{varqmail}
+ln -sf ../../..%{_sysconfdir}/users $RPM_BUILD_ROOT%{varqmail}
+ln -sf ../../..%{_libdir}/qmail $RPM_BUILD_ROOT%{varqmail}/bin
+ln -sf ../../..%{_mandir} $RPM_BUILD_ROOT%{varqmail}/man
+ln -sf ../../..%{queuedir} $RPM_BUILD_ROOT%{varqmail}/queue
 ln -sf $RPM_BUILD_DIR/%{name}-%{version}/boot $RPM_BUILD_ROOT%{varqmail}/boot
 
 ./install -s $RPM_BUILD_ROOT
@@ -515,15 +523,14 @@ ln -sf qmail-qread $RPM_BUILD_ROOT%{_bindir}/mailq
 ln -sf ../..%{varqmail}/bin/sendmail $RPM_BUILD_ROOT%{_sbindir}/sendmail
 ln -sf ../..%{varqmail}/bin/sendmail $RPM_BUILD_ROOT%{_prefix}/lib/sendmail
 
-# Set up boot procedures
 install %{SOURCE8} $RPM_BUILD_ROOT/etc/profile.d/qmail.sh
 install %{SOURCE9} $RPM_BUILD_ROOT/etc/profile.d/qmail.csh
 
 install %{SOURCE18} $RPM_BUILD_ROOT/etc/logrotate.d/qmail
 install %{SOURCE19} $RPM_BUILD_ROOT/etc/logrotate.d/qmail-pop3
 
-# tcpserver (supervise)
-PV=`basename %{SOURCE6}`
+# tcpserver (ucspi-tcp)
+PV=$(basename %{SOURCE6})
 cd ${PV%.tar.bz2}
 
 install -d $RPM_BUILD_ROOT/var/log/{,archive/}qmail
@@ -546,7 +553,7 @@ install -d $RPM_BUILD_ROOT/etc/cron.hourly
 install qmail-genrsacert.sh $RPM_BUILD_ROOT/etc/cron.hourly
 
 # for some files
-install -d $RPM_BUILD_ROOT/var/qmail/control/tlshosts
+install -d $RPM_BUILD_ROOT%{varqmail}/control/tlshosts
 > $RPM_BUILD_ROOT%{_sysconfdir}/control/clientcert.pem
 %endif
 
@@ -604,11 +611,11 @@ echo -n "." > $RPM_BUILD_ROOT%{_sysconfdir}/users/assign
 # Set up default delivery
 install %{SOURCE13} $RPM_BUILD_ROOT%{_sysconfdir}/control/defaultdelivery
 
-install %{SOURCE14} $RPM_BUILD_ROOT%{varqmail}/bin/qmail-lint
-install %{SOURCE15} $RPM_BUILD_ROOT%{varqmail}/bin/qmail-qsanity
+install %{SOURCE14} $RPM_BUILD_ROOT%{_libdir}/qmail/qmail-lint
+install %{SOURCE15} $RPM_BUILD_ROOT%{_bindir}/qmail-qsanity
 
 # QUEUE FIX command
-install queue-fix-1.4/queue-fix $RPM_BUILD_ROOT%{varqmail}/bin
+install queue-fix-1.4/queue-fix $RPM_BUILD_ROOT%{_bindir}
 
 # CHECKPASSWORD command
 install checkpass-1.2/checkpass $RPM_BUILD_ROOT%{varqmail}/bin
@@ -617,17 +624,17 @@ echo "qmaild" > $RPM_BUILD_ROOT/etc/security/checkpass.allow
 
 # DOT FORWARD command and doc
 install dot-forward-0.71/dot-forward $RPM_BUILD_ROOT%{varqmail}/bin
-install dot-forward-0.71/dot-forward.1 $RPM_BUILD_ROOT%{varqmail}/man/man1
+install dot-forward-0.71/dot-forward.1 $RPM_BUILD_ROOT%{_mandir}/man1
 
 # FAST FORWARD commands and docs
 install fastforward-0.51/fastforward $RPM_BUILD_ROOT%{varqmail}/bin
-install fastforward-0.51/newaliases $RPM_BUILD_ROOT%{varqmail}/bin
+install fastforward-0.51/newaliases $RPM_BUILD_ROOT%{_bindir}
 install fastforward-0.51/newinclude $RPM_BUILD_ROOT%{varqmail}/bin
 install fastforward-0.51/printforward $RPM_BUILD_ROOT%{varqmail}/bin
 install fastforward-0.51/printmaillist $RPM_BUILD_ROOT%{varqmail}/bin
 install fastforward-0.51/setforward $RPM_BUILD_ROOT%{varqmail}/bin
 install fastforward-0.51/setmaillist $RPM_BUILD_ROOT%{varqmail}/bin
-install fastforward-0.51/*.1 $RPM_BUILD_ROOT%{varqmail}/man/man1/
+install fastforward-0.51/*.1 $RPM_BUILD_ROOT%{_mandir}/man1
 
 %if %{with dkeys}
 install qmail-dk $RPM_BUILD_ROOT%{varqmail}/bin
@@ -650,15 +657,10 @@ mv -f $RPM_BUILD_ROOT%{varqmail}/bin/maildir2mbox	$RPM_BUILD_ROOT%{_bindir}
 mv -f $RPM_BUILD_ROOT%{varqmail}/bin/maildirmake	$RPM_BUILD_ROOT%{_bindir}
 mv -f $RPM_BUILD_ROOT%{varqmail}/bin/maildirwatch	$RPM_BUILD_ROOT%{_bindir}
 mv -f $RPM_BUILD_ROOT%{varqmail}/bin/qmail-qread	$RPM_BUILD_ROOT%{_bindir}
-mv -f $RPM_BUILD_ROOT%{varqmail}/bin/qmail-qsanity	$RPM_BUILD_ROOT%{_bindir}
 mv -f $RPM_BUILD_ROOT%{varqmail}/bin/qmail-qstat	$RPM_BUILD_ROOT%{_bindir}
-mv -f $RPM_BUILD_ROOT%{varqmail}/bin/queue-fix		$RPM_BUILD_ROOT%{_bindir}
-mv -f $RPM_BUILD_ROOT%{varqmail}/bin/newaliases		$RPM_BUILD_ROOT%{_bindir}
 mv -f $RPM_BUILD_ROOT%{varqmail}/bin/qmail-showctl	$RPM_BUILD_ROOT%{_bindir}
-
-# remove mbox(5) man page which is in man-pages now and isn't strict qmail
-# man page
-rm -f $RPM_BUILD_ROOT%{_mandir}/man5/mbox.5
+mv -f $RPM_BUILD_ROOT%{varqmail}/rc					$RPM_BUILD_ROOT%{_libdir}/qmail
+ln -s ../../%{_libdir}/qmail/rc $RPM_BUILD_ROOT%{varqmail}/rc
 
 # remove doc, it's already in %doc
 rm -rf $RPM_BUILD_ROOT%{varqmail}/doc
@@ -696,8 +698,22 @@ done
 rm -f qmail-doki/*.[135789]
 rm -f INSTALL.redhat.redhat # size 0
 
+# remove mbox(5) man page which is in man-pages now and isn't strict qmail
+# man page
+rm -f $RPM_BUILD_ROOT%{_mandir}/man5/mbox.5
+rm -f $RPM_BUILD_ROOT%{_mandir}/pl/man5/mbox.5
+
+# no need for these symlinks to package
+rm -f $RPM_BUILD_ROOT%{varqmail}/{boot,man}
+
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+%pretrans
+if [ -d /var/qmail ]; then
+	echo >&2 "You have old qmail setup with /var/qmail. Flawless upgrade not yet supported."
+	exit 1
+fi
 
 %pre
 # Add few users and groups
@@ -718,7 +734,7 @@ fi
 
 umask 022
 if [ ! -s /etc/qmail/control/me ]; then
-	FQDN=`/bin/hostname -f`
+	FQDN=$(/bin/hostname -f)
 	echo "$FQDN" > /etc/qmail/control/me
 	echo "$FQDN" | /bin/sed 's/^\([^\.]*\)\.\([^\.]*\)\./\2\./' > /etc/qmail/control/defaultdomain
 	echo "$FQDN" | /bin/sed 's/^.*\.\([^\.]*\)\.\([^\.]*\)$/\1.\2/' > /etc/qmail/control/plusdomain
@@ -735,7 +751,7 @@ fi
 %{_bindir}/newaliases
 
 # queue-fix makes life easy!
-%{_bindir}/queue-fix %{varqmail}/queue >/dev/null
+%{_bindir}/queue-fix %{queuedir} >/dev/null
 
 # build .cdb if missing
 for i in smtp qmtp qmqp; do
@@ -753,7 +769,7 @@ echo
 
 # reload qmail-send on upgrade, the others are invoked anyway per connection
 if [ -d %{servicedir}/qmail-send/supervise ]; then
-	svc -t %{servicedir}/qmail-send %{servicedir}/qmail-send/log
+	svc -t %{servicedir}/qmail-send{,/log}
 fi
 
 ln -snf %{supervise}/send %{servicedir}/qmail-send
@@ -857,7 +873,7 @@ fi
 
 umask 022
 if [ ! -s /etc/qmail/control/me ]; then
-	FQDN=`/bin/hostname -f`
+	FQDN=$(/bin/hostname -f)
 	echo "$FQDN" > /etc/qmail/control/me
 	echo "$FQDN" > /etc/qmail/control/idhost
 	echo "$FQDN" | /bin/sed 's/^\([^\.]*\)\.\([^\.]*\)\./\2\./' > /etc/qmail/control/defaultdomain
@@ -885,19 +901,20 @@ fi
 %dir %{_sysconfdir}/users
 %attr(755,root,qmail) %dir %{_libdir}/qmail
 %attr(755,root,qmail) %dir %{varqmail}
-%attr(750,qmailq,qmail) %dir %{varqmail}/queue
-%attr(750,qmailq,qmail) %dir %{varqmail}/queue/lock
-%attr(700,qmails,qmail) %{varqmail}/queue/bounce
-%attr(700,qmails,qmail) %{varqmail}/queue/info
-%attr(700,qmailq,qmail) %{varqmail}/queue/intd
-%attr(700,qmails,qmail) %{varqmail}/queue/local
-%attr(750,qmailq,qmail) %{varqmail}/queue/mess
-%attr(700,qmailq,qmail) %{varqmail}/queue/pid
-%attr(700,qmails,qmail) %{varqmail}/queue/remote
-%attr(750,qmailq,qmail) %{varqmail}/queue/todo
-%attr(600,qmails,qmail) %config(noreplace) %verify(not md5 mtime size) %ghost %{varqmail}/queue/lock/sendmutex
-%attr(644,qmailr,qmail) %config(noreplace) %verify(not md5 mtime size) %ghost %{varqmail}/queue/lock/tcpto
-%attr(622,qmails,qmail) %config(noreplace) %verify(not md5 mtime size) %ghost %{varqmail}/queue/lock/trigger
+%{varqmail}/queue
+%attr(750,qmailq,qmail) %dir %{queuedir}
+%attr(750,qmailq,qmail) %dir %{queuedir}/lock
+%attr(700,qmails,qmail) %{queuedir}/bounce
+%attr(700,qmails,qmail) %{queuedir}/info
+%attr(700,qmailq,qmail) %{queuedir}/intd
+%attr(700,qmails,qmail) %{queuedir}/local
+%attr(750,qmailq,qmail) %{queuedir}/mess
+%attr(700,qmailq,qmail) %{queuedir}/pid
+%attr(700,qmails,qmail) %{queuedir}/remote
+%attr(750,qmailq,qmail) %{queuedir}/todo
+%attr(600,qmails,qmail) %config(noreplace) %verify(not md5 mtime size) %ghost %{queuedir}/lock/sendmutex
+%attr(644,qmailr,qmail) %config(noreplace) %verify(not md5 mtime size) %ghost %{queuedir}/lock/tcpto
+%attr(622,qmails,qmail) %config(noreplace) %verify(not md5 mtime size) %ghost %{queuedir}/lock/trigger
 %attr(644,root,nofiles) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/alias/.qmail-*
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/control/defaultdomain
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/control/locals
@@ -980,7 +997,8 @@ fi
 %attr(755,root,root) %{_libdir}/qmail/qmail-dk
 %dir %attr(751,qmaild,root) %{_sysconfdir}/control/domainkeys
 %endif
-%attr(755,root,root) %{varqmail}/rc
+%attr(755,root,root) %{_libdir}/qmail/rc
+%{varqmail}/rc
 
 %attr(755,root,root) %{_libdir}/qmail/config-sanity-check
 %attr(755,root,root) %{_libdir}/qmail/qmail-config-system
