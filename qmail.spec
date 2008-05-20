@@ -718,7 +718,7 @@ rm -f $RPM_BUILD_ROOT%{varqmail}/{boot,man}
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%pretrans
+%pre
 if [ -d /var/qmail ]; then
 	cat >&2 <<'EOF'
 
@@ -733,7 +733,6 @@ if [ -d /var/qmail ]; then
 	exit 1
 fi
 
-%pre
 # Add few users and groups
 %groupadd -g 81 nofiles
 %groupadd -g 82 qmail
