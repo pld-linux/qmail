@@ -720,7 +720,16 @@ rm -rf $RPM_BUILD_ROOT
 
 %pretrans
 if [ -d /var/qmail ]; then
-	echo >&2 "You have old qmail setup with /var/qmail. Flawless upgrade not yet supported."
+	cat >&2 <<'EOF'
+
+	You have old qmail setup with /var/qmail. Flawless upgrade not yet supported.
+
+	To copy queue to new location:
+	stop qmail
+	cp -a /var/qmail/queue/* %{queuedir}
+	queue-fix %{queuedir}
+
+	EOF
 	exit 1
 fi
 
