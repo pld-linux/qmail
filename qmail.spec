@@ -33,7 +33,7 @@ Summary:	qmail Mail Transport Agent
 Summary(pl.UTF-8):	qmail - serwer pocztowy (MTA)
 Name:		qmail
 Version:	1.03
-Release:	63.3
+Release:	63.4
 License:	Public Domain
 Group:		Networking/Daemons
 Source0:	http://cr.yp.to/software/%{name}-%{version}.tar.gz
@@ -720,7 +720,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %pre
 if [ -d /var/qmail ]; then
-	cat >&2 <<'EOF'
+	cat >&2 <<-'EOF'
 
 	You have old qmail setup with /var/qmail. Flawless upgrade not yet supported.
 
