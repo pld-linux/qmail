@@ -76,6 +76,7 @@ Patch6:		%{name}-relayclientexternal.patch
 Patch8:		tarpit.patch
 Patch9:		%{name}-1.03-maxrcpt.patch
 Patch11:	%{name}-1.03-v6-20000417.diff.gz
+# Patch11-md5:	90eb4c96e55df89dfb7d23623ce7d4fc
 Patch20:	%{name}-no_mail_routing.patch
 Patch21:	%{name}-qmqpc-received.patch
 Patch23:	%{name}-extbouncer.patch
