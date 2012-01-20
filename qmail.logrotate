@@ -7,6 +7,7 @@
 # i think it's bug in bzip2/gzip, since it happens with not just this package.
 
 /var/log/qmail/send/@*.s {
+    su qmaill root
     olddir /var/log/archive/qmail/send
     create 640 qmaill qmail
     missingok
@@ -21,6 +22,7 @@
 }
 
 /var/log/qmail/smtpd/@*.s {
+    su qmaill root
     olddir /var/log/archive/qmail/smtpd
     create 640 qmaill qmail
     missingok
@@ -35,6 +37,7 @@
 }
 
 /var/log/qmail/rblsmtpd/@*.s {
+    su qmaill root
     olddir /var/log/archive/qmail/rblsmtpd
     create 640 qmaill qmail
     missingok
@@ -49,6 +52,7 @@
 }
 
 /var/log/qmail/qmqpd/@*.s {
+    su qmaill root
     olddir /var/log/archive/qmail/qmqpd
     create 640 qmaill qmail
     missingok
@@ -63,6 +67,7 @@
 }
 
 /var/log/qmail/qmtpd/@*.s {
+    su qmaill root
     olddir /var/log/archive/qmail/qmtpd
     create 640 qmaill qmail
     missingok

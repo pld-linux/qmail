@@ -253,6 +253,7 @@ Provides:	user(qmailq)
 Provides:	user(qmailr)
 Provides:	user(qmails)
 Obsoletes:	smtpdaemon
+Conflicts:	logrotate < 3.8.0
 Conflicts:	qmail-client
 Conflicts:	qmhandle < 1.2.0-5.4
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
