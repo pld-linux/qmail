@@ -1,0 +1,3 @@
+- add proper supervise start/stop and removal
+- start qmail-send and qmail-smtpd by default
+- remove chkconfig completely
