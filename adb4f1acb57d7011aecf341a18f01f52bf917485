@@ -1,0 +1,6 @@
+- package qmail-send supervise scripts
+- proper permissions of tcprules .cdb files
+- fix path for rc (qmail-send supervise script)
+- remove gentoo-compat need
+- temp out patch 104 (does not apply)
+- rel 56.12
