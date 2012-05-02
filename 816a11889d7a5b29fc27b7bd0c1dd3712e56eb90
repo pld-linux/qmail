@@ -1,0 +1,6 @@
+- changes from PLD:
+  - %userremove/%groupremove
+  - unification on useradd/groupadd
+  - qmail-doki added
+  - spelling fixes
+- remove BR that already there by rpm-build
