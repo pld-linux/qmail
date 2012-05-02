@@ -1,0 +1,1 @@
+- trigger to move /etc/qmail/dot-qmail.rpmsave to /etc/qmail/control/defaultdelivery
