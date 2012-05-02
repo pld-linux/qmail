@@ -510,7 +510,7 @@ find '(' -name '*~' -o -name '*.orig' ')' -print0 | xargs -0 -r -l512 rm -f
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_sbindir},%{_bindir},%{_mandir}/man{1,8},%{_prefix}/lib,%{_libdir}/qmail,%{varqmail}} \
+install -d $RPM_BUILD_ROOT{%{_sbindir},%{_bindir},%{_mandir}/man{1,8},/usr/lib,%{_libdir}/qmail,%{varqmail}} \
 	$RPM_BUILD_ROOT/etc/{rc.d/init.d,profile.d,mail,pam.d,security,logrotate.d} \
 	$RPM_BUILD_ROOT%{_sysconfdir}/{alias,control,users} \
 	$RPM_BUILD_ROOT%{queuedir}
@@ -532,7 +532,7 @@ ln -sf $RPM_BUILD_DIR/%{name}-%{version}/boot $RPM_BUILD_ROOT%{varqmail}/boot
 
 ln -sf qmail-qread $RPM_BUILD_ROOT%{_bindir}/mailq
 ln -sf ../..%{varqmail}/bin/sendmail $RPM_BUILD_ROOT%{_sbindir}/sendmail
-ln -sf ../..%{varqmail}/bin/sendmail $RPM_BUILD_ROOT%{_prefix}/lib/sendmail
+ln -sf ../..%{varqmail}/bin/sendmail $RPM_BUILD_ROOT/usr/lib/sendmail
 
 install %{SOURCE8} $RPM_BUILD_ROOT/etc/profile.d/qmail.sh
 install %{SOURCE9} $RPM_BUILD_ROOT/etc/profile.d/qmail.csh
@@ -1089,7 +1089,7 @@ fi
 
 %attr(755,root,root) %{_bindir}/mailq
 %attr(755,root,root) %{_sbindir}/sendmail
-%attr(755,root,root) %{_prefix}/lib/sendmail
+%attr(755,root,root) /usr/lib/sendmail
 %attr(2755,alias,qmail) %{varqmail}/alias
 %attr(755,root,root) %{varqmail}/bin
 %attr(755,root,root) %{varqmail}/control
@@ -1152,7 +1152,7 @@ fi
 %attr(755,root,root) %{_bindir}/qmail-showctl
 %attr(755,root,root) %{_libdir}/qmail/sendmail
 %attr(755,root,root) %{_sbindir}/sendmail
-%attr(755,root,root) %{_prefix}/lib/sendmail
+/usr/lib/sendmail
 %{_mandir}/man1/maildir2mbox*
 %{_mandir}/man1/maildirwatch*
 %{_mandir}/man1/mailsubj*
